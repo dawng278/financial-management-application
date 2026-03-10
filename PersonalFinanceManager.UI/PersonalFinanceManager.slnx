@@ -7,5 +7,9 @@
   <Project Path="../PersonalFinanceManager.DAL/PersonalFinanceManager.DAL.csproj" Id="154d46c4-07e7-4089-93d9-9c9b8735bb56" />
   <Project Path="../PersonalFinanceManager.Infrastructure/PersonalFinanceManager.Infrastructure.csproj" Id="91f643f1-5d6b-42b6-99f9-45c29ca921f0" />
   <Project Path="../PersonalFinanceManager.Models/PersonalFinanceManager.Models.csproj" Id="728182f6-7262-40f1-b3c4-33aa9e3ce35e" />
+<<<<<<< HEAD
+=======
+  <Project Path="../Tests/PersonalFinanceManager.Tests/PersonalFinanceManager.Tests.csproj" Id="73229df5-4297-45fc-96b2-9cc8c98163c5" />
+>>>>>>> origin/feature
   <Project Path="PersonalFinanceManager.UI.csproj" Id="edbf51a6-ecb0-446b-a0c5-351fd43f9016" />
 </Solution>

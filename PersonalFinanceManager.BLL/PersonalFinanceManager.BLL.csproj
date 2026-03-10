@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
+=======
+    <Reference Include="FluentValidation, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\PersonalFinanceManager.UI\packages\FluentValidation.9.5.4\lib\net461\FluentValidation.dll</HintPath>
+    </Reference>
+>>>>>>> origin/feature
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,6 +75,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+<<<<<<< HEAD
+=======
+    <None Include="packages.config" />
+>>>>>>> origin/feature
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
