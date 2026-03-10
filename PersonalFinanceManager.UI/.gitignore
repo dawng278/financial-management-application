@@ -1,0 +1,14 @@
+# Các thư mục Visual Studio sinh ra
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Thư viện NuGet
+packages/
+
+# File tạm của Windows
+Thumbs.db

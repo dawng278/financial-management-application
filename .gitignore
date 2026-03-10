@@ -1,0 +1,29 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build Output
+[Bb]in/
+[Oo]bj/
+*.csproj.user
+
+# NuGet
+packages/
+*.nupkg
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Deployment
+*.pubxml
+*.pubxml.user
+
+# Local Settings (nếu có dùng file cấu hình cá nhân)
+*.config.user
+appsettings.Local.json

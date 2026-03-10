@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="../PersonalFinanceManager.BLL/PersonalFinanceManager.BLL.csproj" Id="d2167e07-6bb8-427e-95ac-b58b93d11500" />
+  <Project Path="../PersonalFinanceManager.Common/PersonalFinanceManager.Common.csproj" Id="1f885851-dc7b-494b-bfa3-f58ff0b3d9b6" />
+  <Project Path="../PersonalFinanceManager.DAL/PersonalFinanceManager.DAL.csproj" Id="154d46c4-07e7-4089-93d9-9c9b8735bb56" />
+  <Project Path="../PersonalFinanceManager.Infrastructure/PersonalFinanceManager.Infrastructure.csproj" Id="91f643f1-5d6b-42b6-99f9-45c29ca921f0" />
+  <Project Path="../PersonalFinanceManager.Models/PersonalFinanceManager.Models.csproj" Id="728182f6-7262-40f1-b3c4-33aa9e3ce35e" />
+  <Project Path="../Tests/PersonalFinanceManager.Tests/PersonalFinanceManager.Tests.csproj" Id="73229df5-4297-45fc-96b2-9cc8c98163c5" />
+  <Project Path="PersonalFinanceManager.UI.csproj" Id="edbf51a6-ecb0-446b-a0c5-351fd43f9016" />
+</Solution>
