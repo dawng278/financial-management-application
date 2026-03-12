@@ -18,7 +18,8 @@ namespace PersonalFinanceManager.UI
                 DependencyContainer.Initialize();
 
                 // Bước 2: Mở form đầu tiên
-                Application.Run(new Form());
+                //Application.Run(new PersonalFinanceManager.Forms.BaseForm());
+                Application.Run(new PersonalFinanceManager.Forms.Auth.RegisterForm());
             }
             catch (Exception ex)
             {
