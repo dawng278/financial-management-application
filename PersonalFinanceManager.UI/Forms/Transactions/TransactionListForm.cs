@@ -30,7 +30,7 @@ namespace PersonalFinanceManager.Forms.Transactions
         public TransactionListForm()
         {
             InitializeComponent();
-            LoadMockData();
+            LoadDataByCurrentUser();
             SetupGrid();
             BindGrid(_allRows);
         }
@@ -52,23 +52,43 @@ namespace PersonalFinanceManager.Forms.Transactions
         }
 
         // =====================================================
-        // MOCK DATA
+        // USER DATA
         // =====================================================
-        private void LoadMockData()
+        private void LoadDataByCurrentUser()
         {
-            _allRows = new List<TransactionRow>
+            _allRows = new List<TransactionRow>();
+
+            try
             {
-                new TransactionRow { Icon="i", IconColor=Color.FromArgb(30,136,229),   Name="iPhone 13 Pro MAX",      Business="Apple Inc",   Type="Di động",    Amount= 4208400m, Date=new DateTime(2022,4,14,20,0,0), InvoiceId="MGL0124877" },
-                new TransactionRow { Icon="N", IconColor=Color.FromArgb(211,47,47),    Name="Netflix Subscription",   Business="Netflix",     Type="Giải trí",   Amount= 1000000m, Date=new DateTime(2022,4,5,19,0,0),  InvoiceId="MGL0124585" },
-                new TransactionRow { Icon="F", IconColor=Color.FromArgb(103,58,183),   Name="Figma Subscription",     Business="Figma Inc",   Type="Phần mềm",   Amount= 2442000m, Date=new DateTime(2022,4,2,22,0,0),  InvoiceId="MGL0124124" },
-                new TransactionRow { Icon="B", IconColor=Color.FromArgb(255,152,0),    Name="Bitcoin Transaction",    Business="Coinbase",    Type="Công nghệ",  Amount=-5208400m, Date=new DateTime(2022,4,2,6,0,0),   InvoiceId="MGL0128544" },
-                new TransactionRow { Icon="S", IconColor=Color.FromArgb(0,150,136),    Name="Sajib Rahman",           Business="Appsumo",     Type="Rút tiền",   Amount= 5001000m, Date=new DateTime(2022,3,30,21,0,0), InvoiceId="MGL0122143" },
-                new TransactionRow { Icon="I", IconColor=Color.FromArgb(233,30,99),    Name="Instagram Ads",          Business="Meta",        Type="Giải trí",   Amount= 1000000m, Date=new DateTime(2022,3,20,21,0,0), InvoiceId="MGL0124877" },
-                new TransactionRow { Icon="U", IconColor=Color.FromArgb(30,136,229),   Name="UIHUT Subscription",     Business="UIHUT",       Type="Thanh toán", Amount= -840000m, Date=new DateTime(2022,3,24,20,0,0), InvoiceId="MGL0124244" },
-                new TransactionRow { Icon="C", IconColor=Color.FromArgb(66,66,66),     Name="Citi Bank Ltd.",         Business="City Bank",   Type="Rút tiền",   Amount= 4001000m, Date=new DateTime(2022,3,10,7,0,0),  InvoiceId="MGL0127749" },
-                new TransactionRow { Icon="A", IconColor=Color.FromArgb(46,125,50),    Name="Amazon Purchase",        Business="Amazon",      Type="Mua sắm",    Amount= 3500000m, Date=new DateTime(2022,3,5,15,0,0),  InvoiceId="MGL0123011" },
-                new TransactionRow { Icon="G", IconColor=Color.FromArgb(21,101,192),   Name="Google Workspace",       Business="Google",      Type="Phần mềm",   Amount=  360000m, Date=new DateTime(2022,2,28,10,0,0), InvoiceId="MGL0121988" },
-            };
+                var txs = ServiceLocator.TransactionService
+                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                    .OrderByDescending(t => t.TransactionDate)
+                    .ToList();
+
+                foreach (var tx in txs)
+                {
+                    var isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
+                    var name = string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName;
+                    var business = string.IsNullOrWhiteSpace(tx.Note) ? "-" : tx.Note;
+
+                    _allRows.Add(new TransactionRow
+                    {
+                        Icon = name.Substring(0, 1),
+                        IconColor = isExpense ? Color.FromArgb(211, 47, 47) : Color.FromArgb(46, 125, 50),
+                        Name = name,
+                        Business = business,
+                        Type = tx.Type,
+                        Amount = isExpense ? -Math.Abs(tx.Amount) : Math.Abs(tx.Amount),
+                        Date = tx.TransactionDate,
+                        InvoiceId = "TX" + tx.Id.ToString("000000")
+                    });
+                }
+            }
+            catch
+            {
+                // keep empty list on load failure
+            }
+
             _filteredRows = new List<TransactionRow>(_allRows);
         }
 

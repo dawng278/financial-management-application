@@ -1,10 +1,13 @@
 ﻿using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.Common.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using PersonalFinanceManager.Models;
 
 namespace PersonalFinanceManager.Forms.MyWallet
 {
@@ -32,7 +35,7 @@ namespace PersonalFinanceManager.Forms.MyWallet
         public MyWalletForm()
         {
             InitializeComponent();
-            LoadMockData();
+            LoadDataByCurrentUser();
 
             this.Load += MyWalletForm_Load;
             this.SizeChanged += MyWalletForm_SizeChanged;
@@ -57,21 +60,84 @@ namespace PersonalFinanceManager.Forms.MyWallet
         }
 
         // =====================================================================
-        // MOCK DATA
+        // USER DATA
         // =====================================================================
-        private void LoadMockData()
+        private void LoadDataByCurrentUser()
         {
-            _allPayments = new List<PaymentRow>
+            _allPayments = new List<PaymentRow>();
+
+            try
             {
-                // Today
-                new PaymentRow { Name="Payoneer",     Date=new DateTime(2022,4,20,18,55,0), Amount=4800.24m,  IsIncome=true,  IsUpcoming=false, IconBg=Color.White,                      IconText="P",  IconFg=Color.FromArgb(255,150,0)  },
-                new PaymentRow { Name="Remitly",      Date=new DateTime(2022,4,18, 8,58,0), Amount=1800.24m,  IsIncome=false, IsUpcoming=false, IconBg=Color.FromArgb(235,250,242),      IconText="R",  IconFg=Color.FromArgb(30,160,90)  },
-                new PaymentRow { Name="Wise",         Date=new DateTime(2022,4,15, 2,55,0), Amount=24.32m,    IsIncome=false, IsUpcoming=false, IconBg=Color.FromArgb(232,248,255),      IconText="W",  IconFg=Color.FromArgb(30,140,220) },
-                new PaymentRow { Name="Paypal",       Date=new DateTime(2022,4,14, 7,40,0), Amount=400.32m,   IsIncome=false, IsUpcoming=false, IconBg=Color.FromArgb(228,238,255),      IconText="P",  IconFg=Color.FromArgb(0,60,180)   },
-                // Upcoming
-                new PaymentRow { Name="Facebooks Ads",Date=new DateTime(2022,4,20,18,55,0), Amount=400.00m,   IsIncome=false, IsUpcoming=true,  IconBg=Color.FromArgb(24,119,242),       IconText="f",  IconFg=Color.White                 },
-                new PaymentRow { Name="LinkedIn Ads", Date=new DateTime(2022,4,18, 8,58,0), Amount=200.50m,   IsIncome=false, IsUpcoming=true,  IconBg=Color.FromArgb(0,119,181),        IconText="in", IconFg=Color.White                 },
-            };
+                var txs = ServiceLocator.TransactionService
+                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                    .OrderByDescending(t => t.TransactionDate)
+                    .Take(20)
+                    .ToList();
+
+                foreach (var tx in txs)
+                {
+                    bool isIncome = string.Equals(tx.Type, "Income", StringComparison.OrdinalIgnoreCase);
+                    string name = string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName;
+
+                    _allPayments.Add(new PaymentRow
+                    {
+                        Name = name,
+                        Date = tx.TransactionDate,
+                        Amount = tx.Amount,
+                        IsIncome = isIncome,
+                        IsUpcoming = false,
+                        IconBg = isIncome ? Color.FromArgb(235, 250, 242) : Color.FromArgb(255, 239, 239),
+                        IconText = name.Substring(0, 1).ToUpper(),
+                        IconFg = isIncome ? Color.FromArgb(30, 160, 90) : Color.FromArgb(200, 60, 60)
+                    });
+                }
+
+                int uid = PersonalFinanceManager.Common.Mock.MockUserService.CurrentUserId;
+                if (uid > 0)
+                {
+                    var db = new DbHelper();
+                    using (var conn = db.CreateConnection())
+                    {
+                        conn.Open();
+                        using (var cmd = (SQLiteCommand)conn.CreateCommand())
+                        {
+                            cmd.CommandText = @"SELECT ClientName, DueDate, Amount
+                                                FROM Invoices
+                                                WHERE UserId = @uid
+                                                  AND datetime(DueDate) >= datetime('now')
+                                                ORDER BY datetime(DueDate) ASC
+                                                LIMIT 10";
+                            cmd.Parameters.AddWithValue("@uid", uid);
+
+                            using (var r = cmd.ExecuteReader())
+                            {
+                                while (r.Read())
+                                {
+                                    var name = r["ClientName"].ToString();
+                                    var due = DateTime.TryParse(r["DueDate"].ToString(), out var d) ? d : DateTime.Now;
+                                    var amount = Convert.ToDecimal(r["Amount"]);
+
+                                    _allPayments.Add(new PaymentRow
+                                    {
+                                        Name = name,
+                                        Date = due,
+                                        Amount = amount,
+                                        IsIncome = false,
+                                        IsUpcoming = true,
+                                        IconBg = Color.FromArgb(24, 119, 242),
+                                        IconText = string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToLower(),
+                                        IconFg = Color.White
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                _allPayments = new List<PaymentRow>();
+            }
         }
 
         // =====================================================================
@@ -215,8 +281,73 @@ namespace PersonalFinanceManager.Forms.MyWallet
         // ADD NEW CARD
         // =====================================================================
         private void lnkAddCard_Click(object sender, EventArgs e)
-            => MessageBox.Show("Add New Card feature coming soon.", "Add Card",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        {
+            ShowAddTransferDialog();
+        }
+
+        private void ShowAddTransferDialog()
+        {
+            using (var dlg = new Form())
+            {
+                dlg.Text = "Thêm bill chuyển khoản";
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.ClientSize = new Size(360, 230);
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+
+                var lblType = new Label { Text = "Loại", Left = 20, Top = 20, Width = 80 };
+                var cboType = new ComboBox { Left = 110, Top = 16, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+                cboType.Items.AddRange(new object[] { "Income", "Expense" });
+                cboType.SelectedIndex = 1;
+
+                var lblAmount = new Label { Text = "Số tiền", Left = 20, Top = 60, Width = 80 };
+                var txtAmount = new TextBox { Left = 110, Top = 56, Width = 220 };
+
+                var lblNote = new Label { Text = "Ghi chú", Left = 20, Top = 100, Width = 80 };
+                var txtNote = new TextBox { Left = 110, Top = 96, Width = 220 };
+
+                var lblDate = new Label { Text = "Ngày", Left = 20, Top = 140, Width = 80 };
+                var dtp = new DateTimePicker { Left = 110, Top = 136, Width = 220, Format = DateTimePickerFormat.Short, Value = DateTime.Now };
+
+                var btnSave = new Button { Text = "Lưu", Left = 174, Top = 180, Width = 75, DialogResult = DialogResult.OK };
+                var btnCancel = new Button { Text = "Hủy", Left = 255, Top = 180, Width = 75, DialogResult = DialogResult.Cancel };
+
+                dlg.Controls.AddRange(new Control[] { lblType, cboType, lblAmount, txtAmount, lblNote, txtNote, lblDate, dtp, btnSave, btnCancel });
+                dlg.AcceptButton = btnSave;
+                dlg.CancelButton = btnCancel;
+
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+                if (!decimal.TryParse(txtAmount.Text.Trim(), out var amount) || amount <= 0)
+                {
+                    MessageBox.Show("Số tiền không hợp lệ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var tx = new Transaction
+                {
+                    Amount = amount,
+                    Type = cboType.Text,
+                    Note = txtNote.Text.Trim(),
+                    TransactionDate = dtp.Value,
+                    CreatedAt = DateTime.Now,
+                    CategoryId = 1,
+                    AccountId = 0
+                };
+
+                var ok = ServiceLocator.TransactionService.Add(tx);
+                if (!ok)
+                {
+                    MessageBox.Show("Không thể lưu bill chuyển khoản.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                LoadDataByCurrentUser();
+                BuildPaymentRows();
+                MessageBox.Show("Đã thêm bill chuyển khoản.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
         // =====================================================================
         // LAYOUT

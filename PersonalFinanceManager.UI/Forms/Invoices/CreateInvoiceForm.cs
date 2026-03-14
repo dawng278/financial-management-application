@@ -1,5 +1,7 @@
 ﻿using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.Common.Helpers;
 using System;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -173,9 +175,59 @@ namespace PersonalFinanceManager.Forms.Invoices
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            if (!SaveInvoice())
+            {
+                MessageBox.Show("Unable to save invoice.", "Invoice",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             MessageBox.Show(
                 $"Invoice Sent!\n\nInvoice #: {txtInvNum.Text}\nBilled to: {txtBilledName.Text}\nClient: {txtClientName.Text}\nTotal: ${_subtotal:0.00}",
                 "Invoice Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            UI.Navigation.FormNavigator.GoToInvoices();
+        }
+
+        private bool SaveInvoice()
+        {
+            int currentUserId = ResolveCurrentUserId();
+            if (currentUserId <= 0) return false;
+
+            decimal total = _subtotal;
+            if (total <= 0m) return false;
+
+            var db = new DbHelper();
+            using (var conn = db.CreateConnection())
+            {
+                conn.Open();
+                using (var cmd = (SQLiteCommand)conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Invoices
+                                        (UserId, InvoiceNumber, ClientName, BilledTo, InvoiceDate, DueDate, OrderType, Amount, Status, CreatedAt)
+                                        VALUES
+                                        (@UserId, @InvoiceNumber, @ClientName, @BilledTo, @InvoiceDate, @DueDate, @OrderType, @Amount, @Status, @CreatedAt)";
+                    cmd.Parameters.AddWithValue("@UserId", currentUserId);
+                    cmd.Parameters.AddWithValue("@InvoiceNumber", txtInvNum.Text.Trim());
+                    cmd.Parameters.AddWithValue("@ClientName", txtClientName.Text.Trim());
+                    cmd.Parameters.AddWithValue("@BilledTo", (object)txtBilledName.Text.Trim() ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@InvoiceDate", dtpInvoiceDate.Value.ToString("s"));
+                    cmd.Parameters.AddWithValue("@DueDate", dtpDueDate.Value.ToString("s"));
+                    cmd.Parameters.AddWithValue("@OrderType", "Invoice");
+                    cmd.Parameters.AddWithValue("@Amount", total);
+                    cmd.Parameters.AddWithValue("@Status", "Pending");
+                    cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now.ToString("s"));
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        private int ResolveCurrentUserId()
+        {
+            var user = ServiceLocator.UserService.GetCurrentUser();
+            if (user != null && user.Id > 0) return user.Id;
+            return PersonalFinanceManager.Common.Mock.MockUserService.CurrentUserId;
         }
 
         private void btnDownload_Click(object sender, EventArgs e)

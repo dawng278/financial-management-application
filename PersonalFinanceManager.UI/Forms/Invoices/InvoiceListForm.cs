@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using PersonalFinanceManager.Common.Helpers;
 
 namespace PersonalFinanceManager.Forms.Invoices
 {
@@ -43,7 +45,7 @@ namespace PersonalFinanceManager.Forms.Invoices
         public InvoiceListForm()
         {
             InitializeComponent();
-            LoadMock();
+            LoadFromDatabase();
             BuildColumns();
             BuildFilterPanel();
             Bind(_all);
@@ -70,22 +72,65 @@ namespace PersonalFinanceManager.Forms.Invoices
         }
 
         // =====================================================================
-        // MOCK DATA
+        // DATA
         // =====================================================================
-        private void LoadMock()
+        private void LoadFromDatabase()
         {
-            _all = new List<InvoiceRow>
+            _all = new List<InvoiceRow>();
+
+            int currentUserId = ResolveCurrentUserId();
+            if (currentUserId <= 0)
             {
-                new InvoiceRow { IconLetter="G", IconColor=Color.FromArgb(235, 75, 55),  Name="Gadget Gallery LTD",   InvNum="MGL524874", Date=new DateTime(2022,4,14,20,0,0), OrderType="20",         Amount=420.84m,  Status="Pending" },
-                new InvoiceRow { IconLetter="F", IconColor=Color.FromArgb(98, 52,180),   Name="Figma Subscription",   InvNum="MGL524250", Date=new DateTime(2022,4,12,20,0,0), OrderType="01",         Amount=244.80m,  Status="Paid"    },
-                new InvoiceRow { IconLetter="J", IconColor=Color.FromArgb(55,125,200),   Name="Jack Dawson Eric",     InvNum="MGL524874", Date=new DateTime(2022,4,12, 9,0,0), OrderType="02",         Amount=200.00m,  Status="Unpaid"  },
-                new InvoiceRow { IconLetter="U", IconColor=Color.FromArgb(25,145,198),   Name="UIHUT Subscription",   InvNum="MGL524140", Date=new DateTime(2022,3,24,20,0,0), OrderType="01",         Amount=84.00m,   Status="Paid"    },
-                new InvoiceRow { IconLetter="C", IconColor=Color.FromArgb(195, 35, 35),  Name="Citi Bank Ltd.",       InvNum="MGL524245", Date=new DateTime(2022,3,10,20,0,0), OrderType="Withdraw",   Amount=420.84m,  Status="Pending" },
-                new InvoiceRow { IconLetter="B", IconColor=Color.FromArgb(238,148,  0),  Name="Bitcoin Transaction",  InvNum="MGL524254", Date=new DateTime(2022,3, 8,20,0,0), OrderType="Technology", Amount=400.11m,  Status="Pending" },
-                new InvoiceRow { IconLetter="N", IconColor=Color.FromArgb(218, 18, 18),  Name="Netflix Subscription", InvNum="MGL524487", Date=new DateTime(2022,3, 2,19,0,0), OrderType="01",         Amount=420.84m,  Status="Paid"    },
-                new InvoiceRow { IconLetter="S", IconColor=Color.FromArgb(55,118,198),   Name="Sajib Rahman",         InvNum="MGL524598", Date=new DateTime(2022,3, 1,20,0,0), OrderType="Withdraw",   Amount=500.10m,  Status="Paid"    },
-            };
+                _filtered = new List<InvoiceRow>(_all);
+                return;
+            }
+
+            var db = new DbHelper();
+            using (var conn = db.CreateConnection())
+            {
+                conn.Open();
+                using (var cmd = (SQLiteCommand)conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT InvoiceNumber, ClientName, InvoiceDate, OrderType, Amount, Status
+                                        FROM Invoices
+                                        WHERE UserId = @uid
+                                        ORDER BY datetime(CreatedAt) DESC";
+                    cmd.Parameters.AddWithValue("@uid", currentUserId);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            var name = r["ClientName"].ToString();
+                            _all.Add(new InvoiceRow
+                            {
+                                IconLetter = string.IsNullOrWhiteSpace(name) ? "?" : name.Substring(0, 1).ToUpper(),
+                                IconColor = Color.FromArgb(55, 125, 200),
+                                Name = name,
+                                InvNum = r["InvoiceNumber"].ToString(),
+                                Date = DateTime.TryParse(r["InvoiceDate"].ToString(), out var d) ? d : DateTime.Now,
+                                OrderType = r["OrderType"].ToString(),
+                                Amount = Convert.ToDecimal(r["Amount"]),
+                                Status = r["Status"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
             _filtered = new List<InvoiceRow>(_all);
+        }
+
+        private int ResolveCurrentUserId()
+        {
+            try
+            {
+                var u = Infrastructure.DI.ServiceLocator.UserService.GetCurrentUser();
+                if (u != null && u.Id > 0) return u.Id;
+            }
+            catch { }
+
+            return PersonalFinanceManager.Common.Mock.MockUserService.CurrentUserId;
         }
 
         // =====================================================================

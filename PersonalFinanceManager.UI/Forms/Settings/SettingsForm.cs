@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Windows.Forms;
 
 namespace PersonalFinanceManager.Forms.Settings
@@ -22,6 +23,7 @@ namespace PersonalFinanceManager.Forms.Settings
             InitializeComponent();
             this.Load += SettingsForm_Load;
             this.SizeChanged += SettingsForm_SizeChanged;
+            btnNavHelp.Click += btnNavHelp_Click;
         }
 
         // =====================================================================
@@ -42,6 +44,7 @@ namespace PersonalFinanceManager.Forms.Settings
                         txtFirstName.Text = parts.Length > 0 ? parts[0] : u.FullName;
                         txtLast.Text = parts.Length > 1 ? string.Join(" ", parts, 1, parts.Length - 1) : "";
                     }
+
                     if (!string.IsNullOrEmpty(u.Email))
                         txtEmail.Text = u.Email;
                 }
@@ -130,9 +133,18 @@ namespace PersonalFinanceManager.Forms.Settings
                 var u = ServiceLocator.UserService.GetCurrentUser();
                 if (u != null)
                 {
-                    u.FullName = txtFirstName.Text.Trim() + " " + txtLast.Text.Trim();
-                    u.Email = txtEmail.Text.Trim();
-                    // ServiceLocator.UserService.UpdateProfile(u); // wire to your service
+                    var updated = new PersonalFinanceManager.Models.User
+                    {
+                        FullName = txtFirstName.Text.Trim() + " " + txtLast.Text.Trim(),
+                        Email = txtEmail.Text.Trim()
+                    };
+
+                    var userService = ServiceLocator.UserService as PersonalFinanceManager.Common.Mock.MockUserService;
+                    if (userService == null || !userService.UpdateProfile(updated, txtNewPass.Text.Trim()))
+                    {
+                        ShowError("Unable to update profile. Email may already be used.");
+                        return;
+                    }
                 }
             }
             catch { }
@@ -237,6 +249,103 @@ namespace PersonalFinanceManager.Forms.Settings
                 ServiceLocator.UserService.Logout();
                 UI.Navigation.FormNavigator.GoToLogin();
             }
+        }
+
+        private void btnNavHelp_Click(object sender, EventArgs e)
+        {
+            var choice = MessageBox.Show(
+                "Yes: Backup database\nNo: Restore database",
+                "Database Tools",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (choice == DialogResult.Yes)
+            {
+                BackupDatabase();
+            }
+            else if (choice == DialogResult.No)
+            {
+                RestoreDatabase();
+            }
+        }
+
+        private void BackupDatabase()
+        {
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Chọn thư mục lưu backup";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+
+                try
+                {
+                    var backupFile = CreateBackup(dialog.SelectedPath);
+                    MessageBox.Show("Backup thành công:\n" + backupFile, "Backup",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Backup thất bại:\n" + ex.Message, "Backup",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void RestoreDatabase()
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "SQLite Database (*.db)|*.db|All files (*.*)|*.*";
+                dialog.Title = "Chọn file backup để restore";
+
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+
+                var confirm = MessageBox.Show(
+                    "Restore sẽ ghi đè database hiện tại. Tiếp tục?",
+                    "Xác nhận restore",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes) return;
+
+                try
+                {
+                    RestoreBackup(dialog.FileName);
+                    MessageBox.Show("Restore thành công. Vui lòng khởi động lại ứng dụng.", "Restore",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Restore thất bại:\n" + ex.Message, "Restore",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private static string GetDbPath()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PersonalFinance.db");
+        }
+
+        private static string CreateBackup(string destinationFolder)
+        {
+            var dbPath = GetDbPath();
+            if (!File.Exists(dbPath))
+                throw new FileNotFoundException("Không tìm thấy file database.", dbPath);
+
+            Directory.CreateDirectory(destinationFolder);
+            var backupFile = Path.Combine(destinationFolder,
+                "PersonalFinance_backup_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".db");
+
+            File.Copy(dbPath, backupFile, true);
+            return backupFile;
+        }
+
+        private static void RestoreBackup(string backupFilePath)
+        {
+            if (!File.Exists(backupFilePath))
+                throw new FileNotFoundException("Không tìm thấy file backup.", backupFilePath);
+
+            File.Copy(backupFilePath, GetDbPath(), true);
         }
 
         private void btnClose_Click(object sender, EventArgs e) => Application.Exit();

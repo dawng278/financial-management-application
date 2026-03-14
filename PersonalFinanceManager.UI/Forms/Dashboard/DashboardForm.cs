@@ -5,6 +5,9 @@ using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Wpf;
 using PersonalFinanceManager.Infrastructure.DI;
+using System.Collections.Generic;
+using System.Linq;
+using PersonalFinanceManager.Models;
 
 namespace PersonalFinanceManager.Forms.Dashboard
 {
@@ -19,6 +22,19 @@ namespace PersonalFinanceManager.Forms.Dashboard
         private static readonly Color DarkCard = Color.FromArgb(30, 33, 42);
         private static readonly Color Teal = Color.FromArgb(0, 180, 140);
         private static readonly Color BgLight = Color.FromArgb(245, 246, 250);
+
+        private decimal _totalBalance = 0m;
+        private decimal _totalSpending = 0m;
+        private decimal _totalSaved = 0m;
+        private List<TransferItem> _recentTransfers = new List<TransferItem>();
+
+        private class TransferItem
+        {
+            public string Name { get; set; }
+            public DateTime Date { get; set; }
+            public decimal Amount { get; set; }
+            public bool IsExpense { get; set; }
+        }
 
         public DashboardForm()
         {
@@ -45,6 +61,8 @@ namespace PersonalFinanceManager.Forms.Dashboard
             this.btnNavWallets.Click += (s, e) => NavigateTo("wallets");
             this.btnNavSettings.Click += (s, e) => NavigateTo("settings");
             this.btnNavDashboard.Click += (s, e) => NavigateTo("dashboard");
+            this.lnkViewAllTrf.Text = "Thêm bill";
+            this.lnkViewAllTrf.LinkClicked += lnkViewAllTrf_LinkClicked;
         }
 
         // ══════════════════════════════════════════════
@@ -61,8 +79,55 @@ namespace PersonalFinanceManager.Forms.Dashboard
             catch { }
 
             LayoutTopBarButtons();
+            LoadDashboardData();
             SetupChart();
             SetupTransactionGrid();
+        }
+
+        private void LoadDashboardData()
+        {
+            try
+            {
+                var all = ServiceLocator.TransactionService
+                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                    .ToList();
+
+                decimal income = all
+                    .Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
+                    .Sum(t => t.Amount);
+
+                decimal expense = all
+                    .Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
+                    .Sum(t => t.Amount);
+
+                _totalSpending = expense;
+                _totalBalance = income - expense;
+                _totalSaved = _totalBalance > 0 ? _totalBalance : 0m;
+
+                _recentTransfers = all
+                    .OrderByDescending(t => t.TransactionDate)
+                    .Take(5)
+                    .Select(t => new TransferItem
+                    {
+                        Name = string.IsNullOrWhiteSpace(t.CategoryName) ? "Giao dịch" : t.CategoryName,
+                        Date = t.TransactionDate,
+                        Amount = t.Amount,
+                        IsExpense = !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)
+                    })
+                    .ToList();
+            }
+            catch
+            {
+                _totalSpending = 0m;
+                _totalBalance = 0m;
+                _totalSaved = 0m;
+                _recentTransfers = new List<TransferItem>();
+            }
+
+            pnlCardBalance.Invalidate();
+            pnlCardSpending.Invalidate();
+            pnlCardSaved.Invalidate();
+            pnlTransferList.Invalidate();
         }
 
         // ══════════════════════════════════════════════
@@ -118,20 +183,59 @@ namespace PersonalFinanceManager.Forms.Dashboard
         // ══════════════════════════════════════════════
         private void SetupChart()
         {
-            var income = new LineSeries
+            var labels = new List<string>();
+            var incomeData = new ChartValues<double>();
+            var expenseData = new ChartValues<double>();
+
+            try
+            {
+                var txs = ServiceLocator.TransactionService
+                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                    .ToList();
+
+                var months = Enumerable.Range(0, 6)
+                    .Select(i => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-5 + i))
+                    .ToList();
+
+                foreach (var m in months)
+                {
+                    var from = m;
+                    var to = m.AddMonths(1).AddTicks(-1);
+                    var monthTx = txs.Where(t => t.TransactionDate >= from && t.TransactionDate <= to);
+
+                    var incomeValue = monthTx
+                        .Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
+                        .Sum(t => t.Amount);
+                    var expenseValue = monthTx
+                        .Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
+                        .Sum(t => t.Amount);
+
+                    labels.Add("T" + m.Month);
+                    incomeData.Add((double)incomeValue);
+                    expenseData.Add((double)expenseValue);
+                }
+            }
+            catch
+            {
+                labels = new List<string> { "T1", "T2", "T3", "T4", "T5", "T6" };
+                incomeData = new ChartValues<double> { 0, 0, 0, 0, 0, 0 };
+                expenseData = new ChartValues<double> { 0, 0, 0, 0, 0, 0 };
+            }
+
+            var incomeSeries = new LineSeries
             {
                 Title = "Thu nhập",
-                Values = new ChartValues<double> { 4800, 5200, 4900, 5600, 5300, 4700, 5100 },
+                Values = incomeData,
                 Stroke = Brush(0, 180, 140),
                 StrokeThickness = 2.5,
                 PointGeometrySize = 8,
                 Fill = BrushA(25, 0, 180, 140),
                 LineSmoothness = 0.8
             };
-            var expenses = new LineSeries
+            var expensesSeries = new LineSeries
             {
                 Title = "Chi tiêu",
-                Values = new ChartValues<double> { 3900, 5500, 4200, 4800, 3700, 5200, 4100 },
+                Values = expenseData,
                 Stroke = Brush(181, 212, 34),
                 StrokeThickness = 2.5,
                 PointGeometrySize = 8,
@@ -139,10 +243,10 @@ namespace PersonalFinanceManager.Forms.Dashboard
                 LineSmoothness = 0.8
             };
 
-            chartWorkingCapital.Series = new SeriesCollection { income, expenses };
+            chartWorkingCapital.Series = new SeriesCollection { incomeSeries, expensesSeries };
             chartWorkingCapital.AxisX.Add(new Axis
             {
-                Labels = new[] { "T2", "T3", "T4", "T5", "T6", "T7", "CN" },
+                Labels = labels,
                 Separator = new Separator { StrokeThickness = 0 },
                 Foreground = Brush(160, 160, 160)
             });
@@ -155,6 +259,76 @@ namespace PersonalFinanceManager.Forms.Dashboard
             chartWorkingCapital.LegendLocation = LegendLocation.None;
             chartWorkingCapital.Zoom = ZoomingOptions.None;
             chartWorkingCapital.DisableAnimations = false;
+        }
+
+        private void lnkViewAllTrf_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ShowAddTransferDialog();
+        }
+
+        private void ShowAddTransferDialog()
+        {
+            using (var dlg = new Form())
+            {
+                dlg.Text = "Thêm bill chuyển khoản";
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.ClientSize = new Size(360, 230);
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+
+                var lblType = new Label { Text = "Loại", Left = 20, Top = 20, Width = 80 };
+                var cboType = new ComboBox { Left = 110, Top = 16, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+                cboType.Items.AddRange(new object[] { "Income", "Expense" });
+                cboType.SelectedIndex = 1;
+
+                var lblAmount = new Label { Text = "Số tiền", Left = 20, Top = 60, Width = 80 };
+                var txtAmount = new TextBox { Left = 110, Top = 56, Width = 220 };
+
+                var lblNote = new Label { Text = "Ghi chú", Left = 20, Top = 100, Width = 80 };
+                var txtNote = new TextBox { Left = 110, Top = 96, Width = 220 };
+
+                var lblDate = new Label { Text = "Ngày", Left = 20, Top = 140, Width = 80 };
+                var dtp = new DateTimePicker { Left = 110, Top = 136, Width = 220, Format = DateTimePickerFormat.Short, Value = DateTime.Now };
+
+                var btnSave = new Button { Text = "Lưu", Left = 174, Top = 180, Width = 75, DialogResult = DialogResult.OK };
+                var btnCancel = new Button { Text = "Hủy", Left = 255, Top = 180, Width = 75, DialogResult = DialogResult.Cancel };
+
+                dlg.Controls.AddRange(new Control[] { lblType, cboType, lblAmount, txtAmount, lblNote, txtNote, lblDate, dtp, btnSave, btnCancel });
+                dlg.AcceptButton = btnSave;
+                dlg.CancelButton = btnCancel;
+
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+                if (!decimal.TryParse(txtAmount.Text.Trim(), out var amount) || amount <= 0)
+                {
+                    MessageBox.Show("Số tiền không hợp lệ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var tx = new Transaction
+                {
+                    Amount = amount,
+                    Type = cboType.Text,
+                    Note = txtNote.Text.Trim(),
+                    TransactionDate = dtp.Value,
+                    CreatedAt = DateTime.Now,
+                    CategoryId = 1,
+                    AccountId = 0
+                };
+
+                var ok = ServiceLocator.TransactionService.Add(tx);
+                if (!ok)
+                {
+                    MessageBox.Show("Không thể lưu bill chuyển khoản.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                LoadDashboardData();
+                SetupChart();
+                SetupTransactionGrid();
+                MessageBox.Show("Đã thêm bill chuyển khoản.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         // ══════════════════════════════════════════════
@@ -174,10 +348,27 @@ namespace PersonalFinanceManager.Forms.Dashboard
             dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "SỐ TIỀN", Name = "colAmount", Width = 160, SortMode = DataGridViewColumnSortMode.NotSortable, DefaultCellStyle = { Font = new Font("Segoe UI", 9.5f, FontStyle.Bold), Alignment = DataGridViewContentAlignment.MiddleCenter } });
             dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "NGÀY", Name = "colDate", Width = 155, SortMode = DataGridViewColumnSortMode.NotSortable, DefaultCellStyle = { ForeColor = Color.FromArgb(130, 130, 130), Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
-            dgvTransactions.Rows.Add("iPhone 13 Pro MAX  •  Apple Inc", "Di động", "4.208.400 ₫", "14 Apr 2022");
-            dgvTransactions.Rows.Add("Netflix Subscription  •  Netflix", "Giải trí", "1.000.000 ₫", "05 Apr 2022");
-            dgvTransactions.Rows.Add("Figma Subscription  •  Figma Inc", "Phần mềm", "2.442.000 ₫", "02 Apr 2022");
-            dgvTransactions.Rows.Add("Shopee  •  E-commerce", "Mua sắm", "850.000 ₫", "01 Apr 2022");
+            dgvTransactions.Rows.Clear();
+
+            try
+            {
+                var rows = ServiceLocator.TransactionService.GetRecent(8);
+                foreach (var tx in rows)
+                {
+                    bool isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
+                    string amount = (isExpense ? "- " : "+ ") + tx.Amount.ToString("N0") + " ₫";
+                    string title = (string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName)
+                                   + "  •  "
+                                   + (string.IsNullOrWhiteSpace(tx.Note) ? "-" : tx.Note);
+
+                    dgvTransactions.Rows.Add(
+                        title,
+                        tx.Type,
+                        amount,
+                        tx.TransactionDate.ToString("dd MMM yyyy"));
+                }
+            }
+            catch { }
         }
 
         // ══════════════════════════════════════════════
@@ -232,9 +423,9 @@ namespace PersonalFinanceManager.Forms.Dashboard
         // ══════════════════════════════════════════════
         // PAINT — Stat cards
         // ══════════════════════════════════════════════
-        private void pnlCardBalance_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardBalance.Width, pnlCardBalance.Height, true, "Tổng số dư", "5.240.000 ₫", "💰");
-        private void pnlCardSpending_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSpending.Width, pnlCardSpending.Height, false, "Tổng chi tiêu", "250.800 ₫", "💸");
-        private void pnlCardSaved_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSaved.Width, pnlCardSaved.Height, false, "Tổng tiết kiệm", "550.250 ₫", "🏦");
+        private void pnlCardBalance_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardBalance.Width, pnlCardBalance.Height, true, "Tổng số dư", _totalBalance.ToString("N0") + " ₫", "💰");
+        private void pnlCardSpending_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSpending.Width, pnlCardSpending.Height, false, "Tổng chi tiêu", _totalSpending.ToString("N0") + " ₫", "💸");
+        private void pnlCardSaved_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSaved.Width, pnlCardSaved.Height, false, "Tổng tiết kiệm", _totalSaved.ToString("N0") + " ₫", "🏦");
 
         private void DrawStatCard(Graphics g, int w, int h, bool dark, string label, string value, string icon)
         {
@@ -328,26 +519,38 @@ namespace PersonalFinanceManager.Forms.Dashboard
         private void pnlTransferList_Paint(object sender, PaintEventArgs e)
         {
             var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            var data = new[] {
-                new[]{"Nguyễn Văn An",  "28 Apr 2025 lúc 11:00","- 435.000 ₫"},
-                new[]{"Trần Thị Bình",  "25 Apr 2025 lúc 11:00","- 132.000 ₫"},
-                new[]{"Lê Minh Hải",    "25 Apr 2025 lúc 11:00","- 826.000 ₫"},
-                new[]{"Phạm Thu Hương", "16 Apr 2025 lúc 11:00","- 435.000 ₫"},
-                new[]{"Đỗ Quang Minh",  "14 Apr 2025 lúc 11:00","- 228.000 ₫"},
-            };
+            var data = _recentTransfers ?? new List<TransferItem>();
+
+            if (data.Count == 0)
+            {
+                using (var f = new Font("Segoe UI", 9.5f))
+                using (var b = new SolidBrush(Color.FromArgb(150, 150, 150)))
+                    g.DrawString("Chưa có giao dịch", f, b, new PointF(8, 12));
+                return;
+            }
+
             int rowH = 72, lw = pnlTransferList.Width;
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Count; i++)
             {
                 int y = i * rowH;
                 var ar = new Rectangle(0, y + 14, 40, 40);
                 using (var grd = new LinearGradientBrush(ar, Accent, Teal, 45f)) g.FillEllipse(grd, ar);
                 using (var f = new Font("Segoe UI", 11f, FontStyle.Bold))
-                    g.DrawString(data[i][0].Substring(0, 1), f, Brushes.White, new RectangleF(ar.X, ar.Y, ar.Width, ar.Height),
+                    g.DrawString(data[i].Name.Substring(0, 1), f, Brushes.White, new RectangleF(ar.X, ar.Y, ar.Width, ar.Height),
                         new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(35, 35, 35))) g.DrawString(data[i][0], f, b, new PointF(50, y + 16));
-                using (var f = new Font("Segoe UI", 8f)) using (var b = new SolidBrush(Color.FromArgb(150, 150, 150))) g.DrawString(data[i][1], f, b, new PointF(50, y + 36));
-                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(200, 60, 60))) g.DrawString(data[i][2], f, b, new PointF(lw - 88, y + 24));
-                if (i < data.Length - 1) using (var pen = new Pen(Color.FromArgb(18, 0, 0, 0), 1)) g.DrawLine(pen, 0, y + rowH - 1, lw, y + rowH - 1);
+                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(35, 35, 35))) g.DrawString(data[i].Name, f, b, new PointF(50, y + 16));
+                string dateText = data[i].Date.ToString("dd MMM yyyy 'lúc' HH:mm");
+                using (var f = new Font("Segoe UI", 8f))
+                using (var b = new SolidBrush(Color.FromArgb(150, 150, 150)))
+                    g.DrawString(dateText, f, b, new PointF(50, y + 36));
+
+                string amountText = (data[i].IsExpense ? "- " : "+ ") + data[i].Amount.ToString("N0") + " ₫";
+                Color amountColor = data[i].IsExpense ? Color.FromArgb(200, 60, 60) : Color.FromArgb(25, 135, 84);
+                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold))
+                using (var b = new SolidBrush(amountColor))
+                    g.DrawString(amountText, f, b, new PointF(lw - 120, y + 24));
+
+                if (i < data.Count - 1) using (var pen = new Pen(Color.FromArgb(18, 0, 0, 0), 1)) g.DrawLine(pen, 0, y + rowH - 1, lw, y + rowH - 1);
             }
         }
 
