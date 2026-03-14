@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Dapper;
 using PersonalFinanceManager.Common.Helpers;
 using PersonalFinanceManager.Common.Interfaces;
@@ -25,26 +25,41 @@ namespace PersonalFinanceManager.DAL.Base
 
         public virtual T GetById(int id)
         {
-            using (var conn = _dbHelper.CreateConnection())
+            string cacheKey = $"{TableName}_{id}";
+            return CacheHelper.GetOrSet(cacheKey, () =>
             {
-                string sql = $"SELECT * FROM {TableName} WHERE Id = @Id";
-                return conn.QueryFirstOrDefault<T>(sql, new { Id = id });
-            }
+                using (var conn = _dbHelper.CreateConnection())
+                {
+                    string sql = $"SELECT * FROM {TableName} WHERE Id = @Id";
+                    return conn.QueryFirstOrDefault<T>(sql, new { Id = id });
+                }
+            });
         }
 
         public virtual IEnumerable<T> GetAll()
         {
-            using (var conn = _dbHelper.CreateConnection())
+            string cacheKey = $"{TableName}_All";
+            return CacheHelper.GetOrSet(cacheKey, () =>
             {
-                string sql = $"SELECT * FROM {TableName}";
-                return conn.Query<T>(sql);
+                using (var conn = _dbHelper.CreateConnection())
+                {
+                    string sql = $"SELECT * FROM {TableName}";
+                    return conn.Query<T>(sql).AsList();
+                }
+            });
+        }
+
+        protected void ClearCache(int? id = null)
+        {
+            CacheHelper.Remove($"{TableName}_All");
+            if (id.HasValue)
+            {
+                CacheHelper.Remove($"{TableName}_{id.Value}");
             }
         }
 
         public virtual int Insert(T entity)
         {
-            // Class con PHẢI override cái này vì mỗi bảng có cột khác nhau
-            // Nếu B quên override, app sẽ báo lỗi rõ ràng thay vì chạy sai
             throw new System.NotImplementedException(
                 $"{GetType().Name} phải override phương thức Insert()");
         }
@@ -61,7 +76,12 @@ namespace PersonalFinanceManager.DAL.Base
             {
                 string sql = $"DELETE FROM {TableName} WHERE Id = @Id";
                 int rows = conn.Execute(sql, new { Id = id });
-                return rows > 0;
+                if (rows > 0)
+                {
+                    ClearCache(id);
+                    return true;
+                }
+                return false;
             }
         }
     }

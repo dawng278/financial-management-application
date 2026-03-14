@@ -47,10 +47,15 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Interfaces\ICategoryService.cs" />
     <Compile Include="Interfaces\ITransactionService.cs" />
+    <Compile Include="Interfaces\IAccountService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\TransactionService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Validators\AccountValidator.cs" />
+    <Compile Include="Validators\CategoryValidator.cs" />
+    <Compile Include="Validators\TransactionValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PersonalFinanceManager.Common\PersonalFinanceManager.Common.csproj">
@@ -61,10 +66,7 @@
       <Project>{154d46c4-07e7-4089-93d9-9c9b8735bb56}</Project>
       <Name>PersonalFinanceManager.DAL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PersonalFinanceManager.Infrastructure\PersonalFinanceManager.Infrastructure.csproj">
-      <Project>{91f643f1-5d6b-42b6-99f9-45c29ca921f0}</Project>
-      <Name>PersonalFinanceManager.Infrastructure</Name>
-    </ProjectReference>
+
     <ProjectReference Include="..\PersonalFinanceManager.Models\PersonalFinanceManager.Models.csproj">
       <Project>{728182f6-7262-40f1-b3c4-33aa9e3ce35e}</Project>
       <Name>PersonalFinanceManager.Models</Name>

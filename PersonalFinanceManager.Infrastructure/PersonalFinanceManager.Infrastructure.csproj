@@ -59,6 +59,14 @@
       <Project>{1f885851-dc7b-494b-bfa3-f58ff0b3d9b6}</Project>
       <Name>PersonalFinanceManager.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PersonalFinanceManager.BLL\PersonalFinanceManager.BLL.csproj">
+      <Project>{d2167e07-6bb8-427e-95ac-b58b93d11500}</Project>
+      <Name>PersonalFinanceManager.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PersonalFinanceManager.DAL\PersonalFinanceManager.DAL.csproj">
+      <Project>{154d46c4-07e7-4089-93d9-9c9b8735bb56}</Project>
+      <Name>PersonalFinanceManager.DAL</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

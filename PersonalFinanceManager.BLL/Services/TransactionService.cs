@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -37,7 +37,11 @@ namespace PersonalFinanceManager.BLL.Services
 
         public bool Add(Transaction transaction)
         {
-            if (transaction == null || transaction.Amount <= 0) return false;
+            var validator = new PersonalFinanceManager.BLL.Validators.TransactionValidator();
+            var validationResult = validator.Validate(transaction);
+            
+            if (!validationResult.IsValid) return false;
+
             transaction.UserId = GetCurrentUserId();
             if (transaction.CreatedAt == default(DateTime)) transaction.CreatedAt = DateTime.Now;
             return _transactionRepository.Insert(transaction) > 0;
@@ -45,7 +49,11 @@ namespace PersonalFinanceManager.BLL.Services
 
         public bool Update(Transaction transaction)
         {
-            if (transaction == null || transaction.Id <= 0 || transaction.Amount <= 0) return false;
+            var validator = new PersonalFinanceManager.BLL.Validators.TransactionValidator();
+            var validationResult = validator.Validate(transaction);
+            
+            if (!validationResult.IsValid || transaction.Id <= 0) return false;
+
             transaction.UserId = GetCurrentUserId();
             return _transactionRepository.Update(transaction);
         }

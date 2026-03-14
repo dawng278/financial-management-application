@@ -1,4 +1,5 @@
-﻿using PersonalFinanceManager.Common.Interfaces;
+using PersonalFinanceManager.Common.Interfaces;
+using PersonalFinanceManager.BLL.Interfaces;
 using System;
 using System.IO;
 
@@ -13,12 +14,14 @@ namespace PersonalFinanceManager.Infrastructure.DI
         public static IUserService UserService
             => DependencyContainer.Resolve<IUserService>();
 
-        public static ITransactionService TransactionService
-            => DependencyContainer.Resolve<ITransactionService>();
+        public static PersonalFinanceManager.BLL.Interfaces.ITransactionService TransactionService
+            => DependencyContainer.Resolve<PersonalFinanceManager.BLL.Interfaces.ITransactionService>();
 
-        // Khi có thêm service, A thêm vào đây
-        // public static IAccountService AccountService
-        //     => DependencyContainer.Resolve<IAccountService>();
+        public static IAccountService AccountService
+            => DependencyContainer.Resolve<IAccountService>();
+
+        public static ICategoryService CategoryService
+            => DependencyContainer.Resolve<ICategoryService>();
     }
 }
 

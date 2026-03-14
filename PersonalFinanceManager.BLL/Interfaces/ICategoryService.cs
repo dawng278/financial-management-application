@@ -1,12 +1,15 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PersonalFinanceManager.Models;
 
 namespace PersonalFinanceManager.BLL.Interfaces
 {
-    internal interface ICategoryService
+    public interface ICategoryService
     {
+        IEnumerable<Category> GetAll();
+        IEnumerable<Category> GetByType(string type);   // "Income" hoặc "Expense"
+        IEnumerable<Category> GetDefaults();
+        bool Add(Category category);
+        bool Update(Category category);
+        bool Delete(int id);
     }
 }

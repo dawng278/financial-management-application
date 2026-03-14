@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PersonalFinanceManager.Common.Interfaces;
 
 namespace PersonalFinanceManager.BLL.Interfaces
 {
-    internal interface ITransactionService
+    // Re-export để các layer (UI, Tests) chỉ cần reference BLL.Interfaces
+    public interface ITransactionService : Common.Interfaces.ITransactionService
     {
     }
 }

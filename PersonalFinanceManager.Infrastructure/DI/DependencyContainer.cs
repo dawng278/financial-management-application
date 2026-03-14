@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using PersonalFinanceManager.Common.Interfaces;
+using PersonalFinanceManager.BLL.Interfaces;
 
 namespace PersonalFinanceManager.Infrastructure.DI
 {
@@ -19,26 +20,24 @@ namespace PersonalFinanceManager.Infrastructure.DI
         private static void RegisterServices()
         {
             // ============================================================
-            // PHASE 1: MOCK (C dùng trong Sprint 1 - B chưa xong DAL)
-            // Khi B xong, A chỉ cần comment block này, bỏ comment block bên dưới
-            // ============================================================
-            _services[typeof(IUserService)] = new PersonalFinanceManager.Common.Mock.MockUserService();
-            _services[typeof(ITransactionService)] = new PersonalFinanceManager.Common.Mock.MockTransactionService();
-
-            // ============================================================
             // PHASE 2: REAL (Mở comment khi B xong DAL - Sprint 2 Task A6)
             // ============================================================
-            // _container.RegisterType<IUserRepository,
-            //     PersonalFinanceManager.DAL.Repositories.UserRepository>(new ContainerControlledLifetimeManager());
-            //
-            // _container.RegisterType<ITransactionRepository,
-            //     PersonalFinanceManager.DAL.Repositories.TransactionRepository>(new ContainerControlledLifetimeManager());
-            //
-            // _container.RegisterType<IUserService,
-            //     PersonalFinanceManager.BLL.Services.UserService>(new ContainerControlledLifetimeManager());
-            //
-            // _container.RegisterType<ITransactionService,
-            //     PersonalFinanceManager.BLL.Services.TransactionService>(new ContainerControlledLifetimeManager());
+            
+            var dbHelper = new PersonalFinanceManager.Common.Helpers.DbHelper();
+            var userService = new PersonalFinanceManager.Common.Mock.MockUserService(); // SQLite-backed implementation
+            
+            var accountRepo = new PersonalFinanceManager.DAL.Repositories.AccountRepository(dbHelper);
+            var categoryRepo = new PersonalFinanceManager.DAL.Repositories.CategoryRepository(dbHelper);
+            var transactionRepo = new PersonalFinanceManager.DAL.Repositories.TransactionRepository(dbHelper);
+            
+            var accountService = new PersonalFinanceManager.BLL.Services.AccountService(accountRepo, userService);
+            var categoryService = new PersonalFinanceManager.BLL.Services.CategoryService(categoryRepo);
+            var transactionService = new PersonalFinanceManager.BLL.Services.TransactionService(transactionRepo, userService);
+            
+            _services[typeof(IUserService)] = userService;
+            _services[typeof(IAccountService)] = accountService;
+            _services[typeof(ICategoryService)] = categoryService;
+            _services[typeof(PersonalFinanceManager.BLL.Interfaces.ITransactionService)] = transactionService;
         }
 
         /// <summary>

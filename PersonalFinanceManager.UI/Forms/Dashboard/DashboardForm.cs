@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -313,8 +313,9 @@ namespace PersonalFinanceManager.Forms.Dashboard
                     Note = txtNote.Text.Trim(),
                     TransactionDate = dtp.Value,
                     CreatedAt = DateTime.Now,
-                    CategoryId = 1,
-                    AccountId = 0
+                    CategoryId = 1, // Default expense/income category id
+                    AccountId = 1, // Require binding to existing Wallet in SQLite
+                    UserId = ServiceLocator.UserService.GetCurrentUser()?.Id ?? 1
                 };
 
                 var ok = ServiceLocator.TransactionService.Add(tx);

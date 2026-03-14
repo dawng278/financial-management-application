@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Dapper;
 using PersonalFinanceManager.Common.Helpers;
@@ -133,7 +133,7 @@ namespace PersonalFinanceManager.DAL.Repositories
                     entity.CreatedAt,
                     entity.ImportSource
                 });
-
+                ClearCache();
                 return (int)id;
             }
         }
@@ -165,7 +165,7 @@ namespace PersonalFinanceManager.DAL.Repositories
                     entity.ImportSource,
                     entity.Id
                 });
-
+                if (rows > 0) ClearCache(entity.Id);
                 return rows > 0;
             }
         }
