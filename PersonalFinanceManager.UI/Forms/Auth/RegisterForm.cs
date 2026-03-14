@@ -1,73 +1,204 @@
-﻿using PersonalFinanceManager.UI.Mock;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing.Drawing2D;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using PersonalFinanceManager.Common.Interfaces;
+using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.Models;
 
 namespace PersonalFinanceManager.Forms.Auth
 {
     public partial class RegisterForm : Form
     {
+        private readonly IUserService _userService;
 
         public RegisterForm()
         {
             InitializeComponent();
+            _userService = ServiceLocator.UserService;
+            this.Load += RegisterForm_Load;
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        // =====================================================
+        // LOAD
+        // =====================================================
+        private void RegisterForm_Load(object sender, EventArgs e)
         {
-            Application.Exit();
+            LoadBackgroundImage();
+            txtFullName.Focus();
         }
 
-        private void btnRegiser_Click_1(object sender, EventArgs e)
+        private void LoadBackgroundImage()
         {
-            // Lấy dữ liệu từ 3 TextBox duy nhất có trong Designer của cậu
-            string username = txtUsernameR.Text;
-            string password = txtPasswordR.Text;
-            string confirmPass = txtPassword2R.Text;
-
-            // 1. Kiểm tra không được để trống thông tin
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            string[] candidates = new[]
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ Tài khoản và Mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image.png"),
+                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Image.png"),
+                System.IO.Path.Combine(Application.StartupPath, "Image.png"),
+            };
+
+            foreach (var path in candidates)
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    try { picBackground.Image = Image.FromFile(path); return; }
+                    catch { }
+                }
+            }
+        }
+
+        // =====================================================
+        // VẼ LOGO
+        // =====================================================
+        private void picLogo_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+
+            int w = picLogo.Width;
+            int h = picLogo.Height;
+
+            using (var bg = new SolidBrush(Color.FromArgb(181, 212, 34)))
+                g.FillEllipse(bg, 0, 0, w - 1, h - 1);
+
+            using (var overlay = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
+                g.FillEllipse(overlay, 3, 3, w - 7, h - 7);
+
+            using (var font = new Font("Segoe UI", 15f, FontStyle.Bold))
+            using (var brush = new SolidBrush(Color.FromArgb(22, 22, 22)))
+            {
+                var sf = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
+                g.DrawString("F", font, brush, new RectangleF(0, 0, w, h), sf);
+            }
+        }
+
+        // =====================================================
+        // CLOSE
+        // =====================================================
+        private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
+
+        // =====================================================
+        // TẠO TÀI KHOẢN
+        // =====================================================
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            ResetAllErrors();
+
+            string fullName = txtFullName.Text.Trim();
+            string email = txtEmail.Text.Trim();
+            string password = txtPassword.Text;
+            string confirmPwd = txtConfirmPwd.Text;
+
+            // --- Validation ---
+            if (string.IsNullOrEmpty(fullName))
+            {
+                SetError(txtFullName, "Vui lòng nhập họ và tên.");
                 return;
             }
 
-            // 2. Kiểm tra mật khẩu nhập lại có khớp với mật khẩu ban đầu không
-            if (password != confirmPass)
+            if (string.IsNullOrEmpty(email))
             {
-                MessageBox.Show("Mật khẩu nhập lại không chính xác!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetError(txtEmail, "Vui lòng nhập email.");
                 return;
             }
 
-            // 3. Thực hiện đăng ký vào hệ thống Mock
-            // Vì không có ô Full Name, tớ sẽ lấy luôn Username làm tên hiển thị
-            if (MockUserService.Register(username, password, username))
+            if (!IsValidEmail(email))
             {
-                MessageBox.Show("Đăng ký tài khoản thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SetError(txtEmail, "Địa chỉ email không hợp lệ.");
+                return;
+            }
 
-                // Sau khi thành công, quay lại Form đăng nhập
-                LoginForm login = new LoginForm();
-                login.Show();
-                this.Hide();
+            if (string.IsNullOrEmpty(password))
+            {
+                SetError(txtPassword, "Vui lòng nhập mật khẩu.");
+                return;
+            }
+
+            if (password.Length < 6)
+            {
+                SetError(txtPassword, "Mật khẩu phải có ít nhất 6 ký tự.");
+                return;
+            }
+
+            if (confirmPwd != password)
+            {
+                SetError(txtConfirmPwd, "Xác nhận mật khẩu không khớp.");
+                return;
+            }
+
+            // --- Tạo User object rồi gọi service ---
+            var newUser = new User
+            {
+                FullName = fullName,
+                Email = email,
+                CreatedAt = DateTime.Now
+            };
+
+            bool success = _userService.Register(newUser, password);
+
+            if (success)
+            {
+                MessageBox.Show(
+                    "Tài khoản đã được tạo thành công!\nVui lòng đăng nhập để tiếp tục.",
+                    "Đăng ký thành công",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                var loginForm = new LoginForm();
+                loginForm.Show();
+                this.Close();
             }
             else
             {
-                MessageBox.Show("Tên tài khoản này đã tồn tại, vui lòng chọn tên khác!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetError(txtEmail, "Email này đã được sử dụng. Vui lòng thử email khác.");
             }
         }
 
-        private void linkLabel1_LinkClicked_1(object sender, LinkLabelLinkClickedEventArgs e)
+        // =====================================================
+        // CHUYỂN VỀ ĐĂNG NHẬP
+        // =====================================================
+        private void lnkSignIn_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // Quay lại màn hình đăng nhập khi nhấn "Đã có tài khoản"
-            LoginForm login = new LoginForm();
-            login.Show();
-            this.Hide();
+            var loginForm = new LoginForm();
+            loginForm.Show();
+            this.Close();
+        }
+
+        // =====================================================
+        // HELPERS
+        // =====================================================
+        private bool IsValidEmail(string email)
+        {
+            return Regex.IsMatch(email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                RegexOptions.IgnoreCase);
+        }
+
+        private void SetError(Guna.UI2.WinForms.Guna2TextBox field, string message)
+        {
+            field.BorderColor = Color.FromArgb(220, 60, 60);
+            field.FocusedState.BorderColor = Color.FromArgb(220, 60, 60);
+            MessageBox.Show(message, "Lỗi nhập liệu",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            field.Focus();
+        }
+
+        private void ResetAllErrors()
+        {
+            var normal = Color.FromArgb(210, 215, 220);
+            var focus = Color.FromArgb(22, 22, 22);
+
+            foreach (var tb in new[] { txtFullName, txtEmail, txtPassword, txtConfirmPwd })
+            {
+                tb.BorderColor = normal;
+                tb.FocusedState.BorderColor = focus;
+            }
         }
     }
 }

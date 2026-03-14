@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.UI.Navigation;
 
 namespace PersonalFinanceManager.UI
 {
@@ -12,23 +13,14 @@ namespace PersonalFinanceManager.UI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            try
-            {
-                // Bước 1: Khởi tạo DI - phải chạy TRƯỚC KHI mở bất kỳ Form nào
-                DependencyContainer.Initialize();
+            // Khởi tạo DI container
+            DependencyContainer.Initialize();
 
-                // Bước 2: Mở form đầu tiên
-                //Application.Run(new PersonalFinanceManager.Forms.BaseForm());
-                Application.Run(new PersonalFinanceManager.Forms.Auth.RegisterForm());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"Lỗi khởi động ứng dụng:\n{ex.Message}",
-                    "Lỗi",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
+            // Mở LoginForm qua Navigator — đảm bảo chỉ 1 instance tồn tại
+            FormNavigator.GoToLogin();
+
+            // Giữ app chạy cho đến khi tất cả form đóng
+            Application.Run();
         }
     }
 }
