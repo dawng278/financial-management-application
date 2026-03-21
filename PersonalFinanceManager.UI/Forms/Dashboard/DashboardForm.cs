@@ -1,13 +1,15 @@
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Wpf;
+using PersonalFinanceManager.Controls;
+using PersonalFinanceManager.Forms.Accounts;
 using PersonalFinanceManager.Infrastructure.DI;
-using System.Collections.Generic;
-using System.Linq;
 using PersonalFinanceManager.Models;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace PersonalFinanceManager.Forms.Dashboard
 {
@@ -39,6 +41,9 @@ namespace PersonalFinanceManager.Forms.Dashboard
         public DashboardForm()
         {
             InitializeComponent();
+            UpdateDashboard();
+            LoadMonthlyBarChart();
+            LoadTrendChart();
 
             // Init Guna effects only at runtime, never in Designer
             if (!this.DesignMode)
@@ -636,5 +641,56 @@ namespace PersonalFinanceManager.Forms.Dashboard
 
         // Stub: nếu Designer cũ có pnlChartLegend thì method này tránh CS1061
         private void pnlChartLegend_Paint(object sender, System.Windows.Forms.PaintEventArgs e) { }
+
+        //Pie Chart
+        private void UpdateDashboard()
+        {
+            var data = new Dictionary<string, double>
+    {
+        { "Ăn uống", 1500 },
+        { "Xăng xe", 500 },
+        { "Học tập", 2000 }
+    };
+
+            // Truyền trực tiếp cái pcCategories từ Toolbox vào Helper
+            ChartHelper.SetupPieData(pieChart, data);
+        }
+
+        //Bar Chart
+        private void LoadMonthlyBarChart()
+        {
+            // Giả lập dữ liệu cho 6 tháng gần nhất
+            List<double> spendValues = new List<double> { 1200000, 850000, 1500000, 2100000, 1750000, 900000 };
+            string[] months = new string[] { "T1", "T2", "T3", "T4", "T5", "T6" };
+
+            // Gọi helper truyền cái cartesianMonthly từ Toolbox vào
+            ChartHelper.SetupBarChart(cartesianMonthly, spendValues, months);
+        }
+
+        // Line Chart
+        private void LoadTrendChart()
+        {
+            // Giả lập xu hướng số dư trong 7 ngày gần nhất
+            List<double> trendValues = new List<double> { 5000, 5200, 4800, 5900, 6100, 5500, 7000 };
+            string[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+            // Truyền cartesianTrend từ Toolbox vào
+            ChartHelper.SetupLineChart(cartesianTrend, trendValues, days);
+        }
+
+        private void picAvatar_Click(object sender, EventArgs e)
+        {
+            // 1. Khởi tạo Form Account
+            AccountForm accForm = new AccountForm();
+
+            // 2. Hiện nó ra ở giữa màn hình cho chuyên nghiệp
+            accForm.StartPosition = FormStartPosition.CenterScreen;
+
+            // 3. Mở Form Account lên
+            accForm.Show();
+
+            // 4. Ẩn Form hiện tại (Tổng quan) đi để tránh rác màn hình
+            this.Hide();
+        }
     }
 }

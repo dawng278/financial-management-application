@@ -19,5 +19,10 @@ namespace PersonalFinanceManager.Theme
         public static Color TextColor = Color.White;
 
         public static Color HeaderColor = Color.FromArgb(46, 51, 73);
+
+        // Màu khi di chuột vào nút (Sáng hơn AccentColor một chút)
+        public static Color HoverColor = Color.FromArgb(46, 150, 255);
+        // Màu cho các vùng chứa nội dung (Card/Panel) để tách biệt với nền chính
+        public static Color CardColor = Color.FromArgb(37, 42, 64);
     }
 }

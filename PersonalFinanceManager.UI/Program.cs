@@ -10,6 +10,7 @@ namespace PersonalFinanceManager.UI
         [STAThread]
         static void Main()
         {
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -20,7 +21,10 @@ namespace PersonalFinanceManager.UI
             FormNavigator.GoToLogin();
 
             // Giữ app chạy cho đến khi tất cả form đóng
-            Application.Run();
+            //Application.Run(new PersonalFinanceManager.Forms.Categories.CategoryForm());
+            //Application.Run(new PersonalFinanceManager.Forms.Accounts.AccountForm());
+            //Application.Run(new PersonalFinanceManager.Forms.Reports.ReportForm());
+            Application.Run(new PersonalFinanceManager.Forms.Dashboard.DashboardForm());
         }
     }
 }
