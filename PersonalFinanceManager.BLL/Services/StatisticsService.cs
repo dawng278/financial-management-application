@@ -1,23 +1,19 @@
-<<<<<<< HEAD
-// File: PersonalFinanceManager.BLL/Services/StatisticsService.cs
-=======
 using PersonalFinanceManager.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
->>>>>>> origin/feature2-update
 namespace PersonalFinanceManager.BLL.Services
 {
     public class StatisticsService
     {
-<<<<<<< HEAD
-        [cite_start]// Tính tổng chi tiêu theo danh mục 
+        // Tính tổng chi tiêu theo danh mục 
         public Dictionary<string, decimal> GetSpendingByCategory(int userId, DateTime month)
         {
             // Logic gọi Repository để lấy data và GroupBy danh mục
-            [cite_start]// Output này sẽ được Member C dùng để vẽ biểu đồ LiveCharts [cite: 12]
+            // Output này sẽ được Member C dùng để vẽ biểu đồ LiveCharts 
             return new Dictionary<string, decimal>();
-=======
+        }
+
         // Giả sử bạn đã có Repository để lấy dữ liệu từ DAL
         public StatisticsDto GetDashboardStats(int userId)
         {
@@ -28,7 +24,6 @@ namespace PersonalFinanceManager.BLL.Services
                 TopCategories = new List<CategorySummary>(), // Gọi GetTopCategories()
                 MonthlyTrends = new List<MonthlyTrendItem>() // Gọi MonthlyTrend()
             };
->>>>>>> origin/feature2-update
         }
     }
 }
