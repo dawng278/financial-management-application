@@ -1,559 +1,868 @@
-﻿namespace PersonalFinanceManager.Forms.Settings
+using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace PersonalFinanceManager.Forms.Settings
 {
     partial class SettingsForm
     {
         private System.ComponentModel.IContainer components = null;
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null) components.Dispose();
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.guna2Drag = new Guna.UI2.WinForms.Guna2DragControl(this.components);
-            this.pnlSidebar = new System.Windows.Forms.Panel();
-            this.pnlContent = new System.Windows.Forms.Panel();
-            this.pnlTopBar = new System.Windows.Forms.Panel();
-            this.pnlMain = new System.Windows.Forms.Panel();
-            this.picLogo = new System.Windows.Forms.PictureBox();
-            this.lblAppName = new System.Windows.Forms.Label();
-            this.btnNavDashboard = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavTransactions = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavInvoices = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavWallets = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavSettings = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavHelp = new Guna.UI2.WinForms.Guna2Button();
-            this.btnNavLogout = new Guna.UI2.WinForms.Guna2Button();
             this.lblPageTitle = new System.Windows.Forms.Label();
-            this.picAvatar = new System.Windows.Forms.PictureBox();
-            this.lblUsername = new System.Windows.Forms.Label();
-            this.btnMinimize = new Guna.UI2.WinForms.Guna2Button();
-            this.btnMaximize = new Guna.UI2.WinForms.Guna2Button();
-            this.btnClose = new Guna.UI2.WinForms.Guna2Button();
-            this.pnlSettingsWrap = new System.Windows.Forms.Panel();
-            this.lblSectionTitle = new System.Windows.Forms.Label();
-            this.lblSectionSub = new System.Windows.Forms.Label();
-            this.pnlFormCard = new System.Windows.Forms.Panel();
-            this.lblPersonalInfo = new System.Windows.Forms.Label();
-            this.btnEdit = new Guna.UI2.WinForms.Guna2Button();
-            this.pnlDivider = new System.Windows.Forms.Panel();
-            this.lblFirstNameLbl = new System.Windows.Forms.Label();
-            this.lblLastLbl = new System.Windows.Forms.Label();
-            this.txtFirstName = new Guna.UI2.WinForms.Guna2TextBox();
-            this.txtLast = new Guna.UI2.WinForms.Guna2TextBox();
-            this.lblDobLbl = new System.Windows.Forms.Label();
-            this.lblMobileLbl = new System.Windows.Forms.Label();
-            this.dtpDob = new Guna.UI2.WinForms.Guna2DateTimePicker();
-            this.txtMobile = new Guna.UI2.WinForms.Guna2TextBox();
+            this.lblPageSub = new System.Windows.Forms.Label();
+            this.pnlProfile = new System.Windows.Forms.Panel();
+            this.picAvatar = new ReaLTaiizor.Controls.HopePictureBox();
+            this.lblProfileName = new System.Windows.Forms.Label();
+            this.lblRole = new System.Windows.Forms.Label();
+            this.btnEditProfile = new ReaLTaiizor.Controls.HopeButton();
             this.lblEmailLbl = new System.Windows.Forms.Label();
-            this.txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
-            this.lblNewPassLbl = new System.Windows.Forms.Label();
-            this.lblConfirmPassLbl = new System.Windows.Forms.Label();
-            this.txtNewPass = new Guna.UI2.WinForms.Guna2TextBox();
-            this.txtConfirmPass = new Guna.UI2.WinForms.Guna2TextBox();
-            this.btnUpdate = new Guna.UI2.WinForms.Guna2Button();
-
-            this.pnlSidebar.SuspendLayout();
-            this.pnlContent.SuspendLayout();
-            this.pnlTopBar.SuspendLayout();
-            this.pnlMain.SuspendLayout();
-            this.pnlSettingsWrap.SuspendLayout();
-            this.pnlFormCard.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
+            this.txtEmail = new ReaLTaiizor.Controls.HopeTextBox();
+            this.lblPhoneLbl = new System.Windows.Forms.Label();
+            this.txtPhone = new ReaLTaiizor.Controls.HopeTextBox();
+            this.lblLocLbl = new System.Windows.Forms.Label();
+            this.txtLocation = new ReaLTaiizor.Controls.HopeTextBox();
+            this.lblTimeLbl = new System.Windows.Forms.Label();
+            this.txtTimezone = new ReaLTaiizor.Controls.HopeTextBox();
+            this.pnlAppearance = new System.Windows.Forms.Panel();
+            this.lblAppTitle = new System.Windows.Forms.Label();
+            this.pnlLightMode = new System.Windows.Forms.Panel();
+            this.lblLightMode = new System.Windows.Forms.Label();
+            this.pnlDarkMode = new System.Windows.Forms.Panel();
+            this.lblDarkMode = new System.Windows.Forms.Label();
+            this.pnlSecurity = new System.Windows.Forms.Panel();
+            this.lblSecTitle = new System.Windows.Forms.Label();
+            this.lblChangePass = new System.Windows.Forms.Label();
+            this.txtCurrentPass = new ReaLTaiizor.Controls.HopeTextBox();
+            this.txtNewPass = new ReaLTaiizor.Controls.HopeTextBox();
+            this.txtConfirmPass = new ReaLTaiizor.Controls.HopeTextBox();
+            this.btnUpdatePassword = new ReaLTaiizor.Controls.HopeButton();
+            this.lbl2FA = new System.Windows.Forms.Label();
+            this.tg2FA = new ReaLTaiizor.Controls.HopeToggle();
+            this.lbl2FADesc = new System.Windows.Forms.Label();
+            this.pnlPrivacy = new System.Windows.Forms.Panel();
+            this.lblPrivacyTitle = new System.Windows.Forms.Label();
+            this.lblPrivacyDesc = new System.Windows.Forms.Label();
+            this.pnlNotifications = new System.Windows.Forms.Panel();
+            this.lblNotifTitle = new System.Windows.Forms.Label();
+            this.lblDepAlert = new System.Windows.Forms.Label();
+            this.lblDepDesc = new System.Windows.Forms.Label();
+            this.tgDeposit = new ReaLTaiizor.Controls.HopeToggle();
+            this.lblBudgAlert = new System.Windows.Forms.Label();
+            this.lblBudgDesc = new System.Windows.Forms.Label();
+            this.tgBudget = new ReaLTaiizor.Controls.HopeToggle();
+            this.lblMonthAlert = new System.Windows.Forms.Label();
+            this.lblMonthDesc = new System.Windows.Forms.Label();
+            this.tgMonthly = new ReaLTaiizor.Controls.HopeToggle();
+            this.btnConfigEmail = new ReaLTaiizor.Controls.HopeButton();
+            this.lblLang = new System.Windows.Forms.Label();
+            this.cboLang = new ReaLTaiizor.Controls.HopeComboBox();
+            this.lblCurr = new System.Windows.Forms.Label();
+            this.cboCurr = new ReaLTaiizor.Controls.HopeComboBox();
+            this.lblExport = new System.Windows.Forms.Label();
+            this.btnFactoryReset = new ReaLTaiizor.Controls.HopeButton();
+            this.pnlProfile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picAvatar)).BeginInit();
+            this.pnlAppearance.SuspendLayout();
+            this.pnlSecurity.SuspendLayout();
+            this.pnlPrivacy.SuspendLayout();
+            this.pnlNotifications.SuspendLayout();
             this.SuspendLayout();
-
-            // ── FORM ──────────────────────────────────────────────────────────────
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(247, 248, 252);
-            this.ClientSize = new System.Drawing.Size(1366, 768);
+            // 
+            // lblPageTitle
+            // 
+            this.lblPageTitle.AutoSize = true;
+            this.lblPageTitle.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
+            this.lblPageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(20)))), ((int)(((byte)(28)))));
+            this.lblPageTitle.Location = new System.Drawing.Point(40, 20);
+            this.lblPageTitle.Name = "lblPageTitle";
+            this.lblPageTitle.Size = new System.Drawing.Size(141, 45);
+            this.lblPageTitle.TabIndex = 0;
+            this.lblPageTitle.Text = "Settings";
+            // 
+            // lblPageSub
+            // 
+            this.lblPageSub.AutoSize = true;
+            this.lblPageSub.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblPageSub.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(89)))), ((int)(((byte)(98)))));
+            this.lblPageSub.Location = new System.Drawing.Point(43, 65);
+            this.lblPageSub.Name = "lblPageSub";
+            this.lblPageSub.Size = new System.Drawing.Size(379, 19);
+            this.lblPageSub.TabIndex = 1;
+            this.lblPageSub.Text = "Manage your account preferences and system configuration.";
+            // 
+            // pnlProfile
+            // 
+            this.pnlProfile.BackColor = System.Drawing.Color.White;
+            this.pnlProfile.Controls.Add(this.picAvatar);
+            this.pnlProfile.Controls.Add(this.lblProfileName);
+            this.pnlProfile.Controls.Add(this.lblRole);
+            this.pnlProfile.Controls.Add(this.btnEditProfile);
+            this.pnlProfile.Controls.Add(this.lblEmailLbl);
+            this.pnlProfile.Controls.Add(this.txtEmail);
+            this.pnlProfile.Controls.Add(this.lblPhoneLbl);
+            this.pnlProfile.Controls.Add(this.txtPhone);
+            this.pnlProfile.Controls.Add(this.lblLocLbl);
+            this.pnlProfile.Controls.Add(this.txtLocation);
+            this.pnlProfile.Controls.Add(this.lblTimeLbl);
+            this.pnlProfile.Controls.Add(this.txtTimezone);
+            this.pnlProfile.Location = new System.Drawing.Point(40, 110);
+            this.pnlProfile.Name = "pnlProfile";
+            this.pnlProfile.Size = new System.Drawing.Size(490, 250);
+            this.pnlProfile.TabIndex = 2;
+            // 
+            // picAvatar
+            // 
+            this.picAvatar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(200)))), ((int)(((byte)(150)))));
+            this.picAvatar.Location = new System.Drawing.Point(20, 20);
+            this.picAvatar.Name = "picAvatar";
+            this.picAvatar.PixelOffsetType = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            this.picAvatar.Size = new System.Drawing.Size(70, 70);
+            this.picAvatar.SmoothingType = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            this.picAvatar.TabIndex = 0;
+            this.picAvatar.TabStop = false;
+            this.picAvatar.TextRenderingType = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            // 
+            // lblProfileName
+            // 
+            this.lblProfileName.AutoSize = true;
+            this.lblProfileName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblProfileName.Location = new System.Drawing.Point(100, 20);
+            this.lblProfileName.Name = "lblProfileName";
+            this.lblProfileName.Size = new System.Drawing.Size(127, 30);
+            this.lblProfileName.TabIndex = 1;
+            this.lblProfileName.Text = "Alex Rivers";
+            // 
+            // lblRole
+            // 
+            this.lblRole.AutoSize = true;
+            this.lblRole.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblRole.ForeColor = System.Drawing.Color.Gray;
+            this.lblRole.Location = new System.Drawing.Point(103, 50);
+            this.lblRole.Name = "lblRole";
+            this.lblRole.Size = new System.Drawing.Size(152, 19);
+            this.lblRole.TabIndex = 2;
+            this.lblRole.Text = "Senior Financial Analyst";
+            // 
+            // btnEditProfile
+            // 
+            this.btnEditProfile.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.btnEditProfile.ButtonType = ReaLTaiizor.Util.HopeButtonType.Primary;
+            this.btnEditProfile.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnEditProfile.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
+            this.btnEditProfile.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnEditProfile.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnEditProfile.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.btnEditProfile.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
+            this.btnEditProfile.Location = new System.Drawing.Point(360, 30);
+            this.btnEditProfile.Name = "btnEditProfile";
+            this.btnEditProfile.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.btnEditProfile.Size = new System.Drawing.Size(110, 36);
+            this.btnEditProfile.SuccessColor = System.Drawing.Color.FromArgb(((int)(((byte)(103)))), ((int)(((byte)(194)))), ((int)(((byte)(58)))));
+            this.btnEditProfile.TabIndex = 3;
+            this.btnEditProfile.Text = "Edit Profile";
+            this.btnEditProfile.TextColor = System.Drawing.Color.White;
+            this.btnEditProfile.WarningColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(162)))), ((int)(((byte)(60)))));
+            // 
+            // lblEmailLbl
+            // 
+            this.lblEmailLbl.AutoSize = true;
+            this.lblEmailLbl.ForeColor = System.Drawing.Color.Gray;
+            this.lblEmailLbl.Location = new System.Drawing.Point(20, 110);
+            this.lblEmailLbl.Name = "lblEmailLbl";
+            this.lblEmailLbl.Size = new System.Drawing.Size(94, 13);
+            this.lblEmailLbl.TabIndex = 4;
+            this.lblEmailLbl.Text = "EMAIL ADDRESS";
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.BackColor = System.Drawing.Color.White;
+            this.txtEmail.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtEmail.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtEmail.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtEmail.Hint = "";
+            this.txtEmail.Location = new System.Drawing.Point(20, 130);
+            this.txtEmail.MaxLength = 32767;
+            this.txtEmail.Multiline = false;
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.PasswordChar = '\0';
+            this.txtEmail.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtEmail.SelectedText = "";
+            this.txtEmail.SelectionLength = 0;
+            this.txtEmail.SelectionStart = 0;
+            this.txtEmail.Size = new System.Drawing.Size(210, 38);
+            this.txtEmail.TabIndex = 5;
+            this.txtEmail.TabStop = false;
+            this.txtEmail.Text = "alex.rivers@zenith.com";
+            this.txtEmail.UseSystemPasswordChar = false;
+            // 
+            // lblPhoneLbl
+            // 
+            this.lblPhoneLbl.AutoSize = true;
+            this.lblPhoneLbl.ForeColor = System.Drawing.Color.Gray;
+            this.lblPhoneLbl.Location = new System.Drawing.Point(250, 110);
+            this.lblPhoneLbl.Name = "lblPhoneLbl";
+            this.lblPhoneLbl.Size = new System.Drawing.Size(95, 13);
+            this.lblPhoneLbl.TabIndex = 6;
+            this.lblPhoneLbl.Text = "PHONE NUMBER";
+            // 
+            // txtPhone
+            // 
+            this.txtPhone.BackColor = System.Drawing.Color.White;
+            this.txtPhone.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtPhone.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtPhone.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtPhone.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtPhone.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtPhone.Hint = "";
+            this.txtPhone.Location = new System.Drawing.Point(250, 130);
+            this.txtPhone.MaxLength = 32767;
+            this.txtPhone.Multiline = false;
+            this.txtPhone.Name = "txtPhone";
+            this.txtPhone.PasswordChar = '\0';
+            this.txtPhone.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtPhone.SelectedText = "";
+            this.txtPhone.SelectionLength = 0;
+            this.txtPhone.SelectionStart = 0;
+            this.txtPhone.Size = new System.Drawing.Size(220, 38);
+            this.txtPhone.TabIndex = 7;
+            this.txtPhone.TabStop = false;
+            this.txtPhone.Text = "+1 (555) 012-3456";
+            this.txtPhone.UseSystemPasswordChar = false;
+            // 
+            // lblLocLbl
+            // 
+            this.lblLocLbl.AutoSize = true;
+            this.lblLocLbl.ForeColor = System.Drawing.Color.Gray;
+            this.lblLocLbl.Location = new System.Drawing.Point(20, 180);
+            this.lblLocLbl.Name = "lblLocLbl";
+            this.lblLocLbl.Size = new System.Drawing.Size(61, 13);
+            this.lblLocLbl.TabIndex = 8;
+            this.lblLocLbl.Text = "LOCATION";
+            // 
+            // txtLocation
+            // 
+            this.txtLocation.BackColor = System.Drawing.Color.White;
+            this.txtLocation.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtLocation.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtLocation.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtLocation.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtLocation.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtLocation.Hint = "";
+            this.txtLocation.Location = new System.Drawing.Point(20, 200);
+            this.txtLocation.MaxLength = 32767;
+            this.txtLocation.Multiline = false;
+            this.txtLocation.Name = "txtLocation";
+            this.txtLocation.PasswordChar = '\0';
+            this.txtLocation.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtLocation.SelectedText = "";
+            this.txtLocation.SelectionLength = 0;
+            this.txtLocation.SelectionStart = 0;
+            this.txtLocation.Size = new System.Drawing.Size(210, 38);
+            this.txtLocation.TabIndex = 9;
+            this.txtLocation.TabStop = false;
+            this.txtLocation.Text = "San Francisco, CA";
+            this.txtLocation.UseSystemPasswordChar = false;
+            // 
+            // lblTimeLbl
+            // 
+            this.lblTimeLbl.AutoSize = true;
+            this.lblTimeLbl.ForeColor = System.Drawing.Color.Gray;
+            this.lblTimeLbl.Location = new System.Drawing.Point(250, 180);
+            this.lblTimeLbl.Name = "lblTimeLbl";
+            this.lblTimeLbl.Size = new System.Drawing.Size(63, 13);
+            this.lblTimeLbl.TabIndex = 10;
+            this.lblTimeLbl.Text = "TIMEZONE";
+            // 
+            // txtTimezone
+            // 
+            this.txtTimezone.BackColor = System.Drawing.Color.White;
+            this.txtTimezone.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtTimezone.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtTimezone.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtTimezone.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtTimezone.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtTimezone.Hint = "";
+            this.txtTimezone.Location = new System.Drawing.Point(250, 200);
+            this.txtTimezone.MaxLength = 32767;
+            this.txtTimezone.Multiline = false;
+            this.txtTimezone.Name = "txtTimezone";
+            this.txtTimezone.PasswordChar = '\0';
+            this.txtTimezone.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtTimezone.SelectedText = "";
+            this.txtTimezone.SelectionLength = 0;
+            this.txtTimezone.SelectionStart = 0;
+            this.txtTimezone.Size = new System.Drawing.Size(220, 38);
+            this.txtTimezone.TabIndex = 11;
+            this.txtTimezone.TabStop = false;
+            this.txtTimezone.Text = "PST (UTC -8)";
+            this.txtTimezone.UseSystemPasswordChar = false;
+            // 
+            // pnlAppearance
+            // 
+            this.pnlAppearance.BackColor = System.Drawing.Color.White;
+            this.pnlAppearance.Controls.Add(this.lblAppTitle);
+            this.pnlAppearance.Controls.Add(this.pnlLightMode);
+            this.pnlAppearance.Controls.Add(this.lblLightMode);
+            this.pnlAppearance.Controls.Add(this.pnlDarkMode);
+            this.pnlAppearance.Controls.Add(this.lblDarkMode);
+            this.pnlAppearance.Location = new System.Drawing.Point(550, 110);
+            this.pnlAppearance.Name = "pnlAppearance";
+            this.pnlAppearance.Size = new System.Drawing.Size(520, 250);
+            this.pnlAppearance.TabIndex = 3;
+            // 
+            // lblAppTitle
+            // 
+            this.lblAppTitle.AutoSize = true;
+            this.lblAppTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblAppTitle.Location = new System.Drawing.Point(20, 20);
+            this.lblAppTitle.Name = "lblAppTitle";
+            this.lblAppTitle.Size = new System.Drawing.Size(101, 21);
+            this.lblAppTitle.TabIndex = 0;
+            this.lblAppTitle.Text = "Appearance";
+            // 
+            // pnlLightMode
+            // 
+            this.pnlLightMode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(245)))));
+            this.pnlLightMode.Location = new System.Drawing.Point(40, 60);
+            this.pnlLightMode.Name = "pnlLightMode";
+            this.pnlLightMode.Size = new System.Drawing.Size(200, 120);
+            this.pnlLightMode.TabIndex = 1;
+            // 
+            // lblLightMode
+            // 
+            this.lblLightMode.AutoSize = true;
+            this.lblLightMode.Location = new System.Drawing.Point(100, 190);
+            this.lblLightMode.Name = "lblLightMode";
+            this.lblLightMode.Size = new System.Drawing.Size(60, 13);
+            this.lblLightMode.TabIndex = 2;
+            this.lblLightMode.Text = "Light Mode";
+            // 
+            // pnlDarkMode
+            // 
+            this.pnlDarkMode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(25)))), ((int)(((byte)(40)))));
+            this.pnlDarkMode.Location = new System.Drawing.Point(280, 60);
+            this.pnlDarkMode.Name = "pnlDarkMode";
+            this.pnlDarkMode.Size = new System.Drawing.Size(200, 120);
+            this.pnlDarkMode.TabIndex = 3;
+            // 
+            // lblDarkMode
+            // 
+            this.lblDarkMode.AutoSize = true;
+            this.lblDarkMode.Location = new System.Drawing.Point(340, 190);
+            this.lblDarkMode.Name = "lblDarkMode";
+            this.lblDarkMode.Size = new System.Drawing.Size(60, 13);
+            this.lblDarkMode.TabIndex = 4;
+            this.lblDarkMode.Text = "Dark Mode";
+            // 
+            // pnlSecurity
+            // 
+            this.pnlSecurity.BackColor = System.Drawing.Color.White;
+            this.pnlSecurity.Controls.Add(this.lblSecTitle);
+            this.pnlSecurity.Controls.Add(this.lblChangePass);
+            this.pnlSecurity.Controls.Add(this.txtCurrentPass);
+            this.pnlSecurity.Controls.Add(this.txtNewPass);
+            this.pnlSecurity.Controls.Add(this.txtConfirmPass);
+            this.pnlSecurity.Controls.Add(this.btnUpdatePassword);
+            this.pnlSecurity.Controls.Add(this.pnlPrivacy);
+            this.pnlSecurity.Location = new System.Drawing.Point(40, 380);
+            this.pnlSecurity.Name = "pnlSecurity";
+            this.pnlSecurity.Size = new System.Drawing.Size(490, 310);
+            this.pnlSecurity.TabIndex = 4;
+            // 
+            // lblSecTitle
+            // 
+            this.lblSecTitle.AutoSize = true;
+            this.lblSecTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblSecTitle.Location = new System.Drawing.Point(20, 20);
+            this.lblSecTitle.Name = "lblSecTitle";
+            this.lblSecTitle.Size = new System.Drawing.Size(136, 21);
+            this.lblSecTitle.TabIndex = 0;
+            this.lblSecTitle.Text = "Security & Privacy";
+            // 
+            // lblChangePass
+            // 
+            this.lblChangePass.AutoSize = true;
+            this.lblChangePass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(90)))), ((int)(((byte)(120)))));
+            this.lblChangePass.Location = new System.Drawing.Point(20, 60);
+            this.lblChangePass.Name = "lblChangePass";
+            this.lblChangePass.Size = new System.Drawing.Size(118, 13);
+            this.lblChangePass.TabIndex = 1;
+            this.lblChangePass.Text = "CHANGE PASSWORD";
+            // 
+            // txtCurrentPass
+            // 
+            this.txtCurrentPass.BackColor = System.Drawing.Color.White;
+            this.txtCurrentPass.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtCurrentPass.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtCurrentPass.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtCurrentPass.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtCurrentPass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtCurrentPass.Hint = "";
+            this.txtCurrentPass.Location = new System.Drawing.Point(20, 90);
+            this.txtCurrentPass.MaxLength = 32767;
+            this.txtCurrentPass.Multiline = false;
+            this.txtCurrentPass.Name = "txtCurrentPass";
+            this.txtCurrentPass.PasswordChar = '\0';
+            this.txtCurrentPass.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtCurrentPass.SelectedText = "";
+            this.txtCurrentPass.SelectionLength = 0;
+            this.txtCurrentPass.SelectionStart = 0;
+            this.txtCurrentPass.Size = new System.Drawing.Size(220, 38);
+            this.txtCurrentPass.TabIndex = 2;
+            this.txtCurrentPass.TabStop = false;
+            this.txtCurrentPass.Text = "Current Password";
+            this.txtCurrentPass.UseSystemPasswordChar = true;
+            // 
+            // txtNewPass
+            // 
+            this.txtNewPass.BackColor = System.Drawing.Color.White;
+            this.txtNewPass.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtNewPass.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtNewPass.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtNewPass.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtNewPass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtNewPass.Hint = "";
+            this.txtNewPass.Location = new System.Drawing.Point(20, 140);
+            this.txtNewPass.MaxLength = 32767;
+            this.txtNewPass.Multiline = false;
+            this.txtNewPass.Name = "txtNewPass";
+            this.txtNewPass.PasswordChar = '\0';
+            this.txtNewPass.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtNewPass.SelectedText = "";
+            this.txtNewPass.SelectionLength = 0;
+            this.txtNewPass.SelectionStart = 0;
+            this.txtNewPass.Size = new System.Drawing.Size(220, 38);
+            this.txtNewPass.TabIndex = 3;
+            this.txtNewPass.TabStop = false;
+            this.txtNewPass.Text = "New Password";
+            this.txtNewPass.UseSystemPasswordChar = true;
+            // 
+            // txtConfirmPass
+            // 
+            this.txtConfirmPass.BackColor = System.Drawing.Color.White;
+            this.txtConfirmPass.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(55)))), ((int)(((byte)(66)))));
+            this.txtConfirmPass.BorderColorA = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.txtConfirmPass.BorderColorB = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.txtConfirmPass.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtConfirmPass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.txtConfirmPass.Hint = "";
+            this.txtConfirmPass.Location = new System.Drawing.Point(20, 190);
+            this.txtConfirmPass.MaxLength = 32767;
+            this.txtConfirmPass.Multiline = false;
+            this.txtConfirmPass.Name = "txtConfirmPass";
+            this.txtConfirmPass.PasswordChar = '\0';
+            this.txtConfirmPass.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtConfirmPass.SelectedText = "";
+            this.txtConfirmPass.SelectionLength = 0;
+            this.txtConfirmPass.SelectionStart = 0;
+            this.txtConfirmPass.Size = new System.Drawing.Size(220, 38);
+            this.txtConfirmPass.TabIndex = 4;
+            this.txtConfirmPass.TabStop = false;
+            this.txtConfirmPass.Text = "Confirm New Password";
+            this.txtConfirmPass.UseSystemPasswordChar = true;
+            // 
+            // btnUpdatePassword
+            // 
+            this.btnUpdatePassword.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.btnUpdatePassword.ButtonType = ReaLTaiizor.Util.HopeButtonType.Primary;
+            this.btnUpdatePassword.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnUpdatePassword.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
+            this.btnUpdatePassword.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnUpdatePassword.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnUpdatePassword.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.btnUpdatePassword.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
+            this.btnUpdatePassword.Location = new System.Drawing.Point(20, 250);
+            this.btnUpdatePassword.Name = "btnUpdatePassword";
+            this.btnUpdatePassword.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.btnUpdatePassword.Size = new System.Drawing.Size(220, 40);
+            this.btnUpdatePassword.SuccessColor = System.Drawing.Color.FromArgb(((int)(((byte)(103)))), ((int)(((byte)(194)))), ((int)(((byte)(58)))));
+            this.btnUpdatePassword.TabIndex = 5;
+            this.btnUpdatePassword.Text = "Update Password";
+            this.btnUpdatePassword.TextColor = System.Drawing.Color.White;
+            this.btnUpdatePassword.WarningColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(162)))), ((int)(((byte)(60)))));
+            this.btnUpdatePassword.Click += new System.EventHandler(this.btnUpdatePassword_Click);
+            // 
+            // lbl2FA
+            // 
+            this.lbl2FA.AutoSize = true;
+            this.lbl2FA.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lbl2FA.Location = new System.Drawing.Point(260, 60);
+            this.lbl2FA.Name = "lbl2FA";
+            this.lbl2FA.Size = new System.Drawing.Size(106, 38);
+            this.lbl2FA.TabIndex = 6;
+            this.lbl2FA.Text = "Two-Factor \nAuthentication";
+            // 
+            // tg2FA
+            // 
+            this.tg2FA.BaseColor = System.Drawing.Color.White;
+            this.tg2FA.BaseColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tg2FA.BaseColorB = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tg2FA.Checked = true;
+            this.tg2FA.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tg2FA.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tg2FA.HeadColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tg2FA.HeadColorB = System.Drawing.Color.White;
+            this.tg2FA.HeadColorC = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tg2FA.HeadColorD = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tg2FA.Location = new System.Drawing.Point(430, 60);
+            this.tg2FA.Name = "tg2FA";
+            this.tg2FA.Size = new System.Drawing.Size(48, 20);
+            this.tg2FA.TabIndex = 7;
+            // 
+            // lbl2FADesc
+            // 
+            this.lbl2FADesc.ForeColor = System.Drawing.Color.Gray;
+            this.lbl2FADesc.Location = new System.Drawing.Point(260, 100);
+            this.lbl2FADesc.Name = "lbl2FADesc";
+            this.lbl2FADesc.Size = new System.Drawing.Size(210, 45);
+            this.lbl2FADesc.TabIndex = 8;
+            this.lbl2FADesc.Text = "Add an extra layer of security to your account by requiring a verification code.";
+            // 
+            // pnlPrivacy
+            // 
+            this.pnlPrivacy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(253)))), ((int)(((byte)(232)))), ((int)(((byte)(232)))));
+            this.pnlPrivacy.Controls.Add(this.lblPrivacyTitle);
+            this.pnlPrivacy.Controls.Add(this.lblPrivacyDesc);
+            this.pnlPrivacy.Location = new System.Drawing.Point(260, 60);
+            this.pnlPrivacy.Name = "pnlPrivacy";
+            this.pnlPrivacy.Size = new System.Drawing.Size(210, 100);
+            this.pnlPrivacy.TabIndex = 9;
+            // 
+            // lblPrivacyTitle
+            // 
+            this.lblPrivacyTitle.AutoSize = true;
+            this.lblPrivacyTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblPrivacyTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.lblPrivacyTitle.Location = new System.Drawing.Point(10, 10);
+            this.lblPrivacyTitle.Name = "lblPrivacyTitle";
+            this.lblPrivacyTitle.Size = new System.Drawing.Size(96, 15);
+            this.lblPrivacyTitle.TabIndex = 0;
+            this.lblPrivacyTitle.Text = "Account Privacy";
+            // 
+            // lblPrivacyDesc
+            // 
+            this.lblPrivacyDesc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.lblPrivacyDesc.Location = new System.Drawing.Point(10, 35);
+            this.lblPrivacyDesc.Name = "lblPrivacyDesc";
+            this.lblPrivacyDesc.Size = new System.Drawing.Size(190, 50);
+            this.lblPrivacyDesc.TabIndex = 1;
+            this.lblPrivacyDesc.Text = "Making your profile private will hide your transaction summaries from shared circ" +
+    "les.";
+            // 
+            // pnlNotifications
+            // 
+            this.pnlNotifications.BackColor = System.Drawing.Color.White;
+            this.pnlNotifications.Controls.Add(this.lblNotifTitle);
+            this.pnlNotifications.Controls.Add(this.lblDepAlert);
+            this.pnlNotifications.Controls.Add(this.lblDepDesc);
+            this.pnlNotifications.Controls.Add(this.tgDeposit);
+            this.pnlNotifications.Controls.Add(this.lblBudgAlert);
+            this.pnlNotifications.Controls.Add(this.lblBudgDesc);
+            this.pnlNotifications.Controls.Add(this.tgBudget);
+            this.pnlNotifications.Controls.Add(this.lblMonthAlert);
+            this.pnlNotifications.Controls.Add(this.lblMonthDesc);
+            this.pnlNotifications.Controls.Add(this.tgMonthly);
+            this.pnlNotifications.Controls.Add(this.btnConfigEmail);
+            this.pnlNotifications.Location = new System.Drawing.Point(550, 380);
+            this.pnlNotifications.Name = "pnlNotifications";
+            this.pnlNotifications.Size = new System.Drawing.Size(520, 310);
+            this.pnlNotifications.TabIndex = 5;
+            // 
+            // lblNotifTitle
+            // 
+            this.lblNotifTitle.AutoSize = true;
+            this.lblNotifTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblNotifTitle.Location = new System.Drawing.Point(20, 20);
+            this.lblNotifTitle.Name = "lblNotifTitle";
+            this.lblNotifTitle.Size = new System.Drawing.Size(110, 21);
+            this.lblNotifTitle.TabIndex = 0;
+            this.lblNotifTitle.Text = "Notifications";
+            // 
+            // lblDepAlert
+            // 
+            this.lblDepAlert.AutoSize = true;
+            this.lblDepAlert.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblDepAlert.Location = new System.Drawing.Point(20, 70);
+            this.lblDepAlert.Name = "lblDepAlert";
+            this.lblDepAlert.Size = new System.Drawing.Size(103, 19);
+            this.lblDepAlert.TabIndex = 1;
+            this.lblDepAlert.Text = "Deposit Alerts";
+            // 
+            // lblDepDesc
+            // 
+            this.lblDepDesc.AutoSize = true;
+            this.lblDepDesc.ForeColor = System.Drawing.Color.Gray;
+            this.lblDepDesc.Location = new System.Drawing.Point(20, 90);
+            this.lblDepDesc.Name = "lblDepDesc";
+            this.lblDepDesc.Size = new System.Drawing.Size(121, 13);
+            this.lblDepDesc.TabIndex = 2;
+            this.lblDepDesc.Text = "Notify when funds arrive";
+            // 
+            // tgDeposit
+            // 
+            this.tgDeposit.BaseColor = System.Drawing.Color.White;
+            this.tgDeposit.BaseColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgDeposit.BaseColorB = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgDeposit.Checked = true;
+            this.tgDeposit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tgDeposit.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tgDeposit.HeadColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgDeposit.HeadColorB = System.Drawing.Color.White;
+            this.tgDeposit.HeadColorC = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgDeposit.HeadColorD = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgDeposit.Location = new System.Drawing.Point(450, 75);
+            this.tgDeposit.Name = "tgDeposit";
+            this.tgDeposit.Size = new System.Drawing.Size(48, 20);
+            this.tgDeposit.TabIndex = 3;
+            // 
+            // lblBudgAlert
+            // 
+            this.lblBudgAlert.AutoSize = true;
+            this.lblBudgAlert.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblBudgAlert.Location = new System.Drawing.Point(20, 130);
+            this.lblBudgAlert.Name = "lblBudgAlert";
+            this.lblBudgAlert.Size = new System.Drawing.Size(123, 19);
+            this.lblBudgAlert.TabIndex = 4;
+            this.lblBudgAlert.Text = "Budget Warnings";
+            // 
+            // lblBudgDesc
+            // 
+            this.lblBudgDesc.AutoSize = true;
+            this.lblBudgDesc.ForeColor = System.Drawing.Color.Gray;
+            this.lblBudgDesc.Location = new System.Drawing.Point(20, 150);
+            this.lblBudgDesc.Name = "lblBudgDesc";
+            this.lblBudgDesc.Size = new System.Drawing.Size(121, 13);
+            this.lblBudgDesc.TabIndex = 5;
+            this.lblBudgDesc.Text = "When limits are reached";
+            // 
+            // tgBudget
+            // 
+            this.tgBudget.BaseColor = System.Drawing.Color.White;
+            this.tgBudget.BaseColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgBudget.BaseColorB = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgBudget.Checked = true;
+            this.tgBudget.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tgBudget.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tgBudget.HeadColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgBudget.HeadColorB = System.Drawing.Color.White;
+            this.tgBudget.HeadColorC = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgBudget.HeadColorD = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgBudget.Location = new System.Drawing.Point(450, 135);
+            this.tgBudget.Name = "tgBudget";
+            this.tgBudget.Size = new System.Drawing.Size(48, 20);
+            this.tgBudget.TabIndex = 6;
+            // 
+            // lblMonthAlert
+            // 
+            this.lblMonthAlert.AutoSize = true;
+            this.lblMonthAlert.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblMonthAlert.Location = new System.Drawing.Point(20, 190);
+            this.lblMonthAlert.Name = "lblMonthAlert";
+            this.lblMonthAlert.Size = new System.Drawing.Size(120, 19);
+            this.lblMonthAlert.TabIndex = 7;
+            this.lblMonthAlert.Text = "Monthly Reports";
+            // 
+            // lblMonthDesc
+            // 
+            this.lblMonthDesc.AutoSize = true;
+            this.lblMonthDesc.ForeColor = System.Drawing.Color.Gray;
+            this.lblMonthDesc.Location = new System.Drawing.Point(20, 210);
+            this.lblMonthDesc.Name = "lblMonthDesc";
+            this.lblMonthDesc.Size = new System.Drawing.Size(128, 13);
+            this.lblMonthDesc.TabIndex = 8;
+            this.lblMonthDesc.Text = "Summary of your finances";
+            // 
+            // tgMonthly
+            // 
+            this.tgMonthly.BaseColor = System.Drawing.Color.White;
+            this.tgMonthly.BaseColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgMonthly.BaseColorB = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgMonthly.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tgMonthly.HeadColorA = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.tgMonthly.HeadColorB = System.Drawing.Color.White;
+            this.tgMonthly.HeadColorC = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgMonthly.HeadColorD = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.tgMonthly.Location = new System.Drawing.Point(450, 195);
+            this.tgMonthly.Name = "tgMonthly";
+            this.tgMonthly.Size = new System.Drawing.Size(48, 20);
+            this.tgMonthly.TabIndex = 9;
+            // 
+            // btnConfigEmail
+            // 
+            this.btnConfigEmail.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.btnConfigEmail.ButtonType = ReaLTaiizor.Util.HopeButtonType.Primary;
+            this.btnConfigEmail.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConfigEmail.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
+            this.btnConfigEmail.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnConfigEmail.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnConfigEmail.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.btnConfigEmail.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
+            this.btnConfigEmail.Location = new System.Drawing.Point(20, 250);
+            this.btnConfigEmail.Name = "btnConfigEmail";
+            this.btnConfigEmail.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.btnConfigEmail.Size = new System.Drawing.Size(470, 40);
+            this.btnConfigEmail.SuccessColor = System.Drawing.Color.FromArgb(((int)(((byte)(103)))), ((int)(((byte)(194)))), ((int)(((byte)(58)))));
+            this.btnConfigEmail.TabIndex = 10;
+            this.btnConfigEmail.Text = "Configure Email Alerts";
+            this.btnConfigEmail.TextColor = System.Drawing.Color.White;
+            this.btnConfigEmail.WarningColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(162)))), ((int)(((byte)(60)))));
+            // 
+            // lblLang
+            // 
+            this.lblLang.AutoSize = true;
+            this.lblLang.ForeColor = System.Drawing.Color.Gray;
+            this.lblLang.Location = new System.Drawing.Point(40, 710);
+            this.lblLang.Name = "lblLang";
+            this.lblLang.Size = new System.Drawing.Size(66, 13);
+            this.lblLang.TabIndex = 6;
+            this.lblLang.Text = "LANGUAGE";
+            // 
+            // cboLang
+            // 
+            this.cboLang.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cboLang.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboLang.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboLang.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.cboLang.ItemHeight = 30;
+            this.cboLang.Items.AddRange(new object[] {
+            "English (United States)"});
+            this.cboLang.Location = new System.Drawing.Point(40, 730);
+            this.cboLang.Name = "cboLang";
+            this.cboLang.Size = new System.Drawing.Size(180, 36);
+            this.cboLang.TabIndex = 7;
+            // 
+            // lblCurr
+            // 
+            this.lblCurr.AutoSize = true;
+            this.lblCurr.ForeColor = System.Drawing.Color.Gray;
+            this.lblCurr.Location = new System.Drawing.Point(240, 710);
+            this.lblCurr.Name = "lblCurr";
+            this.lblCurr.Size = new System.Drawing.Size(115, 13);
+            this.lblCurr.TabIndex = 8;
+            this.lblCurr.Text = "CURRENCY FORMAT";
+            // 
+            // cboCurr
+            // 
+            this.cboCurr.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cboCurr.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboCurr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboCurr.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.cboCurr.ItemHeight = 30;
+            this.cboCurr.Items.AddRange(new object[] {
+            "USD ($) - Dollar"});
+            this.cboCurr.Location = new System.Drawing.Point(240, 730);
+            this.cboCurr.Name = "cboCurr";
+            this.cboCurr.Size = new System.Drawing.Size(180, 36);
+            this.cboCurr.TabIndex = 9;
+            // 
+            // lblExport
+            // 
+            this.lblExport.AutoSize = true;
+            this.lblExport.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblExport.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.lblExport.Location = new System.Drawing.Point(600, 740);
+            this.lblExport.Name = "lblExport";
+            this.lblExport.Size = new System.Drawing.Size(146, 19);
+            this.lblExport.TabIndex = 10;
+            this.lblExport.Text = "Export Account Data";
+            // 
+            // btnFactoryReset
+            // 
+            this.btnFactoryReset.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.btnFactoryReset.ButtonType = ReaLTaiizor.Util.HopeButtonType.Primary;
+            this.btnFactoryReset.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnFactoryReset.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
+            this.btnFactoryReset.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnFactoryReset.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnFactoryReset.ForeColor = System.Drawing.Color.White;
+            this.btnFactoryReset.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.btnFactoryReset.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
+            this.btnFactoryReset.Location = new System.Drawing.Point(880, 730);
+            this.btnFactoryReset.Name = "btnFactoryReset";
+            this.btnFactoryReset.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(158)))), ((int)(((byte)(255)))));
+            this.btnFactoryReset.Size = new System.Drawing.Size(190, 36);
+            this.btnFactoryReset.SuccessColor = System.Drawing.Color.FromArgb(((int)(((byte)(103)))), ((int)(((byte)(194)))), ((int)(((byte)(58)))));
+            this.btnFactoryReset.TabIndex = 11;
+            this.btnFactoryReset.Text = "Factory Reset";
+            this.btnFactoryReset.TextColor = System.Drawing.Color.White;
+            this.btnFactoryReset.WarningColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(162)))), ((int)(((byte)(60)))));
+            this.btnFactoryReset.Click += new System.EventHandler(this.btnFactoryReset_Click);
+            // 
+            // SettingsForm
+            // 
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(248)))), ((int)(((byte)(252)))));
+            this.ClientSize = new System.Drawing.Size(1110, 780);
+            this.Controls.Add(this.lblPageTitle);
+            this.Controls.Add(this.lblPageSub);
+            this.Controls.Add(this.pnlProfile);
+            this.Controls.Add(this.pnlAppearance);
+            this.Controls.Add(this.pnlSecurity);
+            this.Controls.Add(this.lblLang);
+            this.Controls.Add(this.cboLang);
+            this.Controls.Add(this.lblCurr);
+            this.Controls.Add(this.cboCurr);
+            this.Controls.Add(this.lblExport);
+            this.Controls.Add(this.btnFactoryReset);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Name = "SettingsForm";
             this.Text = "Settings";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.guna2Drag.TargetControl = this.pnlTopBar;
-            this.guna2Drag.UseTransparentDrag = true;
-
-            // ── SIDEBAR ───────────────────────────────────────────────────────────
-            this.pnlSidebar.BackColor = System.Drawing.Color.White;
-            this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlSidebar.Width = 240;
-            this.pnlSidebar.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlSidebar_Paint);
-
-            this.picLogo.Location = new System.Drawing.Point(20, 22);
-            this.picLogo.Size = new System.Drawing.Size(42, 42);
-            this.picLogo.BackColor = System.Drawing.Color.Transparent;
-            this.picLogo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.picLogo.Paint += new System.Windows.Forms.PaintEventHandler(this.picLogo_Paint);
-
-            this.lblAppName.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblAppName.ForeColor = System.Drawing.Color.FromArgb(18, 20, 28);
-            this.lblAppName.Location = new System.Drawing.Point(70, 28);
-            this.lblAppName.Size = new System.Drawing.Size(140, 28);
-            this.lblAppName.AutoSize = false;
-            this.lblAppName.Text = "Maglo.";
-
-            // Nav – Dashboard
-            this.btnNavDashboard.Text = "  Dashboard";
-            this.btnNavDashboard.Location = new System.Drawing.Point(14, 108);
-            this.btnNavDashboard.Size = new System.Drawing.Size(212, 42);
-            this.btnNavDashboard.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavDashboard.BorderRadius = 10;
-            this.btnNavDashboard.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavDashboard.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavDashboard.ForeColor = System.Drawing.Color.FromArgb(115, 120, 140);
-            this.btnNavDashboard.HoverState.FillColor = System.Drawing.Color.FromArgb(245, 246, 250);
-            this.btnNavDashboard.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavDashboard.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNavDashboard.Click += new System.EventHandler(this.btnNavDashboard_Click);
-
-            // Nav – Transactions
-            this.btnNavTransactions.Text = "  Transactions";
-            this.btnNavTransactions.Location = new System.Drawing.Point(14, 156);
-            this.btnNavTransactions.Size = new System.Drawing.Size(212, 42);
-            this.btnNavTransactions.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavTransactions.BorderRadius = 10;
-            this.btnNavTransactions.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavTransactions.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavTransactions.ForeColor = System.Drawing.Color.FromArgb(115, 120, 140);
-            this.btnNavTransactions.HoverState.FillColor = System.Drawing.Color.FromArgb(245, 246, 250);
-            this.btnNavTransactions.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavTransactions.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNavTransactions.Click += new System.EventHandler(this.btnNavTransactions_Click);
-
-            // Nav – Invoices
-            this.btnNavInvoices.Text = "  Invoices";
-            this.btnNavInvoices.Location = new System.Drawing.Point(14, 204);
-            this.btnNavInvoices.Size = new System.Drawing.Size(212, 42);
-            this.btnNavInvoices.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavInvoices.BorderRadius = 10;
-            this.btnNavInvoices.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavInvoices.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavInvoices.ForeColor = System.Drawing.Color.FromArgb(115, 120, 140);
-            this.btnNavInvoices.HoverState.FillColor = System.Drawing.Color.FromArgb(245, 246, 250);
-            this.btnNavInvoices.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavInvoices.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNavInvoices.Click += new System.EventHandler(this.btnNavInvoices_Click);
-
-            // Nav – My Wallets
-            this.btnNavWallets.Text = "  My Wallets";
-            this.btnNavWallets.Location = new System.Drawing.Point(14, 252);
-            this.btnNavWallets.Size = new System.Drawing.Size(212, 42);
-            this.btnNavWallets.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavWallets.BorderRadius = 10;
-            this.btnNavWallets.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavWallets.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavWallets.ForeColor = System.Drawing.Color.FromArgb(115, 120, 140);
-            this.btnNavWallets.HoverState.FillColor = System.Drawing.Color.FromArgb(245, 246, 250);
-            this.btnNavWallets.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavWallets.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNavWallets.Click += new System.EventHandler(this.btnNavWallets_Click);
-
-            // Nav – Settings (ACTIVE)
-            this.btnNavSettings.Text = "  Settings";
-            this.btnNavSettings.Location = new System.Drawing.Point(14, 300);
-            this.btnNavSettings.Size = new System.Drawing.Size(212, 42);
-            this.btnNavSettings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavSettings.BorderRadius = 10;
-            this.btnNavSettings.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.btnNavSettings.FillColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.btnNavSettings.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavSettings.HoverState.FillColor = System.Drawing.Color.FromArgb(165, 196, 20);
-            this.btnNavSettings.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavSettings.Cursor = System.Windows.Forms.Cursors.Hand;
-
-            // Nav – Help (bottom)
-            this.btnNavHelp.Text = "  Help";
-            this.btnNavHelp.Location = new System.Drawing.Point(14, 676);
-            this.btnNavHelp.Size = new System.Drawing.Size(212, 42);
-            this.btnNavHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavHelp.BorderRadius = 10;
-            this.btnNavHelp.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavHelp.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavHelp.ForeColor = System.Drawing.Color.FromArgb(115, 120, 140);
-            this.btnNavHelp.HoverState.FillColor = System.Drawing.Color.FromArgb(245, 246, 250);
-            this.btnNavHelp.HoverState.ForeColor = System.Drawing.Color.FromArgb(22, 24, 35);
-            this.btnNavHelp.Cursor = System.Windows.Forms.Cursors.Hand;
-
-            // Nav – Logout (bottom, red)
-            this.btnNavLogout.Text = "  Logout";
-            this.btnNavLogout.Location = new System.Drawing.Point(14, 722);
-            this.btnNavLogout.Size = new System.Drawing.Size(212, 42);
-            this.btnNavLogout.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            this.btnNavLogout.BorderRadius = 10;
-            this.btnNavLogout.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.btnNavLogout.FillColor = System.Drawing.Color.Transparent;
-            this.btnNavLogout.ForeColor = System.Drawing.Color.FromArgb(210, 55, 55);
-            this.btnNavLogout.HoverState.FillColor = System.Drawing.Color.FromArgb(255, 238, 238);
-            this.btnNavLogout.HoverState.ForeColor = System.Drawing.Color.FromArgb(190, 35, 35);
-            this.btnNavLogout.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNavLogout.Click += new System.EventHandler(this.btnNavLogout_Click);
-
-            this.pnlSidebar.Controls.Add(this.picLogo);
-            this.pnlSidebar.Controls.Add(this.lblAppName);
-            this.pnlSidebar.Controls.Add(this.btnNavDashboard);
-            this.pnlSidebar.Controls.Add(this.btnNavTransactions);
-            this.pnlSidebar.Controls.Add(this.btnNavInvoices);
-            this.pnlSidebar.Controls.Add(this.btnNavWallets);
-            this.pnlSidebar.Controls.Add(this.btnNavSettings);
-            this.pnlSidebar.Controls.Add(this.btnNavHelp);
-            this.pnlSidebar.Controls.Add(this.btnNavLogout);
-
-            // ── TOPBAR ────────────────────────────────────────────────────────────
-            this.pnlTopBar.BackColor = System.Drawing.Color.FromArgb(247, 248, 252);
-            this.pnlTopBar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlTopBar.Height = 64;
-            this.pnlTopBar.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlTopBar_Paint);
-
-            this.lblPageTitle.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
-            this.lblPageTitle.ForeColor = System.Drawing.Color.FromArgb(18, 20, 28);
-            this.lblPageTitle.Location = new System.Drawing.Point(28, 12);
-            this.lblPageTitle.Size = new System.Drawing.Size(260, 40);
-            this.lblPageTitle.AutoSize = false;
-            this.lblPageTitle.Text = "Settings";
-
-            this.picAvatar.Size = new System.Drawing.Size(36, 36);
-            this.picAvatar.Location = new System.Drawing.Point(10, 14);
-            this.picAvatar.BackColor = System.Drawing.Color.Transparent;
-            this.picAvatar.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.picAvatar.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.picAvatar.Paint += new System.Windows.Forms.PaintEventHandler(this.picAvatar_Paint);
-
-            this.lblUsername.AutoSize = true;
-            this.lblUsername.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(25, 28, 42);
-            this.lblUsername.Location = new System.Drawing.Point(10, 22);
-            this.lblUsername.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.lblUsername.Text = "Admin";
-
-            this.btnMinimize.FillColor = System.Drawing.Color.Transparent;
-            this.btnMinimize.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnMinimize.ForeColor = System.Drawing.Color.FromArgb(120, 125, 142);
-            this.btnMinimize.Location = new System.Drawing.Point(10, 17);
-            this.btnMinimize.Size = new System.Drawing.Size(30, 30);
-            this.btnMinimize.Text = "-";
-            this.btnMinimize.BorderRadius = 7;
-            this.btnMinimize.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.btnMinimize.HoverState.FillColor = System.Drawing.Color.FromArgb(232, 234, 240);
-            this.btnMinimize.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
-
-            this.btnMaximize.FillColor = System.Drawing.Color.Transparent;
-            this.btnMaximize.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnMaximize.ForeColor = System.Drawing.Color.FromArgb(120, 125, 142);
-            this.btnMaximize.Location = new System.Drawing.Point(10, 17);
-            this.btnMaximize.Size = new System.Drawing.Size(30, 30);
-            this.btnMaximize.Text = "[]";
-            this.btnMaximize.BorderRadius = 7;
-            this.btnMaximize.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.btnMaximize.HoverState.FillColor = System.Drawing.Color.FromArgb(232, 234, 240);
-            this.btnMaximize.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnMaximize.Click += new System.EventHandler(this.btnMaximize_Click);
-
-            this.btnClose.FillColor = System.Drawing.Color.Transparent;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.FromArgb(120, 125, 142);
-            this.btnClose.Location = new System.Drawing.Point(10, 17);
-            this.btnClose.Size = new System.Drawing.Size(30, 30);
-            this.btnClose.Text = "X";
-            this.btnClose.BorderRadius = 7;
-            this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.btnClose.HoverState.FillColor = System.Drawing.Color.FromArgb(235, 60, 60);
-            this.btnClose.HoverState.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-
-            this.pnlTopBar.Controls.Add(this.lblPageTitle);
-            this.pnlTopBar.Controls.Add(this.picAvatar);
-            this.pnlTopBar.Controls.Add(this.lblUsername);
-            this.pnlTopBar.Controls.Add(this.btnMinimize);
-            this.pnlTopBar.Controls.Add(this.btnMaximize);
-            this.pnlTopBar.Controls.Add(this.btnClose);
-
-            // ── MAIN ──────────────────────────────────────────────────────────────
-            this.pnlMain.BackColor = System.Drawing.Color.FromArgb(247, 248, 252);
-            this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMain.AutoScroll = true;
-            this.pnlMain.Padding = new System.Windows.Forms.Padding(36, 20, 36, 24);
-
-            // ── SETTINGS WRAP ─────────────────────────────────────────────────────
-            this.pnlSettingsWrap.BackColor = System.Drawing.Color.Transparent;
-            this.pnlSettingsWrap.Location = new System.Drawing.Point(0, 0);
-            this.pnlSettingsWrap.Size = new System.Drawing.Size(860, 700);
-            this.pnlSettingsWrap.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                             System.Windows.Forms.AnchorStyles.Left |
-                                             System.Windows.Forms.AnchorStyles.Right;
-
-            this.lblSectionTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblSectionTitle.ForeColor = System.Drawing.Color.FromArgb(18, 20, 32);
-            this.lblSectionTitle.Location = new System.Drawing.Point(0, 0);
-            this.lblSectionTitle.AutoSize = true;
-            this.lblSectionTitle.Text = "Account Information";
-
-            this.lblSectionSub.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSectionSub.ForeColor = System.Drawing.Color.FromArgb(148, 153, 172);
-            this.lblSectionSub.Location = new System.Drawing.Point(0, 30);
-            this.lblSectionSub.AutoSize = true;
-            this.lblSectionSub.Text = "Update your account information";
-
-            // ── WHITE FORM CARD ───────────────────────────────────────────────────
-            this.pnlFormCard.BackColor = System.Drawing.Color.Transparent;
-            this.pnlFormCard.Location = new System.Drawing.Point(0, 68);
-            this.pnlFormCard.Size = new System.Drawing.Size(860, 560);
-            this.pnlFormCard.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                         System.Windows.Forms.AnchorStyles.Left |
-                                         System.Windows.Forms.AnchorStyles.Right;
-            this.pnlFormCard.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlWhiteCard_Paint);
-
-            // Personal Information label
-            this.lblPersonalInfo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblPersonalInfo.ForeColor = System.Drawing.Color.FromArgb(18, 20, 32);
-            this.lblPersonalInfo.Location = new System.Drawing.Point(28, 22);
-            this.lblPersonalInfo.AutoSize = true;
-            this.lblPersonalInfo.Text = "Personal Information";
-
-            // Edit button
-            this.btnEdit.Text = "  ✎  Edit";
-            this.btnEdit.Location = new System.Drawing.Point(730, 16);
-            this.btnEdit.Size = new System.Drawing.Size(102, 36);
-            this.btnEdit.BorderRadius = 9;
-            this.btnEdit.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.btnEdit.FillColor = System.Drawing.Color.Transparent;
-            this.btnEdit.ForeColor = System.Drawing.Color.FromArgb(34, 160, 95);
-            this.btnEdit.BorderColor = System.Drawing.Color.Transparent;
-            this.btnEdit.HoverState.FillColor = System.Drawing.Color.FromArgb(232, 252, 215);
-            this.btnEdit.HoverState.ForeColor = System.Drawing.Color.FromArgb(25, 135, 75);
-            this.btnEdit.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnEdit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
-
-            // Divider
-            this.pnlDivider.Location = new System.Drawing.Point(28, 62);
-            this.pnlDivider.Size = new System.Drawing.Size(804, 1);
-            this.pnlDivider.BackColor = System.Drawing.Color.FromArgb(230, 232, 244);
-            this.pnlDivider.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                        System.Windows.Forms.AnchorStyles.Left |
-                                        System.Windows.Forms.AnchorStyles.Right;
-
-            // ── ROW 1: First Name (left=28) | Last (right=452)  Y=82/104 ─────────
-            this.lblFirstNameLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblFirstNameLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblFirstNameLbl.Location = new System.Drawing.Point(28, 82);
-            this.lblFirstNameLbl.AutoSize = true;
-            this.lblFirstNameLbl.Text = "First Name";
-
-            this.txtFirstName.Location = new System.Drawing.Point(28, 104);
-            this.txtFirstName.Size = new System.Drawing.Size(360, 44);
-            this.txtFirstName.BorderRadius = 8;
-            this.txtFirstName.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtFirstName.FillColor = System.Drawing.Color.White;
-            this.txtFirstName.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtFirstName.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtFirstName.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtFirstName.PlaceholderText = "First name";
-            this.txtFirstName.Text = "Mahfuzul Islam";
-            this.txtFirstName.ReadOnly = true;
-            this.txtFirstName.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            this.lblLastLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblLastLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblLastLbl.Location = new System.Drawing.Point(452, 82);
-            this.lblLastLbl.AutoSize = true;
-            this.lblLastLbl.Text = "Last";
-
-            this.txtLast.Location = new System.Drawing.Point(452, 104);
-            this.txtLast.Size = new System.Drawing.Size(360, 44);
-            this.txtLast.BorderRadius = 8;
-            this.txtLast.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtLast.FillColor = System.Drawing.Color.White;
-            this.txtLast.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtLast.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtLast.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtLast.PlaceholderText = "Last name";
-            this.txtLast.Text = "Nabil";
-            this.txtLast.ReadOnly = true;
-            this.txtLast.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            // ── ROW 2: Date of Birth (left) | Mobile (right)  Y=174/196 ──────────
-            this.lblDobLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblDobLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblDobLbl.Location = new System.Drawing.Point(28, 174);
-            this.lblDobLbl.AutoSize = true;
-            this.lblDobLbl.Text = "Date of Birth";
-
-            this.dtpDob.Location = new System.Drawing.Point(28, 196);
-            this.dtpDob.Size = new System.Drawing.Size(360, 44);
-            this.dtpDob.BorderRadius = 8;
-            this.dtpDob.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpDob.FillColor = System.Drawing.Color.White;
-            this.dtpDob.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.dtpDob.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.dtpDob.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpDob.Value = new System.DateTime(1998, 9, 27);
-            this.dtpDob.Enabled = false;
-            this.dtpDob.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            this.lblMobileLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblMobileLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblMobileLbl.Location = new System.Drawing.Point(452, 174);
-            this.lblMobileLbl.AutoSize = true;
-            this.lblMobileLbl.Text = "Mobile Number";
-
-            this.txtMobile.Location = new System.Drawing.Point(452, 196);
-            this.txtMobile.Size = new System.Drawing.Size(360, 44);
-            this.txtMobile.BorderRadius = 8;
-            this.txtMobile.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtMobile.FillColor = System.Drawing.Color.White;
-            this.txtMobile.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtMobile.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtMobile.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtMobile.PlaceholderText = "+1 xxx xxx xxxx";
-            this.txtMobile.Text = "+123 456 7890";
-            this.txtMobile.ReadOnly = true;
-            this.txtMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            // ── ROW 3: Email full-width  Y=268/290 ───────────────────────────────
-            this.lblEmailLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblEmailLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblEmailLbl.Location = new System.Drawing.Point(28, 268);
-            this.lblEmailLbl.AutoSize = true;
-            this.lblEmailLbl.Text = "Email";
-
-            this.txtEmail.Location = new System.Drawing.Point(28, 290);
-            this.txtEmail.Size = new System.Drawing.Size(804, 44);
-            this.txtEmail.BorderRadius = 8;
-            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtEmail.FillColor = System.Drawing.Color.White;
-            this.txtEmail.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtEmail.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtEmail.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtEmail.PlaceholderText = "email@example.com";
-            this.txtEmail.Text = "hellouihut@gmail.com";
-            this.txtEmail.ReadOnly = true;
-            this.txtEmail.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                                                     System.Windows.Forms.AnchorStyles.Left |
-                                                     System.Windows.Forms.AnchorStyles.Right;
-
-            // ── ROW 4: New Password (left) | Confirm Password (right)  Y=362/384 ─
-            this.lblNewPassLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblNewPassLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblNewPassLbl.Location = new System.Drawing.Point(28, 362);
-            this.lblNewPassLbl.AutoSize = true;
-            this.lblNewPassLbl.Text = "New Password";
-
-            this.txtNewPass.Location = new System.Drawing.Point(28, 384);
-            this.txtNewPass.Size = new System.Drawing.Size(360, 44);
-            this.txtNewPass.BorderRadius = 8;
-            this.txtNewPass.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtNewPass.FillColor = System.Drawing.Color.White;
-            this.txtNewPass.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtNewPass.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtNewPass.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtNewPass.PlaceholderText = "New password";
-            this.txtNewPass.UseSystemPasswordChar = true;
-            this.txtNewPass.ReadOnly = true;
-            this.txtNewPass.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            this.lblConfirmPassLbl.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblConfirmPassLbl.ForeColor = System.Drawing.Color.FromArgb(145, 150, 170);
-            this.lblConfirmPassLbl.Location = new System.Drawing.Point(452, 362);
-            this.lblConfirmPassLbl.AutoSize = true;
-            this.lblConfirmPassLbl.Text = "Confirm Password";
-
-            this.txtConfirmPass.Location = new System.Drawing.Point(452, 384);
-            this.txtConfirmPass.Size = new System.Drawing.Size(360, 44);
-            this.txtConfirmPass.BorderRadius = 8;
-            this.txtConfirmPass.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtConfirmPass.FillColor = System.Drawing.Color.White;
-            this.txtConfirmPass.ForeColor = System.Drawing.Color.FromArgb(22, 25, 40);
-            this.txtConfirmPass.BorderColor = System.Drawing.Color.FromArgb(218, 222, 235);
-            this.txtConfirmPass.FocusedState.BorderColor = System.Drawing.Color.FromArgb(181, 212, 34);
-            this.txtConfirmPass.PlaceholderText = "Confirm password";
-            this.txtConfirmPass.UseSystemPasswordChar = true;
-            this.txtConfirmPass.ReadOnly = true;
-            this.txtConfirmPass.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left;
-
-            // ── Update button  Y=460 ──────────────────────────────────────────────
-            this.btnUpdate.Location = new System.Drawing.Point(28, 460);
-            this.btnUpdate.Size = new System.Drawing.Size(170, 48);
-            this.btnUpdate.BorderRadius = 12;
-            this.btnUpdate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnUpdate.FillColor = System.Drawing.Color.FromArgb(160, 180, 160);
-            this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.HoverState.FillColor = System.Drawing.Color.FromArgb(160, 180, 160);
-            this.btnUpdate.HoverState.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Text = "Update";
-            this.btnUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnUpdate.Enabled = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-
-            this.pnlFormCard.Controls.Add(this.lblPersonalInfo);
-            this.pnlFormCard.Controls.Add(this.btnEdit);
-            this.pnlFormCard.Controls.Add(this.pnlDivider);
-            this.pnlFormCard.Controls.Add(this.lblFirstNameLbl);
-            this.pnlFormCard.Controls.Add(this.txtFirstName);
-            this.pnlFormCard.Controls.Add(this.lblLastLbl);
-            this.pnlFormCard.Controls.Add(this.txtLast);
-            this.pnlFormCard.Controls.Add(this.lblDobLbl);
-            this.pnlFormCard.Controls.Add(this.dtpDob);
-            this.pnlFormCard.Controls.Add(this.lblMobileLbl);
-            this.pnlFormCard.Controls.Add(this.txtMobile);
-            this.pnlFormCard.Controls.Add(this.lblEmailLbl);
-            this.pnlFormCard.Controls.Add(this.txtEmail);
-            this.pnlFormCard.Controls.Add(this.lblNewPassLbl);
-            this.pnlFormCard.Controls.Add(this.txtNewPass);
-            this.pnlFormCard.Controls.Add(this.lblConfirmPassLbl);
-            this.pnlFormCard.Controls.Add(this.txtConfirmPass);
-            this.pnlFormCard.Controls.Add(this.btnUpdate);
-
-            this.pnlSettingsWrap.Controls.Add(this.lblSectionTitle);
-            this.pnlSettingsWrap.Controls.Add(this.lblSectionSub);
-            this.pnlSettingsWrap.Controls.Add(this.pnlFormCard);
-
-            this.pnlMain.Controls.Add(this.pnlSettingsWrap);
-
-            // ── CONTENT ───────────────────────────────────────────────────────────
-            this.pnlContent.BackColor = System.Drawing.Color.FromArgb(247, 248, 252);
-            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlContent.Controls.Add(this.pnlMain);
-            this.pnlContent.Controls.Add(this.pnlTopBar);
-
-            this.Controls.Add(this.pnlContent);
-            this.Controls.Add(this.pnlSidebar);
-
-            this.pnlSidebar.ResumeLayout(false);
-            this.pnlContent.ResumeLayout(false);
-            this.pnlTopBar.ResumeLayout(false);
-            this.pnlMain.ResumeLayout(false);
-            this.pnlSettingsWrap.ResumeLayout(false);
-            this.pnlFormCard.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
+            this.pnlProfile.ResumeLayout(false);
+            this.pnlProfile.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picAvatar)).EndInit();
+            this.pnlAppearance.ResumeLayout(false);
+            this.pnlAppearance.PerformLayout();
+            this.pnlSecurity.ResumeLayout(false);
+            this.pnlSecurity.PerformLayout();
+            this.pnlPrivacy.ResumeLayout(false);
+            this.pnlPrivacy.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
-        // ── Designer fields ───────────────────────────────────────────────────────
-        private Guna.UI2.WinForms.Guna2DragControl guna2Drag;
-        private System.Windows.Forms.Panel pnlSidebar, pnlContent, pnlTopBar, pnlMain;
-        private System.Windows.Forms.Panel pnlSettingsWrap, pnlFormCard, pnlDivider;
-        private System.Windows.Forms.PictureBox picLogo, picAvatar;
-        private System.Windows.Forms.Label lblAppName, lblPageTitle, lblUsername;
-        private System.Windows.Forms.Label lblSectionTitle, lblSectionSub, lblPersonalInfo;
-        private System.Windows.Forms.Label lblFirstNameLbl, lblLastLbl;
-        private System.Windows.Forms.Label lblDobLbl, lblMobileLbl;
-        private System.Windows.Forms.Label lblEmailLbl;
-        private System.Windows.Forms.Label lblNewPassLbl, lblConfirmPassLbl;
-        private Guna.UI2.WinForms.Guna2Button btnNavDashboard, btnNavTransactions, btnNavInvoices;
-        private Guna.UI2.WinForms.Guna2Button btnNavWallets, btnNavSettings, btnNavHelp, btnNavLogout;
-        private Guna.UI2.WinForms.Guna2Button btnMinimize, btnMaximize, btnClose;
-        private Guna.UI2.WinForms.Guna2Button btnEdit, btnUpdate;
-        private Guna.UI2.WinForms.Guna2TextBox txtFirstName, txtLast;
-        private Guna.UI2.WinForms.Guna2TextBox txtMobile, txtEmail;
-        private Guna.UI2.WinForms.Guna2TextBox txtNewPass, txtConfirmPass;
-        private Guna.UI2.WinForms.Guna2DateTimePicker dtpDob;
+        private System.Windows.Forms.Label lblPageTitle, lblPageSub;
+        private System.Windows.Forms.Panel pnlProfile;
+        private ReaLTaiizor.Controls.HopePictureBox picAvatar;
+        private System.Windows.Forms.Label lblProfileName, lblRole;
+        private ReaLTaiizor.Controls.HopeButton btnEditProfile;
+        private System.Windows.Forms.Label lblEmailLbl, lblPhoneLbl, lblLocLbl, lblTimeLbl;
+        private ReaLTaiizor.Controls.HopeTextBox txtEmail, txtPhone, txtLocation, txtTimezone;
+
+        private System.Windows.Forms.Panel pnlAppearance;
+        private System.Windows.Forms.Label lblAppTitle;
+        private System.Windows.Forms.Panel pnlLightMode, pnlDarkMode;
+        private System.Windows.Forms.Label lblLightMode, lblDarkMode;
+
+        private System.Windows.Forms.Panel pnlSecurity;
+        private System.Windows.Forms.Label lblSecTitle, lblChangePass;
+        private ReaLTaiizor.Controls.HopeTextBox txtCurrentPass, txtNewPass, txtConfirmPass;
+        private ReaLTaiizor.Controls.HopeButton btnUpdatePassword;
+        private System.Windows.Forms.Label lbl2FA, lbl2FADesc;
+        private ReaLTaiizor.Controls.HopeToggle tg2FA;
+        private System.Windows.Forms.Panel pnlPrivacy;
+        private System.Windows.Forms.Label lblPrivacyTitle, lblPrivacyDesc;
+
+        private System.Windows.Forms.Panel pnlNotifications;
+        private System.Windows.Forms.Label lblNotifTitle;
+        private System.Windows.Forms.Label lblDepAlert, lblDepDesc;
+        private ReaLTaiizor.Controls.HopeToggle tgDeposit;
+        private System.Windows.Forms.Label lblBudgAlert, lblBudgDesc;
+        private ReaLTaiizor.Controls.HopeToggle tgBudget;
+        private System.Windows.Forms.Label lblMonthAlert, lblMonthDesc;
+        private ReaLTaiizor.Controls.HopeToggle tgMonthly;
+        private ReaLTaiizor.Controls.HopeButton btnConfigEmail;
+
+        private System.Windows.Forms.Label lblLang, lblCurr, lblExport;
+        private ReaLTaiizor.Controls.HopeComboBox cboLang, cboCurr;
+        private ReaLTaiizor.Controls.HopeButton btnFactoryReset;
     }
 }

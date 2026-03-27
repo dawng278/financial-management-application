@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Text.RegularExpressions;
@@ -18,6 +18,33 @@ namespace PersonalFinanceManager.Forms.Auth
             InitializeComponent();
             _userService = ServiceLocator.UserService;
             this.Load += RegisterForm_Load;
+            
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, e) => {
+                if (this.IsHandleCreated) this.Invoke(new Action(UpdateTranslations));
+            };
+            UpdateTranslations();
+        }
+
+        private void UpdateTranslations()
+        {
+            lblLogo.Text = tr("Executive Finance");
+            lblTitle.Text = tr("Join the\nElite Circle of\nWealth\nManagement.");
+            lblSubtitle.Text = tr("Elevate your financial trajectory with our precision-engineered executive workspace.");
+            lblFeature1.Text = tr(".   Bank-grade encryption protocol");
+            lblFeature2.Text = tr(".   Real-time market synchronization");
+            lblRightTitle.Text = tr("Create Account");
+            lblRightSub.Text = tr("Initialize your premium financial profile.");
+            lblName.Text = tr("Full Name");
+            lblEmail.Text = tr("Email Address");
+            lblExecId.Text = tr("Executive ID");
+            lblPass.Text = tr("Password");
+            lblConfPass.Text = tr("Confirm Password");
+            chkTerms.Text = tr("I acknowledge the Executive Terms of Service and consent to the data protocols.");
+            btnRegister.Text = tr("Create Account ->");
+            lnkSignIn.Text = tr("Already have an account? Back to Login ->");
+            lblFooterCopy.Text = tr("2024 EXECUTIVE FINANCE GLOBAL");
+            lblFooterPriv.Text = tr("PRIVACY POLICY");
+            lblFooterReg.Text = tr("REGULATORY DISCLOSURE");
         }
 
         // =====================================================
@@ -25,57 +52,7 @@ namespace PersonalFinanceManager.Forms.Auth
         // =====================================================
         private void RegisterForm_Load(object sender, EventArgs e)
         {
-            LoadBackgroundImage();
             txtFullName.Focus();
-        }
-
-        private void LoadBackgroundImage()
-        {
-            string[] candidates = new[]
-            {
-                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image.png"),
-                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Image.png"),
-                System.IO.Path.Combine(Application.StartupPath, "Image.png"),
-            };
-
-            foreach (var path in candidates)
-            {
-                if (System.IO.File.Exists(path))
-                {
-                    try { picBackground.Image = Image.FromFile(path); return; }
-                    catch { }
-                }
-            }
-        }
-
-        // =====================================================
-        // VẼ LOGO
-        // =====================================================
-        private void picLogo_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-
-            int w = picLogo.Width;
-            int h = picLogo.Height;
-
-            using (var bg = new SolidBrush(Color.FromArgb(181, 212, 34)))
-                g.FillEllipse(bg, 0, 0, w - 1, h - 1);
-
-            using (var overlay = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
-                g.FillEllipse(overlay, 3, 3, w - 7, h - 7);
-
-            using (var font = new Font("Segoe UI", 15f, FontStyle.Bold))
-            using (var brush = new SolidBrush(Color.FromArgb(22, 22, 22)))
-            {
-                var sf = new StringFormat
-                {
-                    Alignment = StringAlignment.Center,
-                    LineAlignment = StringAlignment.Center
-                };
-                g.DrawString("F", font, brush, new RectangleF(0, 0, w, h), sf);
-            }
         }
 
         // =====================================================
@@ -84,7 +61,7 @@ namespace PersonalFinanceManager.Forms.Auth
         private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
 
         // =====================================================
-        // TẠO TÀI KHOẢN
+        // REGISTER
         // =====================================================
         private void btnRegister_Click(object sender, EventArgs e)
         {
@@ -98,41 +75,41 @@ namespace PersonalFinanceManager.Forms.Auth
             // --- Validation ---
             if (string.IsNullOrEmpty(fullName))
             {
-                SetError(txtFullName, "Vui lòng nhập họ và tên.");
+                SetError(txtFullName, tr("Please enter your full name."));
                 return;
             }
 
             if (string.IsNullOrEmpty(email))
             {
-                SetError(txtEmail, "Vui lòng nhập email.");
+                SetError(txtEmail, tr("Please enter your email."));
                 return;
             }
 
             if (!IsValidEmail(email))
             {
-                SetError(txtEmail, "Địa chỉ email không hợp lệ.");
+                SetError(txtEmail, tr("Invalid email address."));
                 return;
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                SetError(txtPassword, "Vui lòng nhập mật khẩu.");
+                SetError(txtPassword, tr("Please enter your password."));
                 return;
             }
 
             if (password.Length < 6)
             {
-                SetError(txtPassword, "Mật khẩu phải có ít nhất 6 ký tự.");
+                SetError(txtPassword, tr("Password must be at least 6 characters."));
                 return;
             }
 
             if (confirmPwd != password)
             {
-                SetError(txtConfirmPwd, "Xác nhận mật khẩu không khớp.");
+                SetError(txtConfirmPwd, tr("Confirm password does not match."));
                 return;
             }
 
-            // --- Tạo User object rồi gọi service ---
+            // --- Create User object and call service ---
             var newUser = new User
             {
                 FullName = fullName,
@@ -145,29 +122,25 @@ namespace PersonalFinanceManager.Forms.Auth
             if (success)
             {
                 MessageBox.Show(
-                    "Tài khoản đã được tạo thành công!\nVui lòng đăng nhập để tiếp tục.",
-                    "Đăng ký thành công",
+                    tr("Account created successfully!\nPlease log in to continue."),
+                    tr("Success"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                var loginForm = new LoginForm();
-                loginForm.Show();
-                this.Close();
+                PersonalFinanceManager.UI.Navigation.FormNavigator.GoToLogin();
             }
             else
             {
-                SetError(txtEmail, "Email này đã được sử dụng. Vui lòng thử email khác.");
+                SetError(txtEmail, tr("This email is already in use. Please try another."));
             }
         }
 
         // =====================================================
-        // CHUYỂN VỀ ĐĂNG NHẬP
+        // BACK TO LOGIN
         // =====================================================
         private void lnkSignIn_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var loginForm = new LoginForm();
-            loginForm.Show();
-            this.Close();
+            PersonalFinanceManager.UI.Navigation.FormNavigator.GoToLogin();
         }
 
         // =====================================================
@@ -180,25 +153,18 @@ namespace PersonalFinanceManager.Forms.Auth
                 RegexOptions.IgnoreCase);
         }
 
-        private void SetError(Guna.UI2.WinForms.Guna2TextBox field, string message)
+        private void SetError(ReaLTaiizor.Controls.HopeTextBox field, string message)
         {
-            field.BorderColor = Color.FromArgb(220, 60, 60);
-            field.FocusedState.BorderColor = Color.FromArgb(220, 60, 60);
-            MessageBox.Show(message, "Lỗi nhập liệu",
+            MessageBox.Show(message, tr("Input Error"),
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             field.Focus();
         }
 
+        private string tr(string key) => PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate(key);
+
         private void ResetAllErrors()
         {
-            var normal = Color.FromArgb(210, 215, 220);
-            var focus = Color.FromArgb(22, 22, 22);
-
-            foreach (var tb in new[] { txtFullName, txtEmail, txtPassword, txtConfirmPwd })
-            {
-                tb.BorderColor = normal;
-                tb.FocusedState.BorderColor = focus;
-            }
+            // Reset logic if needed
         }
     }
 }

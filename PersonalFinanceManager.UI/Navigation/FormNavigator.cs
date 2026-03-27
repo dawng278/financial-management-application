@@ -1,104 +1,142 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 
 namespace PersonalFinanceManager.UI.Navigation
 {
-    /// <summary>
-    /// Quản lý navigation toàn app — đảm bảo chỉ 1 form visible tại 1 thời điểm.
-    /// Mỗi form chỉ được khởi tạo 1 lần duy nhất (singleton per type).
-    /// </summary>
     public static class FormNavigator
     {
-        // ── Singleton instances ───────────────────────────────────────────────────
-        private static Forms.Auth.LoginForm _login;
-        private static Forms.Dashboard.DashboardForm _dashboard;
-        private static Forms.Transactions.TransactionListForm _transaction;
-        private static Forms.Invoices.InvoiceListForm _invoiceList;
-        private static Forms.Invoices.CreateInvoiceForm _createInvoice;
-        private static Forms.MyWallet.MyWalletForm _myWallet;
-        private static Forms.Settings.SettingsForm _settings;
-
-        // ═════════════════════════════════════════════════════════════════════════
-        // PUBLIC API
-        // ═════════════════════════════════════════════════════════════════════════
+        private static PersonalFinanceManager.Forms.Auth.LoginForm _login;
+        private static PersonalFinanceManager.Forms.Auth.RegisterForm _register;
+        
+        // Modules
+        private static PersonalFinanceManager.Forms.Dashboard.DashboardForm _dashboard;
+        private static PersonalFinanceManager.Forms.Transactions.TransactionListForm _transaction;
+        private static PersonalFinanceManager.Forms.Accounts.AccountForm _account;
+        private static PersonalFinanceManager.Forms.Categories.CategoryForm _category;
+        private static PersonalFinanceManager.UI.Forms.Goals.GoalManagementForm _goal;
+        private static PersonalFinanceManager.Forms.Reports.ReportForm _report;
+        private static PersonalFinanceManager.Forms.Settings.SettingsForm _settings;
 
         public static void GoToLogin()
         {
-            DestroyAndNull(ref _dashboard);
-            DestroyAndNull(ref _transaction);
-            DestroyAndNull(ref _invoiceList);
-            DestroyAndNull(ref _createInvoice);
-            DestroyAndNull(ref _myWallet);
-            DestroyAndNull(ref _settings);
-            Show(ref _login, () => new Forms.Auth.LoginForm());
+            HideStandalone(_register);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.Hide();
+            ShowStandalone(ref _login, () => new PersonalFinanceManager.Forms.Auth.LoginForm());
+        }
+
+        public static void GoToRegister()
+        {
+            HideStandalone(_login);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.Hide();
+            ShowStandalone(ref _register, () => new PersonalFinanceManager.Forms.Auth.RegisterForm());
         }
 
         public static void GoToDashboard()
-            => Show(ref _dashboard, () => new Forms.Dashboard.DashboardForm());
+        {
+            if (_dashboard == null || _dashboard.IsDisposed)
+                _dashboard = new PersonalFinanceManager.Forms.Dashboard.DashboardForm();
+            ShowInShell(_dashboard);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Dashboard");
+        }
 
         public static void GoToTransactions()
-            => Show(ref _transaction, () => new Forms.Transactions.TransactionListForm());
-
-        public static void GoToInvoices()
         {
-            // Khi quay về list, hủy CreateInvoice để data luôn fresh
-            DestroyAndNull(ref _createInvoice);
-            Show(ref _invoiceList, () => new Forms.Invoices.InvoiceListForm());
+            if (_transaction == null || _transaction.IsDisposed)
+                _transaction = new PersonalFinanceManager.Forms.Transactions.TransactionListForm();
+            ShowInShell(_transaction);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Transactions");
         }
 
-        public static void GoToCreateInvoice()
+        public static void GoToAccounts()
         {
-            // Tạo mới mỗi lần để số invoice unique
-            DestroyAndNull(ref _createInvoice);
-            Show(ref _createInvoice, () => new Forms.Invoices.CreateInvoiceForm());
+            if (_account == null || _account.IsDisposed)
+                _account = new PersonalFinanceManager.Forms.Accounts.AccountForm();
+            ShowInShell(_account);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Accounts");
         }
 
-        public static void GoToMyWallet()
-            => Show(ref _myWallet, () => new Forms.MyWallet.MyWalletForm());
+        public static void GoToCategories()
+        {
+            if (_category == null || _category.IsDisposed)
+                _category = new PersonalFinanceManager.Forms.Categories.CategoryForm();
+            ShowInShell(_category);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Categories");
+        }
+
+        public static void GoToGoals()
+        {
+            if (_goal == null || _goal.IsDisposed)
+                _goal = new PersonalFinanceManager.UI.Forms.Goals.GoalManagementForm();
+            ShowInShell(_goal);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Goals");
+        }
+
+        public static void GoToReports()
+        {
+            if (_report == null || _report.IsDisposed)
+                _report = new PersonalFinanceManager.Forms.Reports.ReportForm();
+            ShowInShell(_report);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Reports");
+        }
 
         public static void GoToSettings()
-            => Show(ref _settings, () => new Forms.Settings.SettingsForm());
+        {
+            if (_settings == null || _settings.IsDisposed)
+                _settings = new PersonalFinanceManager.Forms.Settings.SettingsForm();
+            ShowInShell(_settings);
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.HighlightRoute("Settings");
+        }
 
-        // ═════════════════════════════════════════════════════════════════════════
-        // CORE — ẩn TẤT CẢ form khác, chỉ hiện form target
-        // ═════════════════════════════════════════════════════════════════════════
+        private static void ShowInShell(Form f)
+        {
+            if (!PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.Visible)
+            {
+                HideStandalone(_login);
+                HideStandalone(_register);
+                PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.Show();
+                PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.BringToFront();
+            }
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.LoadChildForm(f);
+        }
 
-        private static void Show<T>(ref T field, System.Func<T> factory) where T : Form
+        private static void ShowStandalone<T>(ref T field, System.Func<T> factory) where T : Form
         {
             if (field == null || field.IsDisposed)
                 field = factory();
-
-            HideAll(except: field);
-
             field.Show();
             field.BringToFront();
-            field.WindowState = FormWindowState.Maximized;
         }
 
-        private static void HideAll(Form except)
+        private static void HideStandalone(Form f)
         {
-            SafeHide(_login, except);
-            SafeHide(_dashboard, except);
-            SafeHide(_transaction, except);
-            SafeHide(_invoiceList, except);
-            SafeHide(_createInvoice, except);
-            SafeHide(_myWallet, except);
-            SafeHide(_settings, except);
-        }
-
-        private static void SafeHide(Form f, Form except)
-        {
-            if (f != null && !f.IsDisposed && f != except && f.Visible)
+            if (f != null && !f.IsDisposed && f.Visible)
                 f.Hide();
         }
 
-        private static void DestroyAndNull<T>(ref T field) where T : Form
+        public static void ClearCacheAndReloadCurrent()
         {
-            if (field != null && !field.IsDisposed)
-            {
-                field.Hide();
-                field.Dispose();
-            }
-            field = null;
+            if (_dashboard != null && !_dashboard.IsDisposed) { _dashboard.Dispose(); _dashboard = null; }
+            if (_transaction != null && !_transaction.IsDisposed) { _transaction.Dispose(); _transaction = null; }
+            if (_account != null && !_account.IsDisposed) { _account.Dispose(); _account = null; }
+            if (_category != null && !_category.IsDisposed) { _category.Dispose(); _category = null; }
+            if (_goal != null && !_goal.IsDisposed) { _goal.Dispose(); _goal = null; }
+            if (_report != null && !_report.IsDisposed) { _report.Dispose(); _report = null; }
+            if (_settings != null && !_settings.IsDisposed) { _settings.Dispose(); _settings = null; }
+        }
+
+        public static void ReloadActiveForm()
+        {
+            var active = PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.ActiveChildForm;
+            string currentName = active?.GetType().Name;
+            
+            ClearCacheAndReloadCurrent();
+            
+            if (currentName == "DashboardForm") GoToDashboard();
+            else if (currentName == "TransactionListForm") GoToTransactions();
+            else if (currentName == "AccountForm") GoToAccounts();
+            else if (currentName == "CategoryForm") GoToCategories();
+            else if (currentName == "GoalManagementForm") GoToGoals();
+            else if (currentName == "ReportForm") GoToReports();
+            else if (currentName == "SettingsForm") GoToSettings();
         }
     }
 }

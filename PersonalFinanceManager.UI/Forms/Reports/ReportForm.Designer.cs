@@ -1,341 +1,438 @@
-﻿namespace PersonalFinanceManager.Forms.Reports
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace PersonalFinanceManager.Forms.Reports
 {
     partial class ReportForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            Guna.UI2.AnimatorNS.Animation animation1 = new Guna.UI2.AnimatorNS.Animation();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReportForm));
-            this.dtpFrom = new Guna.UI2.WinForms.Guna2DateTimePicker();
-            this.dtpTo = new Guna.UI2.WinForms.Guna2DateTimePicker();
-            this.cboType = new Guna.UI2.WinForms.Guna2ComboBox();
-            this.guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.guna2HtmlLabel2 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.btnFilter = new Guna.UI2.WinForms.Guna2Button();
-            this.dgvReports = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.lblTotalIn = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.lblTotalOut = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.lblBalance = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.guna2HtmlLabel6 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.guna2Button1 = new Guna.UI2.WinForms.Guna2Button();
-            this.btnExportPdf = new Guna.UI2.WinForms.Guna2Button();
-            this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow(this.components);
-            this.guna2Transition1 = new Guna.UI2.WinForms.Guna2Transition();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvReports)).BeginInit();
+            this.pnlScrollContext = new System.Windows.Forms.Panel();
+            this.lblPageTitle = new System.Windows.Forms.Label();
+            this.lblPageSub = new System.Windows.Forms.Label();
+            this.pnlFilter = new System.Windows.Forms.Panel();
+            this.lblFilterStart = new System.Windows.Forms.Label();
+            this.dtpStart = new ReaLTaiizor.Controls.PoisonDateTime();
+            this.lblFilterEnd = new System.Windows.Forms.Label();
+            this.dtpEnd = new ReaLTaiizor.Controls.PoisonDateTime();
+            this.lblFilterCat = new System.Windows.Forms.Label();
+            this.cboCategory = new ReaLTaiizor.Controls.HopeComboBox();
+            this.lblFilterAcc = new System.Windows.Forms.Label();
+            this.cboAccount = new ReaLTaiizor.Controls.HopeComboBox();
+            this.btnApply = new ReaLTaiizor.Controls.HopeButton();
+            this.pnlIncome = new System.Windows.Forms.Panel();
+            this.pnlExpense = new System.Windows.Forms.Panel();
+            this.pnlSavings = new System.Windows.Forms.Panel();
+            this.pnlChart = new System.Windows.Forms.Panel();
+            this.lblChartTitle = new System.Windows.Forms.Label();
+            this.lblChartSub = new System.Windows.Forms.Label();
+            this.pnlLedger = new System.Windows.Forms.Panel();
+            this.lblLedgerTitle = new System.Windows.Forms.Label();
+            this.btnExportExcel = new System.Windows.Forms.Button();
+            this.btnExportPdf = new System.Windows.Forms.Button();
+            this.dgvLedger = new System.Windows.Forms.DataGridView();
+            this.lblPaginator = new System.Windows.Forms.Label();
+            this.pnlScrollContext.SuspendLayout();
+            this.pnlFilter.SuspendLayout();
+            this.pnlChart.SuspendLayout();
+            this.pnlLedger.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLedger)).BeginInit();
             this.SuspendLayout();
             // 
-            // dtpFrom
+            // pnlScrollContext
             // 
-            this.dtpFrom.BackColor = System.Drawing.Color.White;
-            this.dtpFrom.Checked = true;
-            this.guna2Transition1.SetDecoration(this.dtpFrom, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.dtpFrom.FillColor = System.Drawing.Color.Lime;
-            this.dtpFrom.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.dtpFrom.Format = System.Windows.Forms.DateTimePickerFormat.Long;
-            this.dtpFrom.Location = new System.Drawing.Point(12, 72);
-            this.dtpFrom.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
-            this.dtpFrom.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
-            this.dtpFrom.Name = "dtpFrom";
-            this.dtpFrom.Size = new System.Drawing.Size(251, 36);
-            this.dtpFrom.TabIndex = 0;
-            this.dtpFrom.Value = new System.DateTime(2026, 3, 18, 22, 24, 16, 452);
+            this.pnlScrollContext.AutoScroll = true;
+            this.pnlScrollContext.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(252)))));
+            this.pnlScrollContext.Controls.Add(this.lblPageTitle);
+            this.pnlScrollContext.Controls.Add(this.lblPageSub);
+            this.pnlScrollContext.Controls.Add(this.pnlFilter);
+            this.pnlScrollContext.Controls.Add(this.pnlIncome);
+            this.pnlScrollContext.Controls.Add(this.pnlExpense);
+            this.pnlScrollContext.Controls.Add(this.pnlSavings);
+            this.pnlScrollContext.Controls.Add(this.pnlChart);
+            this.pnlScrollContext.Controls.Add(this.pnlLedger);
+            this.pnlScrollContext.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlScrollContext.Location = new System.Drawing.Point(0, 0);
+            this.pnlScrollContext.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlScrollContext.Name = "pnlScrollContext";
+            this.pnlScrollContext.Size = new System.Drawing.Size(832, 572);
+            this.pnlScrollContext.TabIndex = 0;
             // 
-            // dtpTo
+            // lblPageTitle
             // 
-            this.dtpTo.Checked = true;
-            this.guna2Transition1.SetDecoration(this.dtpTo, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.dtpTo.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.dtpTo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.dtpTo.Format = System.Windows.Forms.DateTimePickerFormat.Long;
-            this.dtpTo.Location = new System.Drawing.Point(301, 72);
-            this.dtpTo.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
-            this.dtpTo.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
-            this.dtpTo.Name = "dtpTo";
-            this.dtpTo.Size = new System.Drawing.Size(251, 36);
-            this.dtpTo.TabIndex = 0;
-            this.dtpTo.Value = new System.DateTime(2026, 3, 18, 22, 24, 16, 452);
+            this.lblPageTitle.AutoSize = true;
+            this.lblPageTitle.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblPageTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(28)))), ((int)(((byte)(29)))));
+            this.lblPageTitle.Location = new System.Drawing.Point(22, 16);
+            this.lblPageTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPageTitle.Name = "lblPageTitle";
+            this.lblPageTitle.Size = new System.Drawing.Size(347, 37);
+            this.lblPageTitle.TabIndex = 0;
+            this.lblPageTitle.Text = "Financial Report Designer";
             // 
-            // cboType
+            // lblPageSub
             // 
-            this.cboType.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.cboType, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.cboType.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.cboType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboType.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cboType.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cboType.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cboType.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
-            this.cboType.ItemHeight = 30;
-            this.cboType.Items.AddRange(new object[] {
-            "Tất cả",
-            "Thu",
-            "Chi"});
-            this.cboType.Location = new System.Drawing.Point(602, 72);
-            this.cboType.Name = "cboType";
-            this.cboType.Size = new System.Drawing.Size(140, 36);
-            this.cboType.TabIndex = 1;
+            this.lblPageSub.AutoSize = true;
+            this.lblPageSub.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.lblPageSub.ForeColor = System.Drawing.Color.Gray;
+            this.lblPageSub.Location = new System.Drawing.Point(22, 53);
+            this.lblPageSub.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPageSub.Name = "lblPageSub";
+            this.lblPageSub.Size = new System.Drawing.Size(694, 17);
+            this.lblPageSub.TabIndex = 1;
+            this.lblPageSub.Text = "Configure your fiscal summary using high-precision filters and multi-dimensional " +
+    "analytics. Data refreshes in real-time.";
             // 
-            // guna2HtmlLabel1
+            // pnlFilter
             // 
-            this.guna2HtmlLabel1.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.guna2HtmlLabel1, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.guna2HtmlLabel1.Location = new System.Drawing.Point(12, 38);
-            this.guna2HtmlLabel1.Name = "guna2HtmlLabel1";
-            this.guna2HtmlLabel1.Size = new System.Drawing.Size(94, 18);
-            this.guna2HtmlLabel1.TabIndex = 2;
-            this.guna2HtmlLabel1.Text = "Ngày giao dịch";
+            this.pnlFilter.BackColor = System.Drawing.Color.Transparent;
+            this.pnlFilter.Controls.Add(this.lblFilterStart);
+            this.pnlFilter.Controls.Add(this.dtpStart);
+            this.pnlFilter.Controls.Add(this.lblFilterEnd);
+            this.pnlFilter.Controls.Add(this.dtpEnd);
+            this.pnlFilter.Controls.Add(this.lblFilterCat);
+            this.pnlFilter.Controls.Add(this.cboCategory);
+            this.pnlFilter.Controls.Add(this.lblFilterAcc);
+            this.pnlFilter.Controls.Add(this.cboAccount);
+            this.pnlFilter.Controls.Add(this.btnApply);
+            this.pnlFilter.Location = new System.Drawing.Point(22, 89);
+            this.pnlFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.Size = new System.Drawing.Size(788, 81);
+            this.pnlFilter.TabIndex = 2;
+            this.pnlFilter.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlFilter_Paint);
             // 
-            // guna2HtmlLabel2
+            // lblFilterStart
             // 
-            this.guna2HtmlLabel2.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.guna2HtmlLabel2, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.guna2HtmlLabel2.Location = new System.Drawing.Point(602, 38);
-            this.guna2HtmlLabel2.Name = "guna2HtmlLabel2";
-            this.guna2HtmlLabel2.Size = new System.Drawing.Size(29, 18);
-            this.guna2HtmlLabel2.TabIndex = 2;
-            this.guna2HtmlLabel2.Text = "Loại";
+            this.lblFilterStart.AutoSize = true;
+            this.lblFilterStart.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterStart.ForeColor = System.Drawing.Color.Gray;
+            this.lblFilterStart.Location = new System.Drawing.Point(15, 12);
+            this.lblFilterStart.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFilterStart.Name = "lblFilterStart";
+            this.lblFilterStart.Size = new System.Drawing.Size(69, 13);
+            this.lblFilterStart.TabIndex = 0;
+            this.lblFilterStart.Text = "START DATE";
             // 
-            // btnFilter
+            // dtpStart
             // 
-            this.guna2Transition1.SetDecoration(this.btnFilter, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.btnFilter.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnFilter.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnFilter.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnFilter.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnFilter.FillColor = System.Drawing.Color.Yellow;
-            this.btnFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnFilter.ForeColor = System.Drawing.Color.Black;
-            this.btnFilter.Location = new System.Drawing.Point(12, 128);
-            this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(180, 45);
-            this.btnFilter.TabIndex = 3;
-            this.btnFilter.Text = "Lọc dữ liệu";
-            this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
+            this.dtpStart.CustomFormat = "dd MMM yyyy";
+            this.dtpStart.FontSize = ReaLTaiizor.Extension.Poison.PoisonDateTimeSize.Medium;
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(15, 32);
+            this.dtpStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dtpStart.MinimumSize = new System.Drawing.Size(0, 29);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(151, 29);
+            this.dtpStart.TabIndex = 1;
             // 
-            // dgvReports
+            // lblFilterEnd
             // 
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
-            this.dgvReports.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvReports.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dgvReports.ColumnHeadersHeight = 4;
-            this.dgvReports.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.guna2Transition1.SetDecoration(this.dgvReports, Guna.UI2.AnimatorNS.DecorationType.None);
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvReports.DefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvReports.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvReports.Location = new System.Drawing.Point(12, 179);
-            this.dgvReports.Name = "dgvReports";
-            this.dgvReports.ReadOnly = true;
-            this.dgvReports.RowHeadersVisible = false;
-            this.dgvReports.RowHeadersWidth = 51;
-            this.dgvReports.RowTemplate.Height = 24;
-            this.dgvReports.Size = new System.Drawing.Size(477, 201);
-            this.dgvReports.TabIndex = 4;
-            this.dgvReports.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvReports.ThemeStyle.AlternatingRowsStyle.Font = null;
-            this.dgvReports.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
-            this.dgvReports.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
-            this.dgvReports.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
-            this.dgvReports.ThemeStyle.BackColor = System.Drawing.Color.White;
-            this.dgvReports.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvReports.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            this.dgvReports.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.dgvReports.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvReports.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvReports.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.dgvReports.ThemeStyle.HeaderStyle.Height = 4;
-            this.dgvReports.ThemeStyle.ReadOnly = true;
-            this.dgvReports.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvReports.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dgvReports.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvReports.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dgvReports.ThemeStyle.RowsStyle.Height = 24;
-            this.dgvReports.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvReports.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.lblFilterEnd.AutoSize = true;
+            this.lblFilterEnd.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterEnd.ForeColor = System.Drawing.Color.Gray;
+            this.lblFilterEnd.Location = new System.Drawing.Point(180, 12);
+            this.lblFilterEnd.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFilterEnd.Name = "lblFilterEnd";
+            this.lblFilterEnd.Size = new System.Drawing.Size(60, 13);
+            this.lblFilterEnd.TabIndex = 2;
+            this.lblFilterEnd.Text = "END DATE";
             // 
-            // lblTotalIn
+            // dtpEnd
             // 
-            this.lblTotalIn.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.lblTotalIn, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.lblTotalIn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTotalIn.Location = new System.Drawing.Point(523, 179);
-            this.lblTotalIn.Name = "lblTotalIn";
-            this.lblTotalIn.Size = new System.Drawing.Size(73, 18);
-            this.lblTotalIn.TabIndex = 5;
-            this.lblTotalIn.Text = "Tổng Thu:";
+            this.dtpEnd.CustomFormat = "dd MMM yyyy";
+            this.dtpEnd.FontSize = ReaLTaiizor.Extension.Poison.PoisonDateTimeSize.Medium;
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(180, 32);
+            this.dtpEnd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dtpEnd.MinimumSize = new System.Drawing.Size(0, 29);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(151, 29);
+            this.dtpEnd.TabIndex = 3;
             // 
-            // lblTotalOut
+            // lblFilterCat
             // 
-            this.lblTotalOut.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.lblTotalOut, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.lblTotalOut.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTotalOut.Location = new System.Drawing.Point(523, 215);
-            this.lblTotalOut.Name = "lblTotalOut";
-            this.lblTotalOut.Size = new System.Drawing.Size(69, 18);
-            this.lblTotalOut.TabIndex = 5;
-            this.lblTotalOut.Text = "Tổng Chi:";
+            this.lblFilterCat.AutoSize = true;
+            this.lblFilterCat.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterCat.ForeColor = System.Drawing.Color.Gray;
+            this.lblFilterCat.Location = new System.Drawing.Point(345, 12);
+            this.lblFilterCat.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFilterCat.Name = "lblFilterCat";
+            this.lblFilterCat.Size = new System.Drawing.Size(63, 13);
+            this.lblFilterCat.TabIndex = 4;
+            this.lblFilterCat.Text = "CATEGORY";
             // 
-            // lblBalance
+            // cboCategory
             // 
-            this.lblBalance.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.lblBalance, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.lblBalance.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBalance.Location = new System.Drawing.Point(523, 252);
-            this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(67, 18);
-            this.lblBalance.TabIndex = 5;
-            this.lblBalance.Text = "Số dư kỳ:";
+            this.cboCategory.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cboCategory.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboCategory.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.cboCategory.ItemHeight = 30;
+            this.cboCategory.Items.AddRange(new object[] {
+            "All Categories"});
+            this.cboCategory.Location = new System.Drawing.Point(345, 32);
+            this.cboCategory.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cboCategory.Name = "cboCategory";
+            this.cboCategory.Size = new System.Drawing.Size(151, 36);
+            this.cboCategory.TabIndex = 5;
             // 
-            // guna2HtmlLabel6
+            // lblFilterAcc
             // 
-            this.guna2HtmlLabel6.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Transition1.SetDecoration(this.guna2HtmlLabel6, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.guna2HtmlLabel6.Location = new System.Drawing.Point(301, 38);
-            this.guna2HtmlLabel6.Name = "guna2HtmlLabel6";
-            this.guna2HtmlLabel6.Size = new System.Drawing.Size(60, 18);
-            this.guna2HtmlLabel6.TabIndex = 2;
-            this.guna2HtmlLabel6.Text = "Đến ngày";
+            this.lblFilterAcc.AutoSize = true;
+            this.lblFilterAcc.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterAcc.ForeColor = System.Drawing.Color.Gray;
+            this.lblFilterAcc.Location = new System.Drawing.Point(510, 12);
+            this.lblFilterAcc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFilterAcc.Name = "lblFilterAcc";
+            this.lblFilterAcc.Size = new System.Drawing.Size(60, 13);
+            this.lblFilterAcc.TabIndex = 6;
+            this.lblFilterAcc.Text = "ACCOUNT";
             // 
-            // guna2Button1
+            // cboAccount
             // 
-            this.guna2Transition1.SetDecoration(this.guna2Button1, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.guna2Button1.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.guna2Button1.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.guna2Button1.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.guna2Button1.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.guna2Button1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.guna2Button1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.guna2Button1.ForeColor = System.Drawing.Color.White;
-            this.guna2Button1.Location = new System.Drawing.Point(523, 295);
-            this.guna2Button1.Name = "guna2Button1";
-            this.guna2Button1.Size = new System.Drawing.Size(180, 45);
-            this.guna2Button1.TabIndex = 6;
-            this.guna2Button1.Text = "Xuất Excel";
-            this.guna2Button1.Click += new System.EventHandler(this.guna2Button1_Click);
+            this.cboAccount.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cboAccount.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboAccount.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboAccount.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.cboAccount.ItemHeight = 30;
+            this.cboAccount.Items.AddRange(new object[] {
+            "Corporate Alpha"});
+            this.cboAccount.Location = new System.Drawing.Point(510, 32);
+            this.cboAccount.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cboAccount.Name = "cboAccount";
+            this.cboAccount.Size = new System.Drawing.Size(151, 36);
+            this.cboAccount.TabIndex = 7;
+            // 
+            // btnApply
+            // 
+            this.btnApply.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(223)))), ((int)(((byte)(230)))));
+            this.btnApply.ButtonType = ReaLTaiizor.Util.HopeButtonType.Primary;
+            this.btnApply.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnApply.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
+            this.btnApply.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnApply.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnApply.ForeColor = System.Drawing.Color.White;
+            this.btnApply.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
+            this.btnApply.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
+            this.btnApply.Location = new System.Drawing.Point(675, 32);
+            this.btnApply.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.PrimaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(85)))), ((int)(((byte)(95)))));
+            this.btnApply.Size = new System.Drawing.Size(98, 29);
+            this.btnApply.SuccessColor = System.Drawing.Color.FromArgb(((int)(((byte)(103)))), ((int)(((byte)(194)))), ((int)(((byte)(58)))));
+            this.btnApply.TabIndex = 8;
+            this.btnApply.Text = "▼ Apply";
+            this.btnApply.TextColor = System.Drawing.Color.White;
+            this.btnApply.WarningColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(162)))), ((int)(((byte)(60)))));
+            // 
+            // pnlIncome
+            // 
+            this.pnlIncome.BackColor = System.Drawing.Color.Transparent;
+            this.pnlIncome.Location = new System.Drawing.Point(22, 187);
+            this.pnlIncome.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlIncome.Name = "pnlIncome";
+            this.pnlIncome.Size = new System.Drawing.Size(248, 81);
+            this.pnlIncome.TabIndex = 3;
+            this.pnlIncome.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlIncome_Paint);
+            // 
+            // pnlExpense
+            // 
+            this.pnlExpense.BackColor = System.Drawing.Color.Transparent;
+            this.pnlExpense.Location = new System.Drawing.Point(292, 187);
+            this.pnlExpense.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlExpense.Name = "pnlExpense";
+            this.pnlExpense.Size = new System.Drawing.Size(248, 81);
+            this.pnlExpense.TabIndex = 4;
+            this.pnlExpense.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlExpense_Paint);
+            // 
+            // pnlSavings
+            // 
+            this.pnlSavings.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSavings.Location = new System.Drawing.Point(562, 187);
+            this.pnlSavings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlSavings.Name = "pnlSavings";
+            this.pnlSavings.Size = new System.Drawing.Size(248, 81);
+            this.pnlSavings.TabIndex = 5;
+            this.pnlSavings.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlSavings_Paint);
+            // 
+            // pnlChart
+            // 
+            this.pnlChart.BackColor = System.Drawing.Color.Transparent;
+            this.pnlChart.Controls.Add(this.lblChartTitle);
+            this.pnlChart.Controls.Add(this.lblChartSub);
+            this.pnlChart.Location = new System.Drawing.Point(22, 284);
+            this.pnlChart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlChart.Name = "pnlChart";
+            this.pnlChart.Size = new System.Drawing.Size(788, 211);
+            this.pnlChart.TabIndex = 6;
+            this.pnlChart.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlChart_Paint);
+            // 
+            // lblChartTitle
+            // 
+            this.lblChartTitle.AutoSize = true;
+            this.lblChartTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblChartTitle.Location = new System.Drawing.Point(15, 16);
+            this.lblChartTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblChartTitle.Name = "lblChartTitle";
+            this.lblChartTitle.Size = new System.Drawing.Size(118, 21);
+            this.lblChartTitle.TabIndex = 0;
+            this.lblChartTitle.Text = "Fiscal Velocity";
+            // 
+            // lblChartSub
+            // 
+            this.lblChartSub.AutoSize = true;
+            this.lblChartSub.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblChartSub.ForeColor = System.Drawing.Color.Gray;
+            this.lblChartSub.Location = new System.Drawing.Point(15, 37);
+            this.lblChartSub.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblChartSub.Name = "lblChartSub";
+            this.lblChartSub.Size = new System.Drawing.Size(220, 15);
+            this.lblChartSub.TabIndex = 1;
+            this.lblChartSub.Text = "Monthly Income vs Expense comparison";
+            // 
+            // pnlLedger
+            // 
+            this.pnlLedger.BackColor = System.Drawing.Color.White;
+            this.pnlLedger.Controls.Add(this.lblLedgerTitle);
+            this.pnlLedger.Controls.Add(this.btnExportExcel);
+            this.pnlLedger.Controls.Add(this.btnExportPdf);
+            this.pnlLedger.Controls.Add(this.dgvLedger);
+            this.pnlLedger.Controls.Add(this.lblPaginator);
+            this.pnlLedger.Location = new System.Drawing.Point(22, 512);
+            this.pnlLedger.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlLedger.Name = "pnlLedger";
+            this.pnlLedger.Size = new System.Drawing.Size(788, 244);
+            this.pnlLedger.TabIndex = 7;
+            this.pnlLedger.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlLedger_Paint);
+            // 
+            // lblLedgerTitle
+            // 
+            this.lblLedgerTitle.AutoSize = true;
+            this.lblLedgerTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblLedgerTitle.Location = new System.Drawing.Point(15, 16);
+            this.lblLedgerTitle.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblLedgerTitle.Name = "lblLedgerTitle";
+            this.lblLedgerTitle.Size = new System.Drawing.Size(154, 21);
+            this.lblLedgerTitle.TabIndex = 0;
+            this.lblLedgerTitle.Text = "Transaction Ledger";
+            // 
+            // btnExportExcel
+            // 
+            this.btnExportExcel.BackColor = System.Drawing.Color.White;
+            this.btnExportExcel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(230)))), ((int)(((byte)(200)))));
+            this.btnExportExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportExcel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnExportExcel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(110)))), ((int)(((byte)(40)))));
+            this.btnExportExcel.Location = new System.Drawing.Point(615, 12);
+            this.btnExportExcel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnExportExcel.Name = "btnExportExcel";
+            this.btnExportExcel.Size = new System.Drawing.Size(75, 24);
+            this.btnExportExcel.TabIndex = 1;
+            this.btnExportExcel.Text = "Excel";
+            this.btnExportExcel.UseVisualStyleBackColor = false;
             // 
             // btnExportPdf
             // 
-            this.guna2Transition1.SetDecoration(this.btnExportPdf, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.btnExportPdf.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnExportPdf.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnExportPdf.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnExportPdf.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnExportPdf.FillColor = System.Drawing.Color.Teal;
-            this.btnExportPdf.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnExportPdf.ForeColor = System.Drawing.Color.White;
-            this.btnExportPdf.Location = new System.Drawing.Point(523, 346);
+            this.btnExportPdf.BackColor = System.Drawing.Color.White;
+            this.btnExportPdf.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.btnExportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportPdf.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnExportPdf.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(30)))), ((int)(((byte)(80)))));
+            this.btnExportPdf.Location = new System.Drawing.Point(698, 12);
+            this.btnExportPdf.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnExportPdf.Name = "btnExportPdf";
-            this.btnExportPdf.Size = new System.Drawing.Size(180, 45);
-            this.btnExportPdf.TabIndex = 6;
-            this.btnExportPdf.Text = "Xuất PDF";
-            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+            this.btnExportPdf.Size = new System.Drawing.Size(75, 24);
+            this.btnExportPdf.TabIndex = 2;
+            this.btnExportPdf.Text = "PDF";
+            this.btnExportPdf.UseVisualStyleBackColor = false;
             // 
-            // guna2Transition1
+            // dgvLedger
             // 
-            this.guna2Transition1.AnimationType = Guna.UI2.AnimatorNS.AnimationType.Scale;
-            this.guna2Transition1.Cursor = null;
-            animation1.AnimateOnlyDifferences = true;
-            animation1.BlindCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.BlindCoeff")));
-            animation1.LeafCoeff = 0F;
-            animation1.MaxTime = 1F;
-            animation1.MinTime = 0F;
-            animation1.MosaicCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicCoeff")));
-            animation1.MosaicShift = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicShift")));
-            animation1.MosaicSize = 0;
-            animation1.Padding = new System.Windows.Forms.Padding(0);
-            animation1.RotateCoeff = 0F;
-            animation1.RotateLimit = 0F;
-            animation1.ScaleCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.ScaleCoeff")));
-            animation1.SlideCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.SlideCoeff")));
-            animation1.TimeCoeff = 0F;
-            animation1.TransparencyCoeff = 0F;
-            this.guna2Transition1.DefaultAnimation = animation1;
+            this.dgvLedger.AllowUserToAddRows = false;
+            this.dgvLedger.AllowUserToDeleteRows = false;
+            this.dgvLedger.BackgroundColor = System.Drawing.Color.White;
+            this.dgvLedger.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvLedger.Location = new System.Drawing.Point(15, 49);
+            this.dgvLedger.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvLedger.Name = "dgvLedger";
+            this.dgvLedger.ReadOnly = true;
+            this.dgvLedger.RowHeadersVisible = false;
+            this.dgvLedger.Size = new System.Drawing.Size(758, 162);
+            this.dgvLedger.TabIndex = 3;
+            // 
+            // lblPaginator
+            // 
+            this.lblPaginator.AutoSize = true;
+            this.lblPaginator.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.lblPaginator.ForeColor = System.Drawing.Color.Gray;
+            this.lblPaginator.Location = new System.Drawing.Point(15, 219);
+            this.lblPaginator.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPaginator.Name = "lblPaginator";
+            this.lblPaginator.Size = new System.Drawing.Size(286, 13);
+            this.lblPaginator.TabIndex = 4;
+            this.lblPaginator.Text = "Showing 5 of 142 entries                           <   1   2   3   >";
             // 
             // ReportForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnExportPdf);
-            this.Controls.Add(this.guna2Button1);
-            this.Controls.Add(this.lblBalance);
-            this.Controls.Add(this.lblTotalOut);
-            this.Controls.Add(this.lblTotalIn);
-            this.Controls.Add(this.dgvReports);
-            this.Controls.Add(this.btnFilter);
-            this.Controls.Add(this.guna2HtmlLabel2);
-            this.Controls.Add(this.guna2HtmlLabel6);
-            this.Controls.Add(this.guna2HtmlLabel1);
-            this.Controls.Add(this.cboType);
-            this.Controls.Add(this.dtpTo);
-            this.Controls.Add(this.dtpFrom);
-            this.guna2Transition1.SetDecoration(this, Guna.UI2.AnimatorNS.DecorationType.None);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.ClientSize = new System.Drawing.Size(832, 572);
+            this.Controls.Add(this.pnlScrollContext);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "ReportForm";
-            this.Text = "ReportForm";
-            this.Load += new System.EventHandler(this.ReportForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvReports)).EndInit();
+            this.pnlScrollContext.ResumeLayout(false);
+            this.pnlScrollContext.PerformLayout();
+            this.pnlFilter.ResumeLayout(false);
+            this.pnlFilter.PerformLayout();
+            this.pnlChart.ResumeLayout(false);
+            this.pnlChart.PerformLayout();
+            this.pnlLedger.ResumeLayout(false);
+            this.pnlLedger.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLedger)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
-        #endregion
+        private System.Windows.Forms.Panel pnlScrollContext;
+        private System.Windows.Forms.Label lblPageTitle;
+        private System.Windows.Forms.Label lblPageSub;
+        
+        private System.Windows.Forms.Panel pnlFilter;
+        private ReaLTaiizor.Controls.PoisonDateTime dtpStart;
+        private ReaLTaiizor.Controls.PoisonDateTime dtpEnd;
+        private ReaLTaiizor.Controls.HopeComboBox cboCategory;
+        private ReaLTaiizor.Controls.HopeComboBox cboAccount;
+        private ReaLTaiizor.Controls.HopeButton btnApply;
+        private System.Windows.Forms.Label lblFilterStart;
+        private System.Windows.Forms.Label lblFilterEnd;
+        private System.Windows.Forms.Label lblFilterCat;
+        private System.Windows.Forms.Label lblFilterAcc;
 
-        private Guna.UI2.WinForms.Guna2DateTimePicker dtpFrom;
-        private Guna.UI2.WinForms.Guna2DateTimePicker dtpTo;
-        private Guna.UI2.WinForms.Guna2ComboBox cboType;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel2;
-        private Guna.UI2.WinForms.Guna2Button btnFilter;
-        private Guna.UI2.WinForms.Guna2DataGridView dgvReports;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblTotalIn;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblTotalOut;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblBalance;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel6;
-        private Guna.UI2.WinForms.Guna2Button guna2Button1;
-        private Guna.UI2.WinForms.Guna2Button btnExportPdf;
-        private Guna.UI2.WinForms.Guna2AnimateWindow guna2AnimateWindow1;
-        private Guna.UI2.WinForms.Guna2Transition guna2Transition1;
+        private System.Windows.Forms.Panel pnlIncome;
+        private System.Windows.Forms.Panel pnlExpense;
+        private System.Windows.Forms.Panel pnlSavings;
+
+        private System.Windows.Forms.Panel pnlChart;
+        private System.Windows.Forms.Label lblChartTitle;
+        private System.Windows.Forms.Label lblChartSub;
+
+        private System.Windows.Forms.Panel pnlLedger;
+        private System.Windows.Forms.Label lblLedgerTitle;
+        private System.Windows.Forms.Button btnExportExcel;
+        private System.Windows.Forms.Button btnExportPdf;
+        private System.Windows.Forms.DataGridView dgvLedger;
+        private System.Windows.Forms.Label lblPaginator;
     }
 }

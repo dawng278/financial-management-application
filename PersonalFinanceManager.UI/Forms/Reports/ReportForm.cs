@@ -1,170 +1,446 @@
-﻿using Guna.UI2.WinForms;
-using PersonalFinanceManager.Controls;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Management;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Util;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Linq;
+using System.Collections.Generic;
+using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.Models;
+using LiveCharts;
+using LiveCharts.WinForms;
+using LiveCharts.Wpf;
+using Panel = System.Windows.Forms.Panel;
 
 namespace PersonalFinanceManager.Forms.Reports
 {
+    public class ComboItem { public string Text { get; set; } public int Value { get; set; } public override string ToString() => Text; }
+
     public partial class ReportForm : Form
     {
-        
+        private decimal _income = 0m;
+        private decimal _expense = 0m;
+        private decimal _savings = 0m;
+        private LiveCharts.WinForms.CartesianChart _fiscalChart;
+
         public ReportForm()
         {
             InitializeComponent();
-        }
-        private DataTable GetTransactionData(DateTime fromDate, DateTime toDate, string type)
-        {
-            // 1. Tạo cấu trúc bảng giống hệt như trong Database thật
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Ngày", typeof(DateTime));
-            dt.Columns.Add("Mô tả", typeof(string));
-            dt.Columns.Add("Loại", typeof(string));
-            dt.Columns.Add("Số tiền", typeof(decimal));
-
-            // 2. Thêm một vài dòng dữ liệu giả để test
-            // Bạn có thể thêm bao nhiêu tùy thích
-            dt.Rows.Add(new DateTime(2026, 3, 10), "Mua giáo trình IT", "Chi", 150000);
-            dt.Rows.Add(new DateTime(2026, 3, 12), "Lương làm thêm", "Thu", 2000000);
-            dt.Rows.Add(new DateTime(2026, 3, 15), "Tiền ăn sáng", "Chi", 30000);
-            dt.Rows.Add(new DateTime(2026, 3, 18), "Thưởng dự án C#", "Thu", 500000);
-            dt.Rows.Add(new DateTime(2026, 3, 19), "Mua chuột máy tính", "Chi", 350000);
-
-            // 3. Logic lọc dữ liệu giả (để khi bạn chỉnh DatePicker nó vẫn có phản hồi)
-            DataTable dtFiltered = dt.Clone(); // Tạo bảng trống có cùng cấu trúc
-
-            foreach (DataRow row in dt.Rows)
-            {
-                DateTime rowDate = (DateTime)row["Ngày"];
-                string rowType = row["Loại"].ToString();
-
-                // Kiểm tra xem dòng này có nằm trong khoảng ngày và đúng loại không
-                bool matchDate = rowDate >= fromDate && rowDate <= toDate;
-                bool matchType = string.IsNullOrEmpty(type) || type == "Tất cả" || rowType == type;
-
-                if (matchDate && matchType)
-                {
-                    dtFiltered.ImportRow(row);
-                }
-            }
-
-            return dtFiltered;
-        }
-        private void btnFilter_Click(object sender, EventArgs e)
-        {
-            // Lấy thông tin từ giao diện
-            DateTime tuNgay = dtpFrom.Value.Date;
-            DateTime denNgay = dtpTo.Value.Date;
-            string loai = cboType.SelectedItem?.ToString();
-
-            // Lấy dữ liệu giả
-            DataTable dt = GetTransactionData(tuNgay, denNgay, loai);
-
-            // Hiển thị lên DataGridView
-            dgvReports.DataSource = dt;
-
-            // Tính tổng tiền (như tớ đã hướng dẫn ở trên)
-            CalculateSummary(dt);
-        }
-
-        private void CalculateSummary(DataTable dt)
-        {
-            decimal totalIn = 0;
-            decimal totalOut = 0;
-
-            foreach (DataRow row in dt.Rows)
-            {
-                // Giả sử cột 'Loai' và 'SoTien' tồn tại trong DB
-                string type = row["Loại"].ToString();
-                decimal amount = Convert.ToDecimal(row["Số Tiền"]);
-
-                if (type == "Thu") totalIn += amount;
-                else totalOut += amount;
-            }
-
-            lblTotalIn.Text = $"Tổng Thu: {totalIn:N0}đ";
-            lblTotalOut.Text = $"Tổng Chi: {totalOut:N0}đ";
-            lblBalance.Text = $"Số dư kỳ: {(totalIn - totalOut):N0}đ";
-        }
-
-        private void guna2Button1_Click(object sender, EventArgs e)
-        {
-            // 1. Kiểm tra xem DataGridView có dữ liệu không
-            if (dgvReports.Rows.Count == 0)
-            {
-                MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // 2. Mở hộp thoại lưu file
-            using (SaveFileDialog sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Excel Workbook|*.xlsx";
-                sfd.FileName = "BaoCao_Excel_" + DateTime.Now.ToString("yyyyMMdd_HHmm");
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        // GỌI CLASS EXPORT
-                        ExportHelper.ExportToExcel(dgvReports, sfd.FileName);
-
-                        MessageBox.Show("Xuất Excel thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Lỗi: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        private void btnExportPdf_Click(object sender, EventArgs e)
-        {
-            if (dgvReports.Rows.Count == 0)
-            {
-                MessageBox.Show("Không có dữ liệu để xuất PDF!", "Thông báo");
-                return;
-            }
-
-            using (SaveFileDialog sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "PDF File|*.pdf";
-                sfd.FileName = "BaoCao_TaiChinh_" + DateTime.Now.ToString("yyyyMMdd");
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    try
-                    {
-                        // GỌI CLASS EXPORT
-                        ExportHelper.ExportToPdf(dgvReports, sfd.FileName);
-
-                        MessageBox.Show("Xuất PDF thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        // Gợi ý: Tự động mở file sau khi xuất xong (tùy chọn)
-                        // System.Diagnostics.Process.Start(sfd.FileName); 
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Không thể xuất PDF. Chi tiết: " + ex.Message);
-                    }
-                }
-            }
+            ApplyResponsiveLayout();
+            this.Load += ReportForm_Load;
         }
 
         private void ReportForm_Load(object sender, EventArgs e)
         {
-            guna2Transition1.ShowSync(dgvReports);
+            dtpStart.Value = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            dtpEnd.Value = DateTime.Now.AddDays(1);
+
+            try {
+                var cats = ServiceLocator.CategoryService.GetAll();
+                cboCategory.Items.Clear();
+                cboCategory.Items.Add(new ComboItem { Text = "All Categories", Value = 0 });
+                foreach(var c in cats) cboCategory.Items.Add(new ComboItem { Text = c.Name, Value = c.Id });
+                cboCategory.SelectedIndex = 0;
+
+                var accs = ServiceLocator.AccountService.GetByCurrentUser();
+                cboAccount.Items.Clear();
+                cboAccount.Items.Add(new ComboItem { Text = "All Accounts", Value = 0 });
+                foreach(var a in accs) cboAccount.Items.Add(new ComboItem { Text = a.AccountName, Value = a.Id });
+                cboAccount.SelectedIndex = 0;
+            } catch { }
+
+            _fiscalChart = new LiveCharts.WinForms.CartesianChart
+            {
+                Location = new Point(20, 60),
+                Size = new Size(pnlChart.Width - 40, pnlChart.Height - 80),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                LegendLocation = LegendLocation.Top,
+                Hoverable = true
+            };
+            pnlChart.Controls.Add(_fiscalChart);
+            _fiscalChart.BringToFront();
+
+            LoadDataGridLayout();
+
+            btnApply.Click += (s, ev) => LoadData();
+
+            btnExportExcel.Click += (s, ev) => {
+                using (var sfd = new SaveFileDialog { Filter = "Excel Workbook|*.xlsx", FileName = "FinancialReport_" + DateTime.Now.ToString("yyyyMMdd") })
+                {
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try {
+                            PersonalFinanceManager.Controls.ExportHelper.ExportToExcel(dgvLedger, sfd.FileName);
+                            MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Export successful!"), PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        } catch (Exception ex) {
+                            MessageBox.Show(ex.Message, PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            };
+
+            btnExportPdf.Click += (s, ev) => {
+                using (var sfd = new SaveFileDialog { Filter = "PDF Document|*.pdf", FileName = "FinancialReport_" + DateTime.Now.ToString("yyyyMMdd") })
+                {
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try {
+                            PersonalFinanceManager.Controls.ExportHelper.ExportToPdf(dgvLedger, sfd.FileName);
+                            MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Export successful!"), PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        } catch (Exception ex) {
+                            MessageBox.Show(ex.Message, PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.CurrencyChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    LoadData();
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    UpdateTranslations();
+                }));
+            };
+
+            UpdateTranslations();
+            LoadData();
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.ThemeChanged += (s, ev) =>
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    ApplyTheme();
+                }));
+            };
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            PersonalFinanceManager.Common.Helpers.ThemeHelper.ApplyTheme(this);
+            pnlFilter.Invalidate();
+            pnlIncome.Invalidate();
+            pnlExpense.Invalidate();
+            pnlSavings.Invalidate();
+            pnlChart.Invalidate();
+            pnlLedger.Invalidate();
+            dgvLedger.BackgroundColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+            dgvLedger.ColumnHeadersDefaultCellStyle.BackColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+            dgvLedger.DefaultCellStyle.BackColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+            dgvLedger.DefaultCellStyle.ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.Text;
+            this.Refresh();
+        }
+
+        private void UpdateTranslations()
+        {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            
+            var lblPageTitle = this.Controls.Find("lblPageTitle", true).Length > 0 ? this.Controls.Find("lblPageTitle", true)[0] as Label : null;
+            if (lblPageTitle != null) lblPageTitle.Text = t("Financial Report Designer");
+
+            var lblPageSub = this.Controls.Find("lblPageSub", true).Length > 0 ? this.Controls.Find("lblPageSub", true)[0] as Label : null;
+            if (lblPageSub != null) lblPageSub.Text = t("Configure your fiscal summary using high-precision filters and multi-dimensional analytics. Data refreshes in real-time.");
+
+            var lblFilterStart = this.Controls.Find("lblFilterStart", true).Length > 0 ? this.Controls.Find("lblFilterStart", true)[0] as Label : null;
+            if (lblFilterStart != null) lblFilterStart.Text = t("START DATE");
+
+            var lblFilterEnd = this.Controls.Find("lblFilterEnd", true).Length > 0 ? this.Controls.Find("lblFilterEnd", true)[0] as Label : null;
+            if (lblFilterEnd != null) lblFilterEnd.Text = t("END DATE");
+
+            var lblFilterCat = this.Controls.Find("lblFilterCat", true).Length > 0 ? this.Controls.Find("lblFilterCat", true)[0] as Label : null;
+            if (lblFilterCat != null) lblFilterCat.Text = t("CATEGORY");
+
+            var lblFilterAcc = this.Controls.Find("lblFilterAcc", true).Length > 0 ? this.Controls.Find("lblFilterAcc", true)[0] as Label : null;
+            if (lblFilterAcc != null) lblFilterAcc.Text = t("ACCOUNT");
+
+            var btnApply = this.Controls.Find("btnApply", true).Length > 0 ? this.Controls.Find("btnApply", true)[0] as ReaLTaiizor.Controls.HopeButton : null;
+            if (btnApply != null) btnApply.Text = t("▼ Apply");
+
+            var lblChartTitle = this.Controls.Find("lblChartTitle", true).Length > 0 ? this.Controls.Find("lblChartTitle", true)[0] as Label : null;
+            if (lblChartTitle != null) lblChartTitle.Text = t("Fiscal Velocity");
+
+            var lblChartSub = this.Controls.Find("lblChartSub", true).Length > 0 ? this.Controls.Find("lblChartSub", true)[0] as Label : null;
+            if (lblChartSub != null) lblChartSub.Text = t("Monthly Income vs Expense comparison");
+
+            var lblLedgerTitle = this.Controls.Find("lblLedgerTitle", true).Length > 0 ? this.Controls.Find("lblLedgerTitle", true)[0] as Label : null;
+            if (lblLedgerTitle != null) lblLedgerTitle.Text = t("Transaction Ledger");
+
+            if (dgvLedger.Columns.Count >= 5)
+            {
+                dgvLedger.Columns[0].HeaderText = t("Date");
+                dgvLedger.Columns[1].HeaderText = t("Description");
+                dgvLedger.Columns[2].HeaderText = t("Category");
+                dgvLedger.Columns[3].HeaderText = t("Account");
+                dgvLedger.Columns[4].HeaderText = t("Amount");
+            }
+
+            // Refresh everything so dynamic labels update too
+            LoadData();
+        }
+
+        private void LoadData()
+        {
+            try
+            {
+                int catId = (cboCategory.SelectedItem as ComboItem)?.Value ?? 0;
+                int accId = (cboAccount.SelectedItem as ComboItem)?.Value ?? 0;
+
+                var txs = ServiceLocator.TransactionService.GetByDateRange(dtpStart.Value, dtpEnd.Value);
+
+                if (catId > 0) txs = txs.Where(t => t.CategoryId == catId);
+                if (accId > 0) txs = txs.Where(t => t.AccountId == accId);
+
+                var txList = txs.ToList();
+
+                _income = txList.Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount);
+                _expense = txList.Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount);
+                _savings = _income - _expense;
+
+                pnlIncome.Invalidate();
+                pnlExpense.Invalidate();
+                pnlSavings.Invalidate();
+
+                dgvLedger.Rows.Clear();
+                foreach(var tx in txList.OrderByDescending(t => t.TransactionDate))
+                {
+                    bool isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
+                    string amt = (isExpense ? "-" : "+") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(tx.Amount);
+                    string catName = string.IsNullOrWhiteSpace(tx.CategoryName) ? "SYSTEM" : tx.CategoryName.ToUpper();
+                    string note = string.IsNullOrWhiteSpace(tx.Note) ? "Transaction" : tx.Note;
+                    string accName = "Account #" + tx.AccountId; // Dynamic account name if join available
+                    
+                    dgvLedger.Rows.Add(tx.TransactionDate.ToString("MMM dd, yyyy"), note, catName, accName, amt);
+                }
+
+                lblPaginator.Text = string.Format(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Showing {0} entries"), txList.Count);
+                UpdateLiveChart(txList);
+            }
+            catch { }
+        }
+
+        private void UpdateLiveChart(List<Transaction> transactions)
+        {
+            if (_fiscalChart == null) return;
+            
+            var groups = transactions
+                .GroupBy(t => new { t.TransactionDate.Year, t.TransactionDate.Month })
+                .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+                .ToList();
+
+            var labels = new List<string>();
+            var incomeValues = new ChartValues<double>();
+            var expenseValues = new ChartValues<double>();
+
+            if (groups.Count == 0)
+            {
+                labels.Add(dtpStart.Value.ToString("MMM"));
+                incomeValues.Add(0); expenseValues.Add(0);
+            }
+            else 
+            {
+                foreach(var g in groups)
+                {
+                    labels.Add(new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"));
+                    incomeValues.Add((double)g.Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount));
+                    expenseValues.Add((double)g.Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount));
+                }
+            }
+
+            _fiscalChart.Series = new SeriesCollection
+            {
+                new ColumnSeries { Title = "Income", Values = incomeValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 106, 34)) },
+                new ColumnSeries { Title = "Expense", Values = expenseValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(183, 30, 80)) }
+            };
+
+            _fiscalChart.AxisX.Clear();
+            _fiscalChart.AxisX.Add(new Axis { Labels = labels, Separator = new Separator { Step = 1, IsEnabled = false } });
+            _fiscalChart.AxisY.Clear();
+            _fiscalChart.AxisY.Add(new Axis { LabelFormatter = value => PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency((decimal)value) });
+        }
+
+        private void ApplyResponsiveLayout()
+        {
+            pnlFilter.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlChart.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlLedger.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            
+            btnApply.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            cboAccount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblFilterAcc.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            cboCategory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblFilterCat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            
+            btnExportPdf.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnExportExcel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            dgvLedger.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            
+            pnlScrollContext.SizeChanged += (s, e) => {
+                int w = (pnlFilter.Width - 40) / 3;
+                pnlIncome.Width = w;
+                pnlExpense.Width = w;
+                pnlSavings.Width = w;
+                pnlExpense.Left = pnlIncome.Right + 20;
+                pnlSavings.Left = pnlExpense.Right + 20;
+            };
+        }
+
+        private void LoadDataGridLayout()
+        {
+            dgvLedger.ColumnCount = 5;
+            dgvLedger.Columns[0].Name = "Date";
+            dgvLedger.Columns[1].Name = "Description";
+            dgvLedger.Columns[2].Name = "Category";
+            dgvLedger.Columns[3].Name = "Account";
+            dgvLedger.Columns[4].Name = "Amount";
+            dgvLedger.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+            dgvLedger.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvLedger.EnableHeadersVisualStyles = false;
+            dgvLedger.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvLedger.ColumnHeadersDefaultCellStyle.BackColor = Color.White;
+            dgvLedger.ColumnHeadersDefaultCellStyle.ForeColor = Color.Gray;
+            dgvLedger.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvLedger.DefaultCellStyle.SelectionBackColor = Color.FromArgb(240,240,245);
+            dgvLedger.DefaultCellStyle.SelectionForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.Text;
+            dgvLedger.BackgroundColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+            dgvLedger.RowTemplate.Height = 40;
+
+            foreach (DataGridViewColumn col in dgvLedger.Columns)
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            dgvLedger.CellPainting += DgvLedger_CellPainting;
+        }
+
+        private void DgvLedger_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            e.PaintBackground(e.CellBounds, true);
+
+            var font = new Font("Segoe UI", 9F);
+            var color = Color.Black;
+
+            if (e.ColumnIndex == 4)
+            {
+                var val = e.Value?.ToString() ?? "";
+                if (val.StartsWith("+")) color = Color.FromArgb(24, 106, 34);
+                else color = Color.FromArgb(183, 30, 80);
+                font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                
+                using (var stringFormat = new StringFormat() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center })
+                {
+                    e.Graphics.DrawString(val, font, new SolidBrush(color), new Rectangle(e.CellBounds.X, e.CellBounds.Y, e.CellBounds.Width - 10, e.CellBounds.Height), stringFormat);
+                }
+                e.Handled = true;
+            }
+            else if (e.ColumnIndex == 2)
+            {
+                var val = e.Value?.ToString() ?? "";
+                var bg = Color.FromArgb(235, 245, 235);
+                var fg = Color.FromArgb(40, 110, 40);
+                
+                if (val == "BUSINESS" || val == "EQUIPMENT" || val == "RENT") 
+                {
+                    bg = Color.FromArgb(250, 230, 240);
+                    fg = Color.FromArgb(183, 30, 80);
+                }
+
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.FillPath(new SolidBrush(bg), RoundedRect(new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y + 10, e.CellBounds.Width - 50, 20), 5));
+                
+                using (var sf = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+                {
+                    e.Graphics.DrawString(val, new Font("Segoe UI", 7F, FontStyle.Bold), new SolidBrush(fg), new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y + 10, e.CellBounds.Width - 50, 20), sf);
+                }
+                e.Handled = true;
+            }
+            else
+            {
+                using (var stringFormat = new StringFormat() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center })
+                {
+                    e.Graphics.DrawString(e.Value?.ToString(), font, Brushes.Black, new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y, e.CellBounds.Width - 10, e.CellBounds.Height), stringFormat);
+                }
+                e.Handled = true;
+            }
+        }
+
+        private void pnlFilter_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var path = RoundedRect(new Rectangle(0, 0, pnlFilter.Width - 1, pnlFilter.Height - 1), 10))
+            {
+                 g.FillPath(new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground), path);
+                 g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1), path);
+            }
+        }
+
+        private void pnlIncome_Paint(object sender, PaintEventArgs e)
+        {
+            DrawMetricCard(e.Graphics, pnlIncome.ClientRectangle, "TOTAL INCOME", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_income), "Calculated statically", Color.FromArgb(24, 106, 34), Color.FromArgb(230, 245, 235), "?");
+        }
+
+        private void pnlExpense_Paint(object sender, PaintEventArgs e)
+        {
+            DrawMetricCard(e.Graphics, pnlExpense.ClientRectangle, "TOTAL EXPENSES", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_expense), "Calculated statically", Color.FromArgb(183, 30, 80), Color.FromArgb(250, 230, 235), "?");
+        }
+
+        private void pnlSavings_Paint(object sender, PaintEventArgs e)
+        {
+            DrawMetricCard(e.Graphics, pnlSavings.ClientRectangle, "NET SAVINGS", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_savings), "", Color.FromArgb(160, 20, 50), Color.FromArgb(250, 230, 240), "??");
+        }
+
+        private void DrawMetricCard(Graphics g, Rectangle r, string title, string val, string sub, Color themeColor, Color pillColor, string icon)
+        {
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var path = RoundedRect(new Rectangle(r.X, r.Y, r.Width - 1, r.Height - 1), 10))
+            {
+                g.FillPath(new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground), path);
+                g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1), path);
+            }
+                
+            g.FillRectangle(new SolidBrush(themeColor), 0, 10, 4, r.Height - 20);
+
+            g.DrawString(title, new Font("Segoe UI", 8F, FontStyle.Bold), Brushes.Gray, 20, 15);
+            g.DrawString(val, new Font("Segoe UI", 20F, FontStyle.Bold), new SolidBrush(themeColor), 15, 35);
+            g.DrawString(sub, new Font("Segoe UI", 8F), new SolidBrush(themeColor), 20, 75);
+
+            g.FillPath(new SolidBrush(pillColor), RoundedRect(new Rectangle(r.Width - 50, 20, 35, 35), 8));
+            g.DrawString(icon, new Font("Segoe UI", 12F, FontStyle.Bold), new SolidBrush(themeColor), r.Width - 43, 27);
+        }
+
+        private void pnlChart_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var path = RoundedRect(new Rectangle(0, 0, pnlChart.Width - 1, pnlChart.Height - 1), 10))
+            {
+                 g.FillPath(new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground), path);
+                 g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1), path);
+            }
+        }
+
+        private void pnlLedger_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var path = RoundedRect(new Rectangle(0, 0, pnlLedger.Width - 1, pnlLedger.Height - 1), 10))
+            {
+                 g.FillPath(new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground), path);
+                 g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1), path);
+            }
+        }
+
+        private static GraphicsPath RoundedRect(Rectangle r, int radius)
+        {
+            var path = new GraphicsPath();
+            int d = radius * 2;
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
         }
     }
 }

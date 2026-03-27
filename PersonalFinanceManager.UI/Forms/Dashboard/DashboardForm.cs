@@ -1,7 +1,6 @@
 using LiveCharts;
 using LiveCharts.Wpf;
 using PersonalFinanceManager.Controls;
-using PersonalFinanceManager.Forms.Accounts;
 using PersonalFinanceManager.Infrastructure.DI;
 using PersonalFinanceManager.Models;
 using System;
@@ -15,79 +14,85 @@ namespace PersonalFinanceManager.Forms.Dashboard
 {
     public partial class DashboardForm : Form
     {
-        // ── Guna helpers not in Designer (avoid design-time NullRef) ──
-        private Guna.UI2.WinForms.Guna2Elipse _elipse;
-        private Guna.UI2.WinForms.Guna2ShadowForm _shadow;
-
-        private static readonly Color Accent = Color.FromArgb(181, 212, 34);
-        private static readonly Color AccentHov = Color.FromArgb(158, 190, 20);
-        private static readonly Color DarkCard = Color.FromArgb(30, 33, 42);
-        private static readonly Color Teal = Color.FromArgb(0, 180, 140);
-        private static readonly Color BgLight = Color.FromArgb(245, 246, 250);
-
         private decimal _totalBalance = 0m;
-        private decimal _totalSpending = 0m;
-        private decimal _totalSaved = 0m;
-        private List<TransferItem> _recentTransfers = new List<TransferItem>();
-
-        private class TransferItem
-        {
-            public string Name { get; set; }
-            public DateTime Date { get; set; }
-            public decimal Amount { get; set; }
-            public bool IsExpense { get; set; }
-        }
+        private decimal _totalIncome = 0m;
+        private decimal _totalExpense = 0m;
 
         public DashboardForm()
         {
             InitializeComponent();
-            UpdateDashboard();
-            LoadMonthlyBarChart();
-            LoadTrendChart();
-
-            // Init Guna effects only at runtime, never in Designer
-            if (!this.DesignMode)
-            {
-                _elipse = new Guna.UI2.WinForms.Guna2Elipse();
-                _elipse.BorderRadius = 0;      // fullscreen = no rounding
-                _elipse.TargetControl = this;
-
-                _shadow = new Guna.UI2.WinForms.Guna2ShadowForm();
-                _shadow.TargetForm = this;
-            }
-
+            
             this.Load += DashboardForm_Load;
-            this.SizeChanged += DashboardForm_SizeChanged;
-            this.pnlMain.SizeChanged += PnlMain_SizeChanged;
+            this.btnAddTransaction.Click += (s, e) => ShowAddTransaction();
+            
+            ServiceLocator.TransactionService.TransactionChanged += (s, e) => {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    LoadDashboardData();
+                    SetupTrendChart();
+                    SetupDonutChart();
+                    SetupTransactionGrid();
+                }));
+            };
 
-            // Nav clicks
-            this.btnNavTransactions.Click += (s, e) => NavigateTo("transactions");
-            this.btnNavInvoices.Click += (s, e) => NavigateTo("invoices");
-            this.btnNavWallets.Click += (s, e) => NavigateTo("wallets");
-            this.btnNavSettings.Click += (s, e) => NavigateTo("settings");
-            this.btnNavDashboard.Click += (s, e) => NavigateTo("dashboard");
-            this.lnkViewAllTrf.Text = "Thêm bill";
-            this.lnkViewAllTrf.LinkClicked += lnkViewAllTrf_LinkClicked;
+            ApplyResponsiveLayout();
         }
 
-        // ══════════════════════════════════════════════
-        // LOAD
-        // ══════════════════════════════════════════════
         private void DashboardForm_Load(object sender, EventArgs e)
         {
-            try
-            {
-                var user = ServiceLocator.UserService.GetCurrentUser();
-                if (user != null)
-                    lblUsername.Text = user.FullName ?? user.Email ?? "Người dùng";
-            }
-            catch { }
-
-            LayoutTopBarButtons();
             LoadDashboardData();
-            SetupChart();
+            SetupTrendChart();
+            SetupDonutChart();
             SetupTransactionGrid();
+            
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.CurrencyChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    LoadDashboardData();
+                    SetupTransactionGrid();
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    UpdateTranslations();
+                    SetupTransactionGrid();
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.ThemeChanged += (s, ev) =>
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    ApplyTheme();
+                }));
+            };
+            
+            UpdateTranslations();
+            ApplyTheme();
         }
+
+        private void ApplyTheme()
+        {
+            PersonalFinanceManager.Common.Helpers.ThemeHelper.ApplyTheme(this);
+            this.Refresh();
+        }
+
+        private void UpdateTranslations()
+        {
+            lblTrendTitle.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Spending Trend") + "\n" + PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Last 30 days of financial activity");
+            lblUsageTitle.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Budget Usage") + "\n" + PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Monthly allocation spent");
+            lblRecentTitle.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Recent Transactions");
+            
+            _incomeRowText = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Income");
+            _expenseRowText = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Expense");
+
+            lblIncomeLabel.Text = _incomeRowText.ToUpper();
+            lblExpenseLabel.Text = _expenseRowText.ToUpper();
+            lblBalanceLabel.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Total Balance").ToUpper();
+        }
+
+        private string _incomeRowText = "Income";
+        private string _expenseRowText = "Expense";
 
         private void LoadDashboardData()
         {
@@ -97,472 +102,246 @@ namespace PersonalFinanceManager.Forms.Dashboard
                     .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
                     .ToList();
 
-                decimal income = all
+                _totalIncome = all
                     .Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
                     .Sum(t => t.Amount);
 
-                decimal expense = all
+                _totalExpense = all
                     .Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
                     .Sum(t => t.Amount);
 
-                _totalSpending = expense;
-                _totalBalance = income - expense;
-                _totalSaved = _totalBalance > 0 ? _totalBalance : 0m;
+                _totalBalance = _totalIncome + _totalExpense;
 
-                _recentTransfers = all
-                    .OrderByDescending(t => t.TransactionDate)
-                    .Take(5)
-                    .Select(t => new TransferItem
-                    {
-                        Name = string.IsNullOrWhiteSpace(t.CategoryName) ? "Giao dịch" : t.CategoryName,
-                        Date = t.TransactionDate,
-                        Amount = t.Amount,
-                        IsExpense = !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)
-                    })
-                    .ToList();
+                lblBalance.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_totalBalance);
+                lblIncome.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_totalIncome);
+                lblExpense.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(_totalExpense));
             }
             catch
             {
-                _totalSpending = 0m;
-                _totalBalance = 0m;
-                _totalSaved = 0m;
-                _recentTransfers = new List<TransferItem>();
+                lblBalance.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(0);
+                lblIncome.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(0);
+                lblExpense.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(0);
             }
-
-            pnlCardBalance.Invalidate();
-            pnlCardSpending.Invalidate();
-            pnlCardSaved.Invalidate();
-            pnlTransferList.Invalidate();
         }
 
-        // ══════════════════════════════════════════════
-        // RESPONSIVE — topbar buttons
-        // ══════════════════════════════════════════════
-        private void DashboardForm_SizeChanged(object sender, EventArgs e) => LayoutTopBarButtons();
-
-        private void LayoutTopBarButtons()
-        {
-            int w = pnlTopBar.Width;
-            int btnY = (pnlTopBar.Height - 30) / 2;
-
-            btnClose.Location = new Point(w - 40, btnY);
-            btnMaximize.Location = new Point(w - 74, btnY);
-            btnMinimize.Location = new Point(w - 108, btnY);
-            lblUsername.Location = new Point(w - 230, (pnlTopBar.Height - lblUsername.PreferredHeight) / 2);
-            picAvatar.Location = new Point(w - 270, (pnlTopBar.Height - 36) / 2);
-        }
-
-        // ══════════════════════════════════════════════
-        // RESPONSIVE — reflow on pnlMain resize
-        // ══════════════════════════════════════════════
-        private void PnlMain_SizeChanged(object sender, EventArgs e)
-        {
-            int pad = pnlMain.Padding.Left;
-            int avail = pnlMain.ClientSize.Width - pad * 2;
-            if (avail <= 0) return;
-
-            // Stat cards: 3 equal columns, max 240px each
-            int cardW = Math.Min(240, (avail - 32) / 3);
-            int cardGap = avail > cardW * 3 ? (avail - cardW * 3) / 2 : 16;
-
-            pnlCardBalance.Width = cardW;
-            pnlCardSpending.Width = cardW;
-            pnlCardSaved.Width = cardW;
-            pnlCardBalance.Location = new Point(0, 0);
-            pnlCardSpending.Location = new Point(cardW + cardGap, 0);
-            pnlCardSaved.Location = new Point((cardW + cardGap) * 2, 0);
-
-            // Chart & transactions stretch full width
-            int fullW = avail;
-            pnlChartArea.Width = fullW;
-            chartWorkingCapital.Width = fullW;
-            pnlTransactions.Width = fullW;
-            dgvTransactions.Width = fullW;
-
-            if (lnkViewAllTrans.IsHandleCreated)
-                lnkViewAllTrans.Location = new Point(fullW - lnkViewAllTrans.Width - 16, 18);
-        }
-
-        // ══════════════════════════════════════════════
-        // LIVECHARTS
-        // ══════════════════════════════════════════════
-        private void SetupChart()
+        private void SetupTrendChart()
         {
             var labels = new List<string>();
-            var incomeData = new ChartValues<double>();
-            var expenseData = new ChartValues<double>();
+            var expenseValues = new ChartValues<double>();
+            var incomeValues = new ChartValues<double>();
 
             try
             {
-                var txs = ServiceLocator.TransactionService
-                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                var allTxs = ServiceLocator.TransactionService
+                    .GetByDateRange(DateTime.Today.AddDays(-30), DateTime.MaxValue)
                     .ToList();
 
-                var months = Enumerable.Range(0, 6)
-                    .Select(i => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(-5 + i))
-                    .ToList();
+                var expenses = allTxs.Where(t => string.Equals(t.Type, "Expense", StringComparison.OrdinalIgnoreCase)).ToList();
+                var incomes = allTxs.Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                foreach (var m in months)
+                // Aggregate by 5 day chunks roughly
+                for (int i = 0; i < 6; i++)
                 {
-                    var from = m;
-                    var to = m.AddMonths(1).AddTicks(-1);
-                    var monthTx = txs.Where(t => t.TransactionDate >= from && t.TransactionDate <= to);
+                    var d = DateTime.Today.AddDays(-25 + (i * 5));
+                    labels.Add(d.ToString("dd MMM").ToUpper());
+                    
+                    var expSum = expenses
+                        .Where(t => t.TransactionDate.Date > d.AddDays(-5).Date && t.TransactionDate.Date <= d.Date)
+                        .Sum(x => x.Amount);
 
-                    var incomeValue = monthTx
-                        .Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
-                        .Sum(t => t.Amount);
-                    var expenseValue = monthTx
-                        .Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
-                        .Sum(t => t.Amount);
-
-                    labels.Add("T" + m.Month);
-                    incomeData.Add((double)incomeValue);
-                    expenseData.Add((double)expenseValue);
+                    var incSum = incomes
+                        .Where(t => t.TransactionDate.Date > d.AddDays(-5).Date && t.TransactionDate.Date <= d.Date)
+                        .Sum(x => x.Amount);
+                        
+                    expenseValues.Add((double)Math.Abs(expSum)); 
+                    incomeValues.Add((double)Math.Abs(incSum));
                 }
             }
-            catch
+            catch 
             {
-                labels = new List<string> { "T1", "T2", "T3", "T4", "T5", "T6" };
-                incomeData = new ChartValues<double> { 0, 0, 0, 0, 0, 0 };
-                expenseData = new ChartValues<double> { 0, 0, 0, 0, 0, 0 };
+                labels = new List<string> { "01 OCT", "06 OCT", "15 OCT", "22 OCT", "30 OCT", "NOW" };
+                expenseValues = new ChartValues<double> { 120, 250, 180, 450, 290, 310 };
+                incomeValues = new ChartValues<double> { 500, 450, 600, 550, 700, 680 };
             }
+
+            var expenseSeries = new LineSeries
+            {
+                Title = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Expense"),
+                Values = expenseValues,
+                Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(200, 20, 80)),
+                StrokeThickness = 3,
+                PointGeometrySize = 8,
+                Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(20, 200, 20, 80)),
+                LineSmoothness = 0.8
+            };
 
             var incomeSeries = new LineSeries
             {
-                Title = "Thu nhập",
-                Values = incomeData,
-                Stroke = Brush(0, 180, 140),
-                StrokeThickness = 2.5,
+                Title = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Income"),
+                Values = incomeValues,
+                Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(40, 160, 60)),
+                StrokeThickness = 3,
                 PointGeometrySize = 8,
-                Fill = BrushA(25, 0, 180, 140),
-                LineSmoothness = 0.8
-            };
-            var expensesSeries = new LineSeries
-            {
-                Title = "Chi tiêu",
-                Values = expenseData,
-                Stroke = Brush(181, 212, 34),
-                StrokeThickness = 2.5,
-                PointGeometrySize = 8,
-                Fill = BrushA(25, 181, 212, 34),
+                Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(20, 40, 160, 60)),
                 LineSmoothness = 0.8
             };
 
-            chartWorkingCapital.Series = new SeriesCollection { incomeSeries, expensesSeries };
-            chartWorkingCapital.AxisX.Add(new Axis
+            chartTrend.Series = new SeriesCollection { expenseSeries, incomeSeries };
+            chartTrend.AxisX.Clear();
+            chartTrend.AxisY.Clear();
+
+            chartTrend.AxisX.Add(new Axis
             {
                 Labels = labels,
                 Separator = new Separator { StrokeThickness = 0 },
-                Foreground = Brush(160, 160, 160)
+                Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(160, 160, 160)),
+                FontSize = 10
             });
-            chartWorkingCapital.AxisY.Add(new Axis
+            chartTrend.AxisY.Add(new Axis
             {
-                LabelFormatter = v => (v / 1000).ToString("0") + "K",
-                Separator = new Separator { StrokeThickness = 1, Stroke = BrushA(40, 0, 0, 0) },
-                Foreground = Brush(160, 160, 160)
+                ShowLabels = false,
+                Separator = new Separator { StrokeThickness = 0 }
             });
-            chartWorkingCapital.LegendLocation = LegendLocation.None;
-            chartWorkingCapital.Zoom = ZoomingOptions.None;
-            chartWorkingCapital.DisableAnimations = false;
+            chartTrend.LegendLocation = LegendLocation.Bottom;
+            chartTrend.Hoverable = true;
         }
 
-        private void lnkViewAllTrf_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void SetupDonutChart()
         {
-            ShowAddTransferDialog();
-        }
-
-        private void ShowAddTransferDialog()
-        {
-            using (var dlg = new Form())
+            try
             {
-                dlg.Text = "Thêm bill chuyển khoản";
-                dlg.StartPosition = FormStartPosition.CenterParent;
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
-                dlg.ClientSize = new Size(360, 230);
-                dlg.MaximizeBox = false;
-                dlg.MinimizeBox = false;
-
-                var lblType = new Label { Text = "Loại", Left = 20, Top = 20, Width = 80 };
-                var cboType = new ComboBox { Left = 110, Top = 16, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
-                cboType.Items.AddRange(new object[] { "Income", "Expense" });
-                cboType.SelectedIndex = 1;
-
-                var lblAmount = new Label { Text = "Số tiền", Left = 20, Top = 60, Width = 80 };
-                var txtAmount = new TextBox { Left = 110, Top = 56, Width = 220 };
-
-                var lblNote = new Label { Text = "Ghi chú", Left = 20, Top = 100, Width = 80 };
-                var txtNote = new TextBox { Left = 110, Top = 96, Width = 220 };
-
-                var lblDate = new Label { Text = "Ngày", Left = 20, Top = 140, Width = 80 };
-                var dtp = new DateTimePicker { Left = 110, Top = 136, Width = 220, Format = DateTimePickerFormat.Short, Value = DateTime.Now };
-
-                var btnSave = new Button { Text = "Lưu", Left = 174, Top = 180, Width = 75, DialogResult = DialogResult.OK };
-                var btnCancel = new Button { Text = "Hủy", Left = 255, Top = 180, Width = 75, DialogResult = DialogResult.Cancel };
-
-                dlg.Controls.AddRange(new Control[] { lblType, cboType, lblAmount, txtAmount, lblNote, txtNote, lblDate, dtp, btnSave, btnCancel });
-                dlg.AcceptButton = btnSave;
-                dlg.CancelButton = btnCancel;
-
-                if (dlg.ShowDialog(this) != DialogResult.OK) return;
-
-                if (!decimal.TryParse(txtAmount.Text.Trim(), out var amount) || amount <= 0)
+                var spentVal = (double)Math.Abs(_totalExpense);
+                var remainingVal = (double)Math.Max(0, _totalBalance);
+                
+                var dict = new Dictionary<string, double>
                 {
-                    MessageBox.Show("Số tiền không hợp lệ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var tx = new Transaction
-                {
-                    Amount = amount,
-                    Type = cboType.Text,
-                    Note = txtNote.Text.Trim(),
-                    TransactionDate = dtp.Value,
-                    CreatedAt = DateTime.Now,
-                    CategoryId = 1, // Default expense/income category id
-                    AccountId = 1, // Require binding to existing Wallet in SQLite
-                    UserId = ServiceLocator.UserService.GetCurrentUser()?.Id ?? 1
+                    { "Spent", spentVal },
+                    { "Remaining", remainingVal }
                 };
 
-                var ok = ServiceLocator.TransactionService.Add(tx);
-                if (!ok)
+                SeriesCollection piechartData = new SeriesCollection();
+                var colors = new[] 
+                { 
+                    System.Windows.Media.Color.FromRgb(200, 20, 80), 
+                    System.Windows.Media.Color.FromRgb(220, 220, 230) 
+                };
+                
+                int i = 0;
+                foreach (var entry in dict)
                 {
-                    MessageBox.Show("Không thể lưu bill chuyển khoản.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    piechartData.Add(new PieSeries
+                    {
+                        Title = entry.Key,
+                        Values = new ChartValues<double> { entry.Value },
+                        DataLabels = false,
+                        Fill = new System.Windows.Media.SolidColorBrush(colors[i % colors.Length]),
+                        PushOut = 0
+                    });
+                    i++;
                 }
+                
+                chartDonut.Series = piechartData;
+                chartDonut.LegendLocation = LegendLocation.None;
+                chartDonut.InnerRadius = 60;
 
-                LoadDashboardData();
-                SetupChart();
-                SetupTransactionGrid();
-                MessageBox.Show("Đã thêm bill chuyển khoản.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Update the percentage label in the center
+                int percent = (_totalIncome > 0) ? (int)(spentVal / (double)_totalIncome * 100) : (spentVal > 0 ? 100 : 0);
+                lblUsagePercent.Text = $"{percent}%";
+                
+                // Center the label inside the donut chart
+                lblUsagePercent.Left = chartDonut.Left + (chartDonut.Width / 2) - (lblUsagePercent.Width / 2);
+                lblUsagePercent.Top = chartDonut.Top + (chartDonut.Height / 2) - (lblUsagePercent.Height / 2) - 5; // -5 for visual optical centering
             }
+            catch { }
         }
 
-        // ══════════════════════════════════════════════
-        // DATAGRIDVIEW
-        // ══════════════════════════════════════════════
         private void SetupTransactionGrid()
         {
-            dgvTransactions.Columns.Clear();
-            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "TÊN / ĐƠN VỊ",
-                Name = "colName",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            });
-            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "LOẠI", Name = "colType", Width = 150, SortMode = DataGridViewColumnSortMode.NotSortable, DefaultCellStyle = { ForeColor = Color.FromArgb(130, 130, 130), Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "SỐ TIỀN", Name = "colAmount", Width = 160, SortMode = DataGridViewColumnSortMode.NotSortable, DefaultCellStyle = { Font = new Font("Segoe UI", 9.5f, FontStyle.Bold), Alignment = DataGridViewContentAlignment.MiddleCenter } });
-            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "NGÀY", Name = "colDate", Width = 155, SortMode = DataGridViewColumnSortMode.NotSortable, DefaultCellStyle = { ForeColor = Color.FromArgb(130, 130, 130), Alignment = DataGridViewContentAlignment.MiddleCenter } });
-
-            dgvTransactions.Rows.Clear();
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            
+            dgvTrans.Columns.Clear();
+            dgvTrans.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = t("TRANSACTION"), Name = "colTrans", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
+            dgvTrans.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = t("CATEGORY"), Name = "colCat", Width = 150 });
+            dgvTrans.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = t("DATE"), Name = "colDate", Width = 150 });
+            dgvTrans.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = t("STATUS"), Name = "colStatus", Width = 120 });
+            dgvTrans.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = t("AMOUNT"), Name = "colAmt", Width = 120, DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleRight, Font = new Font("Segoe UI", 9.5f, FontStyle.Bold) } });
 
             try
             {
-                var rows = ServiceLocator.TransactionService.GetRecent(8);
+                var rows = ServiceLocator.TransactionService.GetRecent(5);
                 foreach (var tx in rows)
                 {
                     bool isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
-                    string amount = (isExpense ? "- " : "+ ") + tx.Amount.ToString("N0") + " ₫";
-                    string title = (string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName)
-                                   + "  •  "
-                                   + (string.IsNullOrWhiteSpace(tx.Note) ? "-" : tx.Note);
+                    string amount = (isExpense ? "-" : "+") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(tx.Amount));
+                    
+                    string catName = string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName;
+                    string note = string.IsNullOrWhiteSpace(tx.Note) ? "Miscellaneous" : tx.Note;
+                    string title = t(catName) + "\n" + t(note);
 
-                    dgvTransactions.Rows.Add(
-                        title,
-                        tx.Type,
-                        amount,
-                        tx.TransactionDate.ToString("dd MMM yyyy"));
+                    dgvTrans.Rows.Add(title, t(tx.Type).ToUpper(), tx.TransactionDate.ToString("MMM dd, yyyy"), t("Completed"), amount);
                 }
             }
             catch { }
         }
 
-        // ══════════════════════════════════════════════
-        // PAINT — TopBar
-        // ══════════════════════════════════════════════
-        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
+        private void ShowAddTransaction()
         {
-            using (var pen = new Pen(Color.FromArgb(18, 0, 0, 0), 1))
-                e.Graphics.DrawLine(pen, 0, pnlTopBar.Height - 1, pnlTopBar.Width, pnlTopBar.Height - 1);
-        }
-
-        // ══════════════════════════════════════════════
-        // PAINT — Sidebar
-        // ══════════════════════════════════════════════
-        private void pnlSidebar_Paint(object sender, PaintEventArgs e)
-        {
-            int h = pnlSidebar.Height;
-            using (var pen = new Pen(Color.FromArgb(40, 255, 255, 255), 1))
+            using (var frm = new PersonalFinanceManager.Forms.Transactions.TransactionEditForm())
             {
-                e.Graphics.DrawLine(pen, 16, 98, 204, 98);
-                e.Graphics.DrawLine(pen, 16, h - 90, 204, h - 90);
+                frm.OnAddTransaction = (date, catId, accId, desc, amt, type) => 
+                {
+                    var user = ServiceLocator.UserService.GetCurrentUser();
+                    if (user == null) return;
+
+                    var newTransaction = new Models.Transaction
+                    {
+                        TransactionDate = date,
+                        CategoryId = catId,
+                        AccountId = accId,
+                        UserId = user.Id,
+                        Note = desc,
+                        Amount = type == "Income" ? Math.Abs(amt) : -Math.Abs(amt),
+                        Type = type,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    bool success = ServiceLocator.TransactionService.Add(newTransaction);
+                    if (!success)
+                    {
+                        var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                        MessageBox.Show(t(ServiceLocator.TransactionService.LastError ?? "Failed to save transaction to database."));
+                    }
+                };
+                frm.ShowDialog();
             }
         }
 
-        private void picSidebarLogo_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            int w = picSidebarLogo.Width, h = picSidebarLogo.Height;
-            using (var bg = new SolidBrush(Accent)) g.FillEllipse(bg, 0, 0, w - 1, h - 1);
-            using (var f = new Font("Segoe UI", 14f, FontStyle.Bold))
-            using (var b = new SolidBrush(Color.FromArgb(22, 22, 22)))
-                g.DrawString("F", f, b, new RectangleF(0, 0, w, h),
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-        }
-
-        // ══════════════════════════════════════════════
-        // PAINT — Avatar
-        // ══════════════════════════════════════════════
-        private void picAvatar_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            int w = picAvatar.Width, h = picAvatar.Height;
-            using (var grd = new LinearGradientBrush(new Rectangle(0, 0, w, h), Accent, Teal, 45f))
-                g.FillEllipse(grd, 0, 0, w - 1, h - 1);
-            using (var f = new Font("Segoe UI", 12f, FontStyle.Bold))
-                g.DrawString("U", f, Brushes.White, new RectangleF(0, 0, w, h),
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-        }
-
-        // ══════════════════════════════════════════════
-        // PAINT — Stat cards
-        // ══════════════════════════════════════════════
-        private void pnlCardBalance_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardBalance.Width, pnlCardBalance.Height, true, "Tổng số dư", _totalBalance.ToString("N0") + " ₫", "💰");
-        private void pnlCardSpending_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSpending.Width, pnlCardSpending.Height, false, "Tổng chi tiêu", _totalSpending.ToString("N0") + " ₫", "💸");
-        private void pnlCardSaved_Paint(object sender, PaintEventArgs e) => DrawStatCard(e.Graphics, pnlCardSaved.Width, pnlCardSaved.Height, false, "Tổng tiết kiệm", _totalSaved.ToString("N0") + " ₫", "🏦");
-
-        private void DrawStatCard(Graphics g, int w, int h, bool dark, string label, string value, string icon)
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, w - 1, h - 1);
-            using (var path = RoundedRect(rect, 16))
-            {
-                if (dark)
-                {
-                    using (var bg = new SolidBrush(DarkCard)) g.FillPath(bg, path);
-                    using (var grd = new LinearGradientBrush(rect, Color.FromArgb(55, 181, 212, 34), Color.Transparent, 135f)) g.FillPath(grd, path);
-                }
-                else
-                {
-                    using (var bg = new SolidBrush(Color.White)) g.FillPath(bg, path);
-                    using (var pen = new Pen(Color.FromArgb(10, 0, 0, 0), 1)) g.DrawPath(pen, path);
-                }
-            }
-            var ir = new Rectangle(18, 16, 40, 40);
-            using (var ib = new SolidBrush(dark ? Color.FromArgb(55, 181, 212, 34) : Color.FromArgb(30, 181, 212, 34))) g.FillEllipse(ib, ir);
-            using (var ef = new Font("Segoe UI Emoji", 13f))
-                g.DrawString(icon, ef, dark ? Brushes.White : new SolidBrush(Color.FromArgb(60, 60, 60)),
-                    new RectangleF(ir.X, ir.Y, ir.Width, ir.Height), new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-            using (var lf = new Font("Segoe UI", 8.5f))
-            using (var lb = new SolidBrush(dark ? Color.FromArgb(160, 190, 210) : Color.FromArgb(140, 140, 140)))
-                g.DrawString(label, lf, lb, new PointF(18, 64));
-            using (var vf = new Font("Segoe UI", 14f, FontStyle.Bold))
-            using (var vb = new SolidBrush(dark ? Color.White : Color.FromArgb(22, 22, 22)))
-                g.DrawString(value, vf, vb, new PointF(14, 82));
-        }
-
-        // ══════════════════════════════════════════════
-        // PAINT — White card panels
-        // ══════════════════════════════════════════════
-        private void pnlWhiteCard_Paint(object sender, PaintEventArgs e)
+        // Custom Paints for Shadows and Borders
+        private void Card_Paint(object sender, PaintEventArgs e)
         {
             var pnl = (Panel)sender;
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             var rect = new Rectangle(0, 0, pnl.Width - 1, pnl.Height - 1);
-            using (var path = RoundedRect(rect, 16))
+            using (var path = RoundedRect(rect, 10))
             {
-                using (var bg = new SolidBrush(Color.White)) g.FillPath(bg, path);
-                using (var pen = new Pen(Color.FromArgb(10, 0, 0, 0), 1)) g.DrawPath(pen, path);
+                using (var bg = new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground)) g.FillPath(bg, path);
+                using (var pen = new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1)) g.DrawPath(pen, path);
             }
         }
 
-        // ══════════════════════════════════════════════
-        // PAINT — Wallet cards
-        // ══════════════════════════════════════════════
-        private void pnlCard1_Paint(object sender, PaintEventArgs e)
+        private void TopAccent_Paint(object sender, PaintEventArgs e)
         {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            int w = pnlCard1.Width, h = pnlCard1.Height;
-            var rect = new Rectangle(0, 0, w - 1, h - 1);
-            using (var path = RoundedRect(rect, 18))
-            {
-                using (var grd = new LinearGradientBrush(rect, Color.FromArgb(38, 42, 56), Color.FromArgb(22, 26, 36), 135f)) g.FillPath(grd, path);
-                using (var c = new SolidBrush(Color.FromArgb(18, 255, 255, 255))) { g.FillEllipse(c, w - 80, -25, 120, 120); g.FillEllipse(c, w - 50, 45, 85, 85); }
-                using (var f = new Font("Segoe UI", 10f, FontStyle.Bold)) using (var b = new SolidBrush(Color.White)) g.DrawString("FinancialApp.", f, b, new PointF(16, 14));
-                using (var f = new Font("Segoe UI", 8f)) using (var b = new SolidBrush(Color.FromArgb(150, 190, 210))) g.DrawString("Universal Bank", f, b, new PointF(140, 17));
-                using (var f = new Font("Courier New", 12f, FontStyle.Bold)) using (var b = new SolidBrush(Color.White)) g.DrawString("5495  7381  3759  2321", f, b, new PointF(16, 82));
-                using (var pen = new Pen(Color.FromArgb(170, 255, 255, 255), 2))
-                { g.DrawArc(pen, w - 46, 14, 20, 20, -90, 180); g.DrawArc(pen, w - 38, 18, 12, 12, -90, 180); g.DrawArc(pen, w - 30, 22, 6, 6, -90, 180); }
-            }
+            var pnl = (Panel)sender;
+            string tag = pnl.Tag?.ToString();
+            Color c = Color.FromArgb(40, 60, 80);
+            if (tag == "Green") c = Color.FromArgb(40, 160, 60);
+            if (tag == "Red") c = Color.FromArgb(200, 20, 60);
+
+            using (var brush = new SolidBrush(c))
+                e.Graphics.FillRectangle(brush, 0, 0, pnl.Width, pnl.Height);
         }
 
-        private void pnlCard2_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            int w = pnlCard2.Width, h = pnlCard2.Height;
-            var rect = new Rectangle(0, 0, w - 1, h - 1);
-            using (var path = RoundedRect(rect, 18))
-            {
-                using (var bg = new SolidBrush(Color.FromArgb(240, 242, 246))) g.FillPath(bg, path);
-                using (var b1 = new SolidBrush(Color.FromArgb(80, 181, 212, 34))) g.FillEllipse(b1, w - 75, -18, 95, 95);
-                using (var b2 = new SolidBrush(Color.FromArgb(70, 255, 100, 80))) g.FillEllipse(b2, w - 44, 12, 65, 65);
-                using (var f = new Font("Segoe UI", 10f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(40, 40, 40))) g.DrawString("FinancialApp.", f, b, new PointF(16, 14));
-                using (var f = new Font("Segoe UI", 8f)) using (var b = new SolidBrush(Color.FromArgb(120, 120, 120))) g.DrawString("Commercial Bank", f, b, new PointF(140, 17));
-                using (var f = new Font("Courier New", 12f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(50, 50, 50))) g.DrawString("85952548  ****", f, b, new PointF(16, 62));
-                using (var f = new Font("Segoe UI", 8f)) using (var b = new SolidBrush(Color.FromArgb(120, 120, 120))) g.DrawString("09/25", f, b, new PointF(16, 90));
-                using (var f = new Font("Arial", 11f, FontStyle.Bold | FontStyle.Italic)) using (var b = new SolidBrush(Color.FromArgb(26, 31, 113))) g.DrawString("VISA", f, b, new PointF(w - 56, h - 36));
-                using (var pen = new Pen(Color.FromArgb(100, 50, 50, 50), 2))
-                { int nx = w - 46, ny = 52; g.DrawArc(pen, nx, ny, 20, 20, -90, 180); g.DrawArc(pen, nx + 8, ny + 4, 12, 12, -90, 180); g.DrawArc(pen, nx + 16, ny + 8, 6, 6, -90, 180); }
-            }
-        }
-
-        // ══════════════════════════════════════════════
-        // PAINT — Transfer list
-        // ══════════════════════════════════════════════
-        private void pnlTransferList_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            var data = _recentTransfers ?? new List<TransferItem>();
-
-            if (data.Count == 0)
-            {
-                using (var f = new Font("Segoe UI", 9.5f))
-                using (var b = new SolidBrush(Color.FromArgb(150, 150, 150)))
-                    g.DrawString("Chưa có giao dịch", f, b, new PointF(8, 12));
-                return;
-            }
-
-            int rowH = 72, lw = pnlTransferList.Width;
-            for (int i = 0; i < data.Count; i++)
-            {
-                int y = i * rowH;
-                var ar = new Rectangle(0, y + 14, 40, 40);
-                using (var grd = new LinearGradientBrush(ar, Accent, Teal, 45f)) g.FillEllipse(grd, ar);
-                using (var f = new Font("Segoe UI", 11f, FontStyle.Bold))
-                    g.DrawString(data[i].Name.Substring(0, 1), f, Brushes.White, new RectangleF(ar.X, ar.Y, ar.Width, ar.Height),
-                        new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold)) using (var b = new SolidBrush(Color.FromArgb(35, 35, 35))) g.DrawString(data[i].Name, f, b, new PointF(50, y + 16));
-                string dateText = data[i].Date.ToString("dd MMM yyyy 'lúc' HH:mm");
-                using (var f = new Font("Segoe UI", 8f))
-                using (var b = new SolidBrush(Color.FromArgb(150, 150, 150)))
-                    g.DrawString(dateText, f, b, new PointF(50, y + 36));
-
-                string amountText = (data[i].IsExpense ? "- " : "+ ") + data[i].Amount.ToString("N0") + " ₫";
-                Color amountColor = data[i].IsExpense ? Color.FromArgb(200, 60, 60) : Color.FromArgb(25, 135, 84);
-                using (var f = new Font("Segoe UI", 9.5f, FontStyle.Bold))
-                using (var b = new SolidBrush(amountColor))
-                    g.DrawString(amountText, f, b, new PointF(lw - 120, y + 24));
-
-                if (i < data.Count - 1) using (var pen = new Pen(Color.FromArgb(18, 0, 0, 0), 1)) g.DrawLine(pen, 0, y + rowH - 1, lw, y + rowH - 1);
-            }
-        }
-
-        // ══════════════════════════════════════════════
-        // HELPER
-        // ══════════════════════════════════════════════
         private static GraphicsPath RoundedRect(Rectangle r, int rad)
         {
             var p = new GraphicsPath(); int d = rad * 2;
@@ -573,124 +352,76 @@ namespace PersonalFinanceManager.Forms.Dashboard
             p.CloseFigure(); return p;
         }
 
-        private static System.Windows.Media.SolidColorBrush Brush(byte r, byte g, byte b)
-            => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
-        private static System.Windows.Media.SolidColorBrush BrushA(byte a, byte r, byte g, byte b)
-            => new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(a, r, g, b));
-
-        // ══════════════════════════════════════════════
-        // NAVIGATION
-        // ══════════════════════════════════════════════
-        private void NavigateTo(string page)
+        private void dgvTrans_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            switch (page)
+            if (e.ColumnIndex == 4 && e.Value != null)
             {
-                case "transactions":
-                    PersonalFinanceManager.UI.Navigation.FormNavigator.GoToTransactions();
-                    break;
-                case "invoices":
-                    PersonalFinanceManager.UI.Navigation.FormNavigator.GoToInvoices();
-                    break;
-                case "wallets":
-                    PersonalFinanceManager.UI.Navigation.FormNavigator.GoToMyWallet();
-                    break;
-                case "settings":
-                    PersonalFinanceManager.UI.Navigation.FormNavigator.GoToSettings();
-                    break;
-                case "dashboard":
-                default:
-                    SetActiveNav("dashboard");
-                    break;
+                string val = e.Value.ToString();
+                if (val.StartsWith("-")) e.CellStyle.ForeColor = Color.FromArgb(200, 20, 60);
+                else e.CellStyle.ForeColor = Color.FromArgb(40, 160, 60);
             }
         }
-
-        private void SetActiveNav(string active)
+    
+        private void ApplyResponsiveLayout()
         {
-            var accentColor = Color.FromArgb(181, 212, 34);
-            var darkText = Color.FromArgb(22, 22, 22);
-            var transparent = Color.Transparent;
-            var grayText = Color.FromArgb(155, 160, 170);
+            var contentPanel = this.Controls["pnlScrollContext"] ?? this.Controls["pnlMain"] ?? this;
+            if (contentPanel != null)
+            {
+                contentPanel.Padding = new Padding(0);
+                contentPanel.Margin = new Padding(0);
+                this.Padding = new Padding(0);
 
-            btnNavDashboard.FillColor = active == "dashboard" ? accentColor : transparent;
-            btnNavDashboard.ForeColor = active == "dashboard" ? darkText : grayText;
-            btnNavTransactions.FillColor = active == "transactions" ? accentColor : transparent;
-            btnNavTransactions.ForeColor = active == "transactions" ? darkText : grayText;
-            btnNavInvoices.FillColor = active == "invoices" ? accentColor : transparent;
-            btnNavInvoices.ForeColor = active == "invoices" ? darkText : grayText;
-            btnNavWallets.FillColor = active == "wallets" ? accentColor : transparent;
-            btnNavWallets.ForeColor = active == "wallets" ? darkText : grayText;
-            btnNavSettings.FillColor = active == "settings" ? accentColor : transparent;
-            btnNavSettings.ForeColor = active == "settings" ? darkText : grayText;
+                // Top Actions
+                btnAddTransaction.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+                // Disable anchors that fight dynamic resizing
+                pnlTrend.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+                pnlUsage.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+                pnlRecent.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+                dgvTrans.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                chartTrend.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+                Action resizeSource = () => {
+                    if (contentPanel.ClientSize.Width == 0) return;
+                    int margin = 30;
+                    int gap = 20;
+                    int w = (contentPanel.ClientSize.Width - margin * 2 - gap * 2) / 3;
+                    if (w < 250) w = 250;
+
+                    pnlCardBalance.Width = w;
+                    pnlCardIncome.Width = w;
+                    pnlCardExpense.Width = w;
+
+                    pnlCardIncome.Left = pnlCardBalance.Right + gap;
+                    pnlCardExpense.Left = pnlCardIncome.Right + gap;
+
+                    foreach (Control c in pnlCardBalance.Controls) if (c.Tag?.ToString() == "Dark" || c.Tag?.ToString() == "Green" || c.Tag?.ToString() == "Red") c.Width = w;
+                    foreach (Control c in pnlCardIncome.Controls) if (c.Tag?.ToString() == "Dark" || c.Tag?.ToString() == "Green" || c.Tag?.ToString() == "Red") c.Width = w;
+                    foreach (Control c in pnlCardExpense.Controls) if (c.Tag?.ToString() == "Dark" || c.Tag?.ToString() == "Green" || c.Tag?.ToString() == "Red") c.Width = w;
+
+                    // Fix missing Usage Donut chart by pinning it explicitly to right edge width
+                    int usageW = 340;
+                    pnlUsage.Width = usageW;
+                    pnlUsage.Left = contentPanel.ClientSize.Width - margin - usageW;
+                    
+                    pnlTrend.Left = margin;
+                    pnlTrend.Width = pnlUsage.Left - gap - pnlTrend.Left;
+
+                    pnlRecent.Left = margin;
+                    pnlRecent.Width = contentPanel.ClientSize.Width - margin * 2;
+                };
+
+                contentPanel.SizeChanged += (s, e) => resizeSource();
+                // Trigger once immediately
+                this.HandleCreated += (s, e) => resizeSource();
+                if (this.IsHandleCreated) resizeSource();
+            }
         }
-
-        // ══════════════════════════════════════════════
-        // EVENTS
-        // ══════════════════════════════════════════════
-        private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
-        private void btnMinimize_Click(object sender, EventArgs e) => this.WindowState = FormWindowState.Minimized;
-        private void btnMaximize_Click(object sender, EventArgs e)
-            => this.WindowState = this.WindowState == FormWindowState.Maximized
-                ? FormWindowState.Normal
-                : FormWindowState.Maximized;
-
-        private void btnNavLogout_Click(object sender, EventArgs e)
-        {
-            ServiceLocator.UserService.Logout();
-            PersonalFinanceManager.UI.Navigation.FormNavigator.GoToLogin();
-        }
-
-        // Stub: nếu Designer cũ có pnlChartLegend thì method này tránh CS1061
-        private void pnlChartLegend_Paint(object sender, System.Windows.Forms.PaintEventArgs e) { }
-
-        //Pie Chart
-        private void UpdateDashboard()
-        {
-            var data = new Dictionary<string, double>
-    {
-        { "Ăn uống", 1500 },
-        { "Xăng xe", 500 },
-        { "Học tập", 2000 }
-    };
-
-            // Truyền trực tiếp cái pcCategories từ Toolbox vào Helper
-            ChartHelper.SetupPieData(pieChart, data);
-        }
-
-        //Bar Chart
-        private void LoadMonthlyBarChart()
-        {
-            // Giả lập dữ liệu cho 6 tháng gần nhất
-            List<double> spendValues = new List<double> { 1200000, 850000, 1500000, 2100000, 1750000, 900000 };
-            string[] months = new string[] { "T1", "T2", "T3", "T4", "T5", "T6" };
-
-            // Gọi helper truyền cái cartesianMonthly từ Toolbox vào
-            ChartHelper.SetupBarChart(cartesianMonthly, spendValues, months);
-        }
-
-        // Line Chart
-        private void LoadTrendChart()
-        {
-            // Giả lập xu hướng số dư trong 7 ngày gần nhất
-            List<double> trendValues = new List<double> { 5000, 5200, 4800, 5900, 6100, 5500, 7000 };
-            string[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-
-            // Truyền cartesianTrend từ Toolbox vào
-            ChartHelper.SetupLineChart(cartesianTrend, trendValues, days);
-        }
-
-        private void picAvatar_Click(object sender, EventArgs e)
-        {
-            // 1. Khởi tạo Form Account
-            AccountForm accForm = new AccountForm();
-
-            // 2. Hiện nó ra ở giữa màn hình cho chuyên nghiệp
-            accForm.StartPosition = FormStartPosition.CenterScreen;
-
-            // 3. Mở Form Account lên
-            accForm.Show();
-
-            // 4. Ẩn Form hiện tại (Tổng quan) đi để tránh rác màn hình
-            this.Hide();
-        }
-    }
 }
+}
+
+
+
+
+
+

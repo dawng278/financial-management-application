@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -12,27 +12,17 @@ namespace PersonalFinanceManager.Common.Helpers
 
         public DbHelper()
         {
-            // Database nằm cùng thư mục với file .exe
-            _dbPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "PersonalFinance.db"
-            );
+            _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PersonalFinance.db");
             _connectionString = $"Data Source={_dbPath};Version=3;";
 
             EnsureDatabaseInitialized();
         }
 
-        /// <summary>
-        /// Mở connection - Dapper/Repository sẽ tự đóng sau khi dùng xong
-        /// </summary>
         public IDbConnection CreateConnection()
         {
             return new SQLiteConnection(_connectionString);
         }
 
-        /// <summary>
-        /// Kiểm tra database có tồn tại không - dùng khi app khởi động
-        /// </summary>
         public bool DatabaseExists()
         {
             return File.Exists(_dbPath);
@@ -80,7 +70,8 @@ CREATE TABLE IF NOT EXISTS Categories (
     IconName TEXT,
     ColorHex TEXT,
     IsDefault INTEGER NOT NULL DEFAULT 0,
-    ParentCategoryId INTEGER NULL
+    ParentCategoryId INTEGER NULL,
+    BudgetLimit REAL NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Transactions (
@@ -108,8 +99,27 @@ CREATE TABLE IF NOT EXISTS Invoices (
     Amount REAL NOT NULL,
     Status TEXT NOT NULL,
     CreatedAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Goals (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserId INTEGER NOT NULL,
+    Title TEXT NOT NULL,
+    TargetDate TEXT NOT NULL,
+    TargetAmount REAL NOT NULL,
+    CurrentAmount REAL NOT NULL DEFAULT 0,
+    ColorHex TEXT,
+    CreatedAt TEXT NOT NULL
 );";
                     cmd.ExecuteNonQuery();
+
+                    // Migration for Categories table
+                    try
+                    {
+                        cmd.CommandText = "ALTER TABLE Categories ADD COLUMN BudgetLimit REAL NOT NULL DEFAULT 0;";
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch { /* Column might already exist */ }
 
                     cmd.CommandText = @"
 INSERT INTO Users (Username, PasswordHash, FullName, Email, CreatedAt, IsActive)
@@ -118,19 +128,7 @@ WHERE NOT EXISTS (SELECT 1 FROM Users WHERE Username = 'admin');
 
 INSERT INTO Accounts (UserId, AccountName, AccountType, Balance, Currency, CreatedAt, IsActive)
 SELECT 1, 'Ví tiền mặt', 'Cash', 0, 'VND', datetime('now'), 1
-WHERE NOT EXISTS (SELECT 1 FROM Accounts WHERE Id = 1);
-
-INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault)
-SELECT 'Ăn uống', 'Expense', 'food', '#FF5733', 1
-WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE Name='Ăn uống' AND Type='Expense');
-
-INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault)
-SELECT 'Đi lại', 'Expense', 'car', '#33A1FF', 1
-WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE Name='Đi lại' AND Type='Expense');
-
-INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault)
-SELECT 'Lương', 'Income', 'wallet', '#28A745', 1
-WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE Name='Lương' AND Type='Income');";
+WHERE NOT EXISTS (SELECT 1 FROM Accounts WHERE Id = 1);";
                     cmd.ExecuteNonQuery();
                 }
             }

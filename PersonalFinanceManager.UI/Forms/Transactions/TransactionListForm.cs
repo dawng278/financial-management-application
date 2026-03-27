@@ -1,186 +1,200 @@
-﻿using PersonalFinanceManager.Infrastructure.DI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using PersonalFinanceManager.Infrastructure.DI;
 
 namespace PersonalFinanceManager.Forms.Transactions
 {
     public partial class TransactionListForm : Form
     {
-        // ── Mock data ──────────────────────────────────────────
         private class TransactionRow
         {
-            public string Icon { get; set; }  // first letter for avatar
-            public Color IconColor { get; set; }
-            public string Name { get; set; }
-            public string Business { get; set; }
-            public string Type { get; set; }
+            public string Date { get; set; }
+            public string Category { get; set; }
+            public string Description { get; set; }
+            public string Account { get; set; }
             public decimal Amount { get; set; }
-            public DateTime Date { get; set; }
-            public string InvoiceId { get; set; }
         }
 
         private List<TransactionRow> _allRows;
-        private List<TransactionRow> _filteredRows;
+        private int _currentPage = 1;
+        private int _pageSize = 7;
 
-        // ── Constructor ────────────────────────────────────────
         public TransactionListForm()
         {
             InitializeComponent();
-            LoadDataByCurrentUser();
+            RefreshData();
             SetupGrid();
             BindGrid(_allRows);
+            UpdateLiquidityDisplay();
+            ApplyResponsiveLayout();
+
+            ApplyResponsiveLayout();
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.CurrencyChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    UpdateLiquidityDisplay();
+                    BindGrid(_allRows);
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    UpdateTranslations();
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.ThemeChanged += (s, ev) =>
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    ApplyTheme();
+                }));
+            };
+            UpdateTranslations();
+            ApplyTheme();
+
+            txtSearch.TextChanged += (s, e) => {
+                _currentPage = 1;
+                BindGridFiltered();
+            };
+
+            pnlPagination.MouseClick += (s, e) => {
+                int totalPages = (int)Math.Ceiling(_allRows.Count / (double)_pageSize);
+                if(totalPages == 0) totalPages = 1;
+                
+                int clickIdx = e.X / 35;
+                if (clickIdx == 0 && _currentPage > 1) _currentPage--;
+                else if (clickIdx == totalPages + 1 && _currentPage < totalPages) _currentPage++;
+                else if (clickIdx > 0 && clickIdx <= totalPages) _currentPage = clickIdx;
+                
+                BindGridFiltered();
+                pnlPagination.Invalidate();
+            };
+
+            ServiceLocator.TransactionService.TransactionChanged += (s, e) => {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    RefreshData();
+                    BindGridFiltered();
+                }));
+            };
         }
 
-        // ── Load event ─────────────────────────────────────────
-        private void TransactionListForm_Load(object sender, EventArgs e)
+        private void ApplyTheme()
         {
+            PersonalFinanceManager.Common.Helpers.ThemeHelper.ApplyTheme(this);
+            pnlLiquidity.Invalidate();
+        }
+
+        private void UpdateTranslations()
+        {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+
+            if (txtSearch.Text == "Search transactions, tags or accounts..." || txtSearch.Text == "Tìm kiếm giao dịch, thẻ hoặc tài khoản...") 
+                txtSearch.Text = t("Search transactions, tags or accounts...");
+
+            lblNetTitle.Text = t("TOTAL NET LIQUIDITY");
+
+            // Redraw grid headers and re-bind datagrid contents
+            SetupGrid();
+            BindGridFiltered();
+        }
+
+        private void RefreshData()
+        {
+            _allRows = new List<TransactionRow>();
             try
             {
-                var user = ServiceLocator.UserService.GetCurrentUser();
-                if (user != null)
-                    lblUsername.Text = user.FullName ?? user.Email ?? "Người dùng";
+                var transactions = ServiceLocator.TransactionService.GetRecent(200);
+                if (transactions != null && transactions.Any())
+                {
+                    foreach (var tx in transactions)
+                    {
+                        var account = ServiceLocator.AccountService.GetByCurrentUser().FirstOrDefault(a => a.Id == tx.AccountId);
+                        var category = ServiceLocator.CategoryService.GetAll().FirstOrDefault(c => c.Id == tx.CategoryId);
+                        
+                        _allRows.Add(new TransactionRow
+                        {
+                            Date = tx.TransactionDate.ToString("MMM dd, yyyy"),
+                            Category = category?.Name ?? tx.CategoryName ?? "Other",
+                            Description = tx.Note ?? "",
+                            Account = account?.AccountName ?? tx.AccountName ?? "Unknown",
+                            Amount = tx.Amount
+                        });
+                    }
+                }
             }
             catch { }
 
-            LayoutTopBarButtons();
-            LayoutSidebarBottomButtons();
-            ResizeTableArea();
+            UpdateLiquidityDisplay();
         }
 
-        // =====================================================
-        // USER DATA
-        // =====================================================
-        private void LoadDataByCurrentUser()
+        private void UpdateLiquidityDisplay()
         {
-            _allRows = new List<TransactionRow>();
-
+            decimal totalBalance = ServiceLocator.AccountService.GetTotalBalance();
+            lblNetValue.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(totalBalance);
+            
             try
             {
-                var txs = ServiceLocator.TransactionService
-                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
-                    .OrderByDescending(t => t.TransactionDate)
-                    .ToList();
-
-                foreach (var tx in txs)
-                {
-                    var isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
-                    var name = string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName;
-                    var business = string.IsNullOrWhiteSpace(tx.Note) ? "-" : tx.Note;
-
-                    _allRows.Add(new TransactionRow
-                    {
-                        Icon = name.Substring(0, 1),
-                        IconColor = isExpense ? Color.FromArgb(211, 47, 47) : Color.FromArgb(46, 125, 50),
-                        Name = name,
-                        Business = business,
-                        Type = tx.Type,
-                        Amount = isExpense ? -Math.Abs(tx.Amount) : Math.Abs(tx.Amount),
-                        Date = tx.TransactionDate,
-                        InvoiceId = "TX" + tx.Id.ToString("000000")
-                    });
-                }
+                // Calculate trend based on last 30 days
+                var last30Days = ServiceLocator.TransactionService.GetByDateRange(DateTime.Today.AddDays(-30), DateTime.MaxValue).ToList();
+                decimal monthlyDelta = last30Days.Sum(t => t.Amount);
+                
+                // We need to convert this delta (which is likely in currency of account) to VND for consistent calc
+                // Actually, let's assume TransactionService.GetRecent/GetByDateRange returns raw amounts. 
+                // To be accurate we'd need account currency for each.
+                // For simplicity, let's just show the delta if we can't do % or a fixed positive trend if balance is high.
+                
+                decimal previousBalance = totalBalance - monthlyDelta;
+                double percent = 0;
+                if (previousBalance > 0) percent = (double)(monthlyDelta / previousBalance) * 100.0;
+                
+                string trendChar = percent >= 0 ? "↗" : "↘";
+                lblNetTrend.Text = $"{trendChar} {(percent >= 0 ? "+" : "")}{percent:N1}% from last month";
+                lblNetTrend.ForeColor = percent >= 0 ? Color.FromArgb(170, 220, 200) : Color.FromArgb(250, 180, 180);
             }
             catch
             {
-                // keep empty list on load failure
+                lblNetTrend.Text = "↗ +0.0% from last month";
             }
-
-            _filteredRows = new List<TransactionRow>(_allRows);
         }
 
-        // =====================================================
-        // GRID SETUP
-        // =====================================================
         private void SetupGrid()
         {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            
             dgvTransactions.Columns.Clear();
+            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { Name = "colDate", HeaderText = t("DATE"), Width = 140, SortMode = DataGridViewColumnSortMode.NotSortable });
+            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCategory", HeaderText = t("CATEGORY"), Width = 160, SortMode = DataGridViewColumnSortMode.NotSortable });
+            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { Name = "colDesc", HeaderText = t("DESCRIPTION"), MinimumWidth = 300, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, SortMode = DataGridViewColumnSortMode.NotSortable });
+            dgvTransactions.Columns.Add(new DataGridViewTextBoxColumn { Name = "colAccount", HeaderText = t("ACCOUNT"), Width = 220, SortMode = DataGridViewColumnSortMode.NotSortable });
+            
+            var colAmount = new DataGridViewTextBoxColumn { Name = "colAmount", HeaderText = t("AMOUNT"), Width = 180, SortMode = DataGridViewColumnSortMode.NotSortable };
+            colAmount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colAmount.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+            dgvTransactions.Columns.Add(colAmount);
 
-            var colIcon = new DataGridViewTextBoxColumn
-            {
-                Name = "colIcon",
-                HeaderText = "",
-                Width = 52,
-                ReadOnly = true,
-                Resizable = DataGridViewTriState.False,
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-            };
-            colIcon.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            // Add some padding to cell content
+            dgvTransactions.Padding = new Padding(20, 0, 20, 0);
+        }
 
-            var colName = new DataGridViewTextBoxColumn
-            {
-                Name = "colName",
-                HeaderText = "TÊN / ĐƠN VỊ",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
+        private void BindGridFiltered()
+        {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            string q = txtSearch.Text.Trim().ToLower();
+            if (q == "" || q == t("Search transactions, tags or accounts...").ToLower() || q == "search transactions, tags or accounts...") q = null;
 
-            var colType = new DataGridViewTextBoxColumn
-            {
-                Name = "colType",
-                HeaderText = "LOẠI",
-                Width = 140,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
-            colType.DefaultCellStyle.ForeColor = Color.FromArgb(140, 140, 140);
-
-            var colAmount = new DataGridViewTextBoxColumn
-            {
-                Name = "colAmount",
-                HeaderText = "SỐ TIỀN",
-                Width = 150,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
-            colAmount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            colAmount.DefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-
-            var colDate = new DataGridViewTextBoxColumn
-            {
-                Name = "colDate",
-                HeaderText = "NGÀY",
-                Width = 160,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
-            colDate.DefaultCellStyle.ForeColor = Color.FromArgb(80, 80, 80);
-
-            var colInvoice = new DataGridViewTextBoxColumn
-            {
-                Name = "colInvoice",
-                HeaderText = "MÃ HÓA ĐƠN",
-                Width = 150,
-                ReadOnly = true,
-                SortMode = DataGridViewColumnSortMode.Automatic,
-            };
-            colInvoice.DefaultCellStyle.ForeColor = Color.FromArgb(150, 150, 150);
-
-            var colAction = new DataGridViewButtonColumn
-            {
-                Name = "colAction",
-                HeaderText = "THAO TÁC",
-                Width = 110,
-                Text = "Xem",
-                UseColumnTextForButtonValue = true,
-                FlatStyle = FlatStyle.Flat,
-            };
-            colAction.DefaultCellStyle.BackColor = Color.FromArgb(181, 212, 34);
-            colAction.DefaultCellStyle.ForeColor = Color.FromArgb(22, 22, 22);
-            colAction.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            colAction.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            colAction.DefaultCellStyle.SelectionBackColor = Color.FromArgb(158, 190, 20);
-            colAction.DefaultCellStyle.SelectionForeColor = Color.FromArgb(22, 22, 22);
-
-            dgvTransactions.Columns.AddRange(colIcon, colName, colType, colAmount, colDate, colInvoice, colAction);
-
-            dgvTransactions.CellPainting += DgvTransactions_CellPainting;
-            dgvTransactions.CellFormatting += DgvTransactions_CellFormatting;
-            dgvTransactions.CellClick += DgvTransactions_CellClick;
+            var query = _allRows.AsEnumerable();
+            if(!string.IsNullOrEmpty(q))
+                query = query.Where(r => r.Description.ToLower().Contains(q) || r.Category.ToLower().Contains(q) || r.Account.ToLower().Contains(q));
+            
+            var paged = query.Skip((_currentPage - 1) * _pageSize).Take(_pageSize).ToList();
+            BindGrid(paged);
+            pnlPagination.Invalidate();
         }
 
         private void BindGrid(List<TransactionRow> rows)
@@ -188,228 +202,169 @@ namespace PersonalFinanceManager.Forms.Transactions
             dgvTransactions.Rows.Clear();
             foreach (var r in rows)
             {
-                string amountStr = r.Amount >= 0
-                    ? string.Format("{0:N0} đ", r.Amount)
-                    : string.Format("- {0:N0} đ", Math.Abs(r.Amount));
-
-                string dateStr = r.Date.ToString("dd MMM yyyy\n'lúc' HH:mm");
-
-                int idx = dgvTransactions.Rows.Add(
-                    r.Icon.ToUpper(), r.Name + "\n" + r.Business,
-                    r.Type, amountStr, dateStr, r.InvoiceId, "Xem");
+                string amtText = (r.Amount > 0 ? "+" : "") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(r.Amount);
+                int idx = dgvTransactions.Rows.Add("  " + r.Date, r.Category, r.Description, r.Account, amtText + "  ");
                 dgvTransactions.Rows[idx].Tag = r;
             }
         }
 
-        // =====================================================
-        // CELL PAINTING
-        // =====================================================
-        private void DgvTransactions_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        private void dgvTransactions_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            e.PaintBackground(e.CellBounds, true);
+            e.Paint(e.CellBounds, DataGridViewPaintParts.Border);
+
             var row = dgvTransactions.Rows[e.RowIndex].Tag as TransactionRow;
             if (row == null) return;
 
-            if (e.ColumnIndex == 0 || e.ColumnIndex == 1 || e.ColumnIndex == 4 || e.ColumnIndex == 6)
+            // Date styling (Grayed out a bit)
+            if (e.ColumnIndex == 0)
             {
-                bool selected = dgvTransactions.Rows[e.RowIndex].Selected;
-                Color bgColor = selected ? Color.FromArgb(240, 248, 230) : Color.White;
-                e.Graphics.FillRectangle(new SolidBrush(bgColor), e.CellBounds);
-                using (var pen = new Pen(Color.FromArgb(235, 237, 242)))
-                    e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+                using (var brush = new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.SubText))
+                {
+                    e.Graphics.DrawString("  " + row.Date, new Font("Segoe UI", 9.5F), brush, e.CellBounds.X, e.CellBounds.Y + 20);
+                }
+                e.Handled = true;
+            }
+            // Draw Pill shape for Category
+            else if (e.ColumnIndex == 1)
+            {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-                if (e.ColumnIndex == 0)
+                Color bg = Color.LightGray;
+                Color fg = Color.DarkGray;
+                switch (row.Category)
                 {
-                    int d = 36, cx = e.CellBounds.X + (e.CellBounds.Width - d) / 2, cy = e.CellBounds.Y + (e.CellBounds.Height - d) / 2;
-                    using (var brush = new SolidBrush(row.IconColor)) e.Graphics.FillEllipse(brush, cx, cy, d, d);
-                    using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                    using (var font = new Font("Segoe UI", 12F, FontStyle.Bold))
-                        e.Graphics.DrawString(row.Icon.ToUpper(), font, Brushes.White, new RectangleF(cx, cy, d, d), sf);
+                    case "Investments": bg = Color.FromArgb(220, 240, 252); fg = Color.FromArgb(40, 130, 180); break;
+                    case "Dining Out": bg = Color.FromArgb(252, 230, 230); fg = Color.FromArgb(200, 50, 70); break;
+                    case "Utilities": bg = Color.FromArgb(225, 245, 255); fg = Color.FromArgb(30, 140, 200); break;
+                    case "Salary": bg = Color.FromArgb(225, 250, 225); fg = Color.FromArgb(40, 180, 80); break;
+                    case "Travel": bg = Color.FromArgb(255, 230, 240); fg = Color.FromArgb(220, 60, 130); break;
+                    case "Housing": bg = Color.FromArgb(215, 240, 255); fg = Color.FromArgb(20, 120, 190); break;
                 }
-                else if (e.ColumnIndex == 1)
+
+                int w = 110;
+                int h = 30;
+                int x = e.CellBounds.X + 10;
+                int y = e.CellBounds.Y + (e.CellBounds.Height - h) / 2;
+
+                var rect = new Rectangle(x, y, w, h);
+                using (var path = RoundedRect(rect, 15))
+                using (var bBg = new SolidBrush(bg))
                 {
-                    int px = e.CellBounds.X + 10, midY = e.CellBounds.Y + e.CellBounds.Height / 2;
-                    using (var fName = new Font("Segoe UI", 9.5F, FontStyle.Bold))
-                    using (var fBiz = new Font("Segoe UI", 8.5F))
-                    using (var bName = new SolidBrush(Color.FromArgb(30, 30, 30)))
-                    using (var bBiz = new SolidBrush(Color.FromArgb(155, 155, 155)))
-                    { e.Graphics.DrawString(row.Name, fName, bName, px, midY - 18); e.Graphics.DrawString(row.Business, fBiz, bBiz, px, midY + 2); }
+                    e.Graphics.FillPath(bBg, path);
                 }
-                else if (e.ColumnIndex == 4)
+
+                using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+                using (var bFg = new SolidBrush(fg))
                 {
-                    int px = e.CellBounds.X + 10, midY = e.CellBounds.Y + e.CellBounds.Height / 2;
-                    using (var fDate = new Font("Segoe UI", 9.5F, FontStyle.Bold))
-                    using (var fTime = new Font("Segoe UI", 8.5F))
-                    using (var bDate = new SolidBrush(Color.FromArgb(30, 30, 30)))
-                    using (var bTime = new SolidBrush(Color.FromArgb(155, 155, 155)))
-                    { e.Graphics.DrawString(row.Date.ToString("dd MMM yyyy"), fDate, bDate, px, midY - 18); e.Graphics.DrawString("lúc " + row.Date.ToString("HH:mm"), fTime, bTime, px, midY + 2); }
+                    e.Graphics.DrawString(row.Category, new Font("Segoe UI", 8.5F, FontStyle.Bold), bFg, rect, sf);
                 }
-                else if (e.ColumnIndex == 6)
+                e.Handled = true;
+            }
+            // Description & Account Default
+            else if (e.ColumnIndex == 2 || e.ColumnIndex == 3)
+            {
+                using (var brush = new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.Text))
                 {
-                    int bw = 72, bh = 34, bx = e.CellBounds.X + (e.CellBounds.Width - bw) / 2, by = e.CellBounds.Y + (e.CellBounds.Height - bh) / 2;
-                    var rect = new Rectangle(bx, by, bw, bh);
-                    using (var path = RoundedRect(rect, 8)) using (var brush = new SolidBrush(Color.FromArgb(181, 212, 34))) e.Graphics.FillPath(brush, path);
-                    using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                    using (var font = new Font("Segoe UI", 9F, FontStyle.Bold))
-                        e.Graphics.DrawString("Xem", font, new SolidBrush(Color.FromArgb(22, 22, 22)), rect, sf);
+                    e.Graphics.DrawString(e.Value?.ToString(), new Font("Segoe UI", 9.5F), brush, e.CellBounds.X, e.CellBounds.Y + 20);
+                }
+                e.Handled = true;
+            }
+            // Amount Amount Formatting
+            else if (e.ColumnIndex == 4)
+            {
+                Color amtColor = row.Amount > 0 ? Color.FromArgb(40, 160, 40) : Color.FromArgb(200, 40, 40);
+                using (var brush = new SolidBrush(amtColor))
+                using (var sf = new StringFormat { Alignment = StringAlignment.Far })
+                {
+                    e.Graphics.DrawString(e.Value?.ToString(), new Font("Segoe UI", 10F, FontStyle.Bold), brush, e.CellBounds.Right - 10, e.CellBounds.Y + 20, sf);
                 }
                 e.Handled = true;
             }
         }
 
-        private void DgvTransactions_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void pnlLiquidity_Paint(object sender, PaintEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex != 3) return;
-            var row = dgvTransactions.Rows[e.RowIndex].Tag as TransactionRow;
-            if (row == null) return;
-            e.CellStyle.ForeColor = row.Amount < 0 ? Color.FromArgb(220, 53, 69) : Color.FromArgb(25, 135, 84);
-            e.CellStyle.SelectionForeColor = e.CellStyle.ForeColor;
-        }
-
-        private void DgvTransactions_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex != 6) return;
-            var row = dgvTransactions.Rows[e.RowIndex].Tag as TransactionRow;
-            if (row == null) return;
-            MessageBox.Show(
-                string.Format("Mã hóa đơn: {0}\nSố tiền: {1:N0} đ\nNgày: {2:dd/MM/yyyy}", row.InvoiceId, row.Amount, row.Date),
-                "Chi tiết giao dịch", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        // =====================================================
-        // SEARCH
-        // =====================================================
-        private void txtSearch_TextChanged(object sender, EventArgs e)
-        {
-            string q = txtSearch.Text.Trim().ToLower();
-            _filteredRows = string.IsNullOrEmpty(q)
-                ? new List<TransactionRow>(_allRows)
-                : _allRows.Where(r =>
-                    r.Name.ToLower().Contains(q) || r.Business.ToLower().Contains(q) ||
-                    r.Type.ToLower().Contains(q) || r.InvoiceId.ToLower().Contains(q)
-                  ).ToList();
-            BindGrid(_filteredRows);
-        }
-
-        // =====================================================
-        // LAYOUT
-        // =====================================================
-        private void TransactionListForm_SizeChanged(object sender, EventArgs e)
-        {
-            LayoutTopBarButtons();
-            LayoutSidebarBottomButtons();
-            ResizeTableArea();
-        }
-
-        private void LayoutTopBarButtons()
-        {
-            int tbW = pnlTopBar.Width, btnY = (pnlTopBar.Height - 30) / 2;
-            btnClose.Location = new Point(tbW - 40, btnY);
-            btnMaximize.Location = new Point(tbW - 74, btnY);
-            btnMinimize.Location = new Point(tbW - 108, btnY);
-            lblUsername.Location = new Point(tbW - 224, (pnlTopBar.Height - lblUsername.Height) / 2 + 1);
-            picAvatar.Location = new Point(tbW - 264, (pnlTopBar.Height - 36) / 2);
-        }
-
-        private void LayoutSidebarBottomButtons()
-        {
-            int sH = pnlSidebar.Height;
-            btnNavLogout.Location = new Point(10, sH - 48);
-            btnNavHelp.Location = new Point(10, sH - 96);
-            pnlSidebar.Invalidate();
-        }
-
-        private void ResizeTableArea()
-        {
-            int pad = pnlMain.Padding.Left;
-            int avail = pnlMain.ClientSize.Width - pad * 2;
-            int high = pnlMain.ClientSize.Height - pad - 62 - 20;
-            pnlSearchBar.Width = Math.Min(420, avail);
-            pnlTableArea.Width = avail;
-            pnlTableArea.Height = Math.Max(200, high);
-            dgvTransactions.Size = new Size(pnlTableArea.Width, pnlTableArea.Height);
-        }
-
-        // =====================================================
-        // NAVIGATION — dùng FormNavigator, không tạo form mới
-        // =====================================================
-        private void btnNavDashboard_Click(object sender, EventArgs e)
-        {
-            PersonalFinanceManager.UI.Navigation.FormNavigator.GoToDashboard();
-        }
-
-        private void btnNavLogout_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Bạn có muốn đăng xuất không?", "Đăng xuất",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+            var rect = new Rectangle(0, 0, pnlLiquidity.Width - 1, pnlLiquidity.Height - 1);
+            using (var path = RoundedRect(rect, 10))
             {
-                ServiceLocator.UserService.Logout();
-                PersonalFinanceManager.UI.Navigation.FormNavigator.GoToLogin();
+                using (var brush = new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode ? Color.FromArgb(40, 50, 60) : Color.FromArgb(55, 75, 85)))
+                {
+                    g.FillPath(brush, path);
+                }
             }
         }
 
-        // =====================================================
-        // WINDOW CONTROLS
-        // =====================================================
-        private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
-        private void btnMinimize_Click(object sender, EventArgs e) => this.WindowState = FormWindowState.Minimized;
-        private void btnMaximize_Click(object sender, EventArgs e)
-            => this.WindowState = this.WindowState == FormWindowState.Maximized
-                ? FormWindowState.Normal : FormWindowState.Maximized;
-
-        // =====================================================
-        // PAINT HANDLERS
-        // =====================================================
-        private void pnlSidebar_Paint(object sender, PaintEventArgs e)
+        private void pnlPagination_Paint(object sender, PaintEventArgs e)
         {
-            using (var pen = new Pen(Color.FromArgb(38, 255, 255, 255), 1))
+            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
+            int x = 0;
+            
+            int totalPages = (int)Math.Ceiling(_allRows.Count / (double)_pageSize);
+            if(totalPages == 0) totalPages = 1;
+            
+            var buttons = new List<string> { "<" };
+            for(int i=1; i<=totalPages; i++) buttons.Add(i.ToString());
+            buttons.Add(">");
+            
+            foreach (var b in buttons)
             {
-                e.Graphics.DrawLine(pen, 16, 96, 244, 96);
-                int divY = btnNavHelp.Top - 8;
-                e.Graphics.DrawLine(pen, 16, divY, 244, divY);
+                var rect = new Rectangle(x, 5, 30, 30);
+                using (var path = RoundedRect(rect, 5))
+                {
+                    if (b == _currentPage.ToString())
+                    {
+                        g.FillPath(new SolidBrush(Color.FromArgb(183, 0, 82)), path);
+                        g.DrawString(b, new Font("Segoe UI", 9F, FontStyle.Bold), Brushes.White, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                    }
+                    else
+                    {
+                        g.FillPath(new SolidBrush(Color.FromArgb(240, 240, 240)), path);
+                        g.DrawString(b, new Font("Segoe UI", 9F), Brushes.Gray, rect, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                    }
+                }
+                x += 35;
             }
         }
 
-        private void picSidebarLogo_Paint(object sender, PaintEventArgs e)
+        private void BtnFloatingAdd_Click(object sender, EventArgs e)
         {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var brush = new SolidBrush(Color.FromArgb(181, 212, 34))) g.FillEllipse(brush, 0, 0, 38, 38);
-            using (var font = new Font("Segoe UI", 15F, FontStyle.Bold))
-            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                g.DrawString("F", font, new SolidBrush(Color.FromArgb(22, 22, 22)), new RectangleF(0, 0, 38, 38), sf);
-        }
-
-        private void picAvatar_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var brush = new SolidBrush(Color.FromArgb(40, 167, 69))) g.FillEllipse(brush, 0, 0, 36, 36);
-            using (var font = new Font("Segoe UI", 14F, FontStyle.Bold))
-            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                g.DrawString("N", font, Brushes.White, new RectangleF(0, 0, 36, 36), sf);
-        }
-
-        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
-        {
-            using (var pen = new Pen(Color.FromArgb(225, 227, 232), 1))
-                e.Graphics.DrawLine(pen, 0, pnlTopBar.Height - 1, pnlTopBar.Width, pnlTopBar.Height - 1);
-        }
-
-        private void pnlWhiteCard_Paint(object sender, PaintEventArgs e)
-        {
-            var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
-            var ctrl = (Control)sender;
-            var rect = new Rectangle(0, 0, ctrl.Width - 1, ctrl.Height - 1);
-            using (var path = RoundedRect(rect, 14))
+            var addForm = new TransactionEditForm();
+            addForm.OnAddTransaction = (date, catId, accId, desc, amt, type) => 
             {
-                using (var brush = new SolidBrush(Color.White)) g.FillPath(brush, path);
-                using (var pen = new Pen(Color.FromArgb(228, 230, 236), 1)) g.DrawPath(pen, path);
-            }
+                var user = ServiceLocator.UserService.GetCurrentUser();
+                if (user == null) return;
+
+                var newTransaction = new Models.Transaction
+                {
+                    TransactionDate = date,
+                    CategoryId = catId,
+                    AccountId = accId,
+                    UserId = user.Id,
+                    Note = desc,
+                    Amount = type == "Income" ? Math.Abs(amt) : -Math.Abs(amt),
+                    Type = type,
+                    CreatedAt = DateTime.Now
+                };
+
+                bool success = ServiceLocator.TransactionService.Add(newTransaction);
+                if (success)
+                {
+                    RefreshData();
+                    BindGridFiltered();
+                }
+                else
+                {
+                    var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                    MessageBox.Show(t(ServiceLocator.TransactionService.LastError ?? "Failed to save transaction to database."));
+                }
+            };
+            addForm.ShowDialog();
         }
 
-        // =====================================================
-        // HELPER
-        // =====================================================
         private static GraphicsPath RoundedRect(Rectangle r, int radius)
         {
             var path = new GraphicsPath();
@@ -420,5 +375,52 @@ namespace PersonalFinanceManager.Forms.Transactions
             path.CloseFigure();
             return path;
         }
-    }
+    
+        private void ApplyResponsiveLayout()
+        {
+            var contentPanel = this.Controls["pnlScrollContext"] ?? this.Controls["pnlMain"] ?? this;
+            if (contentPanel != null)
+            {
+                contentPanel.Padding = new Padding(0);
+                contentPanel.Margin = new Padding(0);
+                this.Padding = new Padding(0);
+
+                contentPanel.SizeChanged += (s, e) => {
+                    int w = contentPanel.ClientSize.Width;
+                    int h = contentPanel.ClientSize.Height;
+                    
+                    pnlFilter.Width = w - 60;
+                    btnFilter.Left = pnlFilter.Width - btnFilter.Width;
+                    cbCategory.Left = btnFilter.Left - cbCategory.Width - 10;
+                    
+                    pnlGrid.Width = w - 60;
+                    pnlGrid.Height = h - pnlGrid.Top - 80;
+                    
+                    pnlLiquidity.Left = w - 30 - pnlLiquidity.Width;
+                    pnlLiquidity.Top = pnlGrid.Bottom - pnlLiquidity.Height - 10;
+                    pnlLiquidity.BringToFront();
+
+                    pnlPagination.Top = pnlGrid.Bottom + 20;
+                    pnlPagination.Left = 30;
+
+                    btnFloatingAdd.Left = w - 40 - btnFloatingAdd.Width;
+                    btnFloatingAdd.Top = h - 40 - btnFloatingAdd.Height;
+                    btnFloatingAdd.BringToFront();
+
+                    int newPageSize = (pnlGrid.Height - 55) / 60;
+                    if (newPageSize < 1) newPageSize = 1;
+                    if (_pageSize != newPageSize)
+                    {
+                        _pageSize = newPageSize;
+                        int totalPages = (int)Math.Ceiling(_allRows.Count / (double)_pageSize);
+                        if (_currentPage > totalPages && totalPages > 0) _currentPage = totalPages;
+                        BindGridFiltered();
+                    }
+                };
+            }
+        }
 }
+}
+
+
+

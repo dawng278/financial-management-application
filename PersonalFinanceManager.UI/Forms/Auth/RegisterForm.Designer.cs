@@ -1,374 +1,296 @@
-﻿using System.Drawing;
+using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace PersonalFinanceManager.Forms.Auth
 {
-    partial class RegisterForm : Form
+    partial class RegisterForm
     {
         private System.ComponentModel.IContainer components = null;
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-                components.Dispose();
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.guna2ShadowForm1 = new Guna.UI2.WinForms.Guna2ShadowForm(this.components);
-            this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
-            this.panelLeft = new System.Windows.Forms.Panel();
-            this.btnClose = new Guna.UI2.WinForms.Guna2Button();
-            this.picLogo = new System.Windows.Forms.PictureBox();
-            this.lblLogoText = new System.Windows.Forms.Label();
+            // Left Panel elements
+            this.pnlLeft = new System.Windows.Forms.Panel();
+            this.lblLogo = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblSubtitle = new System.Windows.Forms.Label();
-            this.lblFullName = new System.Windows.Forms.Label();
-            this.txtFullName = new Guna.UI2.WinForms.Guna2TextBox();
+            this.lblFeature1 = new System.Windows.Forms.Label();
+            this.lblFeature2 = new System.Windows.Forms.Label();
+
+            // Right Panel (Content)
+            this.pnlRight = new System.Windows.Forms.Panel();
+            this.btnClose = new ReaLTaiizor.Controls.HopeButton();
+            this.lblRightTitle = new System.Windows.Forms.Label();
+            this.lblRightSub = new System.Windows.Forms.Label();
+
+            this.lblName = new System.Windows.Forms.Label();
+            this.txtFullName = new ReaLTaiizor.Controls.HopeTextBox();
+
             this.lblEmail = new System.Windows.Forms.Label();
-            this.txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
-            this.lblPassword = new System.Windows.Forms.Label();
-            this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
-            this.lblConfirmPwd = new System.Windows.Forms.Label();
-            this.txtConfirmPwd = new Guna.UI2.WinForms.Guna2TextBox();
-            this.btnRegister = new Guna.UI2.WinForms.Guna2Button();
-            this.lblHaveAccount = new System.Windows.Forms.Label();
+            this.txtEmail = new ReaLTaiizor.Controls.HopeTextBox();
+
+            this.lblExecId = new System.Windows.Forms.Label();
+            this.txtExecutiveId = new ReaLTaiizor.Controls.HopeTextBox();
+
+            this.lblPass = new System.Windows.Forms.Label();
+            this.txtPassword = new ReaLTaiizor.Controls.HopeTextBox();
+
+            this.lblConfPass = new System.Windows.Forms.Label();
+            this.txtConfirmPwd = new ReaLTaiizor.Controls.HopeTextBox();
+
+            this.chkTerms = new System.Windows.Forms.CheckBox();
+            this.btnRegister = new ReaLTaiizor.Controls.HopeButton();
+
             this.lnkSignIn = new System.Windows.Forms.LinkLabel();
-            this.pnlSignInUnderline = new System.Windows.Forms.Panel();
-            this.panelRight = new System.Windows.Forms.Panel();
-            this.picBackground = new System.Windows.Forms.PictureBox();
-            this.panelLeft.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
-            this.panelRight.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBackground)).BeginInit();
+
+            // Footer
+            this.lblFooterCopy = new System.Windows.Forms.Label();
+            this.lblFooterPriv = new System.Windows.Forms.Label();
+            this.lblFooterReg = new System.Windows.Forms.Label();
+
+            this.pnlLeft.SuspendLayout();
+            this.pnlRight.SuspendLayout();
             this.SuspendLayout();
+
             // 
-            // guna2Elipse1
-            // 
-            this.guna2Elipse1.BorderRadius = 16;
-            this.guna2Elipse1.TargetControl = this;
-            // 
-            // guna2ShadowForm1
-            // 
-            this.guna2ShadowForm1.TargetForm = this;
-            // 
-            // guna2DragControl1
-            // 
-            this.guna2DragControl1.DockIndicatorTransparencyValue = 0.6D;
-            this.guna2DragControl1.TargetControl = this.panelLeft;
-            this.guna2DragControl1.UseTransparentDrag = true;
-            // 
-            // panelLeft
-            // 
-            this.panelLeft.BackColor = System.Drawing.Color.White;
-            this.panelLeft.Controls.Add(this.btnClose);
-            this.panelLeft.Controls.Add(this.picLogo);
-            this.panelLeft.Controls.Add(this.lblLogoText);
-            this.panelLeft.Controls.Add(this.lblTitle);
-            this.panelLeft.Controls.Add(this.lblSubtitle);
-            this.panelLeft.Controls.Add(this.lblFullName);
-            this.panelLeft.Controls.Add(this.txtFullName);
-            this.panelLeft.Controls.Add(this.lblEmail);
-            this.panelLeft.Controls.Add(this.txtEmail);
-            this.panelLeft.Controls.Add(this.lblPassword);
-            this.panelLeft.Controls.Add(this.txtPassword);
-            this.panelLeft.Controls.Add(this.lblConfirmPwd);
-            this.panelLeft.Controls.Add(this.txtConfirmPwd);
-            this.panelLeft.Controls.Add(this.btnRegister);
-            this.panelLeft.Controls.Add(this.lblHaveAccount);
-            this.panelLeft.Controls.Add(this.lnkSignIn);
-            this.panelLeft.Controls.Add(this.pnlSignInUnderline);
-            this.panelLeft.Location = new System.Drawing.Point(0, 0);
-            this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(640, 747);
-            this.panelLeft.TabIndex = 0;
-            // 
-            // btnClose
-            // 
-            this.btnClose.BorderRadius = 14;
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.FillColor = System.Drawing.Color.Transparent;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnClose.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-            this.btnClose.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(75)))), ((int)(((byte)(75)))));
-            this.btnClose.HoverState.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(590, 17);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(37, 34);
-            this.btnClose.TabIndex = 0;
-            this.btnClose.Text = "✕";
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // picLogo
-            // 
-            this.picLogo.BackColor = System.Drawing.Color.Transparent;
-            this.picLogo.Location = new System.Drawing.Point(91, 49);
-            this.picLogo.Name = "picLogo";
-            this.picLogo.Size = new System.Drawing.Size(46, 43);
-            this.picLogo.TabIndex = 1;
-            this.picLogo.TabStop = false;
-            this.picLogo.Paint += new System.Windows.Forms.PaintEventHandler(this.picLogo_Paint);
-            // 
-            // lblLogoText
-            // 
-            this.lblLogoText.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblLogoText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.lblLogoText.Location = new System.Drawing.Point(143, 49);
-            this.lblLogoText.Name = "lblLogoText";
-            this.lblLogoText.Size = new System.Drawing.Size(282, 45);
-            this.lblLogoText.TabIndex = 2;
-            this.lblLogoText.Text = "FinancialApp";
-            // 
-            // lblTitle
-            // 
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 26F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
-            this.lblTitle.Location = new System.Drawing.Point(91, 110);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(503, 71);
-            this.lblTitle.TabIndex = 3;
-            this.lblTitle.Text = "Tạo tài khoản mới";
-            // 
-            // lblSubtitle
-            // 
-            this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(140)))), ((int)(((byte)(140)))));
-            this.lblSubtitle.Location = new System.Drawing.Point(91, 181);
-            this.lblSubtitle.Name = "lblSubtitle";
-            this.lblSubtitle.Size = new System.Drawing.Size(480, 37);
-            this.lblSubtitle.TabIndex = 4;
-            this.lblSubtitle.Text = "Vui lòng điền đầy đủ thông tin bên dưới.";
-            // 
-            // lblFullName
-            // 
-            this.lblFullName.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lblFullName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.lblFullName.Location = new System.Drawing.Point(91, 229);
-            this.lblFullName.Name = "lblFullName";
-            this.lblFullName.Size = new System.Drawing.Size(229, 23);
-            this.lblFullName.TabIndex = 5;
-            this.lblFullName.Text = "Họ và tên";
-            // 
-            // txtFullName
-            // 
-            this.txtFullName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(215)))), ((int)(((byte)(220)))));
-            this.txtFullName.BorderRadius = 10;
-            this.txtFullName.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtFullName.DefaultText = "";
-            this.txtFullName.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.txtFullName.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtFullName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.txtFullName.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(155)))), ((int)(((byte)(160)))));
-            this.txtFullName.Location = new System.Drawing.Point(91, 257);
-            this.txtFullName.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.txtFullName.Name = "txtFullName";
-            this.txtFullName.PlaceholderText = "Nhập họ và tên đầy đủ";
-            this.txtFullName.SelectedText = "";
-            this.txtFullName.Size = new System.Drawing.Size(457, 51);
-            this.txtFullName.TabIndex = 0;
-            // 
-            // lblEmail
-            // 
-            this.lblEmail.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lblEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.lblEmail.Location = new System.Drawing.Point(91, 327);
-            this.lblEmail.Name = "lblEmail";
-            this.lblEmail.Size = new System.Drawing.Size(229, 23);
-            this.lblEmail.TabIndex = 6;
-            this.lblEmail.Text = "Email";
-            // 
-            // txtEmail
-            // 
-            this.txtEmail.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(215)))), ((int)(((byte)(220)))));
-            this.txtEmail.BorderRadius = 10;
-            this.txtEmail.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtEmail.DefaultText = "";
-            this.txtEmail.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.txtEmail.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(155)))), ((int)(((byte)(160)))));
-            this.txtEmail.Location = new System.Drawing.Point(91, 355);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.PlaceholderText = "example@gmail.com";
-            this.txtEmail.SelectedText = "";
-            this.txtEmail.Size = new System.Drawing.Size(457, 51);
-            this.txtEmail.TabIndex = 1;
-            // 
-            // lblPassword
-            // 
-            this.lblPassword.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.lblPassword.Location = new System.Drawing.Point(91, 426);
-            this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(229, 23);
-            this.lblPassword.TabIndex = 7;
-            this.lblPassword.Text = "Mật khẩu";
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(215)))), ((int)(((byte)(220)))));
-            this.txtPassword.BorderRadius = 10;
-            this.txtPassword.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtPassword.DefaultText = "";
-            this.txtPassword.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtPassword.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(155)))), ((int)(((byte)(160)))));
-            this.txtPassword.Location = new System.Drawing.Point(91, 453);
-            this.txtPassword.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.PasswordChar = '●';
-            this.txtPassword.PlaceholderText = "Nhập mật khẩu";
-            this.txtPassword.SelectedText = "";
-            this.txtPassword.Size = new System.Drawing.Size(457, 51);
-            this.txtPassword.TabIndex = 2;
-            this.txtPassword.UseSystemPasswordChar = true;
-            // 
-            // lblConfirmPwd
-            // 
-            this.lblConfirmPwd.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lblConfirmPwd.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.lblConfirmPwd.Location = new System.Drawing.Point(91, 524);
-            this.lblConfirmPwd.Name = "lblConfirmPwd";
-            this.lblConfirmPwd.Size = new System.Drawing.Size(286, 23);
-            this.lblConfirmPwd.TabIndex = 8;
-            this.lblConfirmPwd.Text = "Xác nhận mật khẩu";
-            // 
-            // txtConfirmPwd
-            // 
-            this.txtConfirmPwd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(215)))), ((int)(((byte)(220)))));
-            this.txtConfirmPwd.BorderRadius = 10;
-            this.txtConfirmPwd.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtConfirmPwd.DefaultText = "";
-            this.txtConfirmPwd.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.txtConfirmPwd.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtConfirmPwd.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(155)))), ((int)(((byte)(160)))));
-            this.txtConfirmPwd.Location = new System.Drawing.Point(91, 551);
-            this.txtConfirmPwd.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.txtConfirmPwd.Name = "txtConfirmPwd";
-            this.txtConfirmPwd.PasswordChar = '●';
-            this.txtConfirmPwd.PlaceholderText = "Nhập lại mật khẩu";
-            this.txtConfirmPwd.SelectedText = "";
-            this.txtConfirmPwd.Size = new System.Drawing.Size(457, 51);
-            this.txtConfirmPwd.TabIndex = 3;
-            this.txtConfirmPwd.UseSystemPasswordChar = true;
-            // 
-            // btnRegister
-            // 
-            this.btnRegister.BorderRadius = 12;
-            this.btnRegister.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnRegister.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(181)))), ((int)(((byte)(212)))), ((int)(((byte)(34)))));
-            this.btnRegister.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnRegister.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.btnRegister.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(158)))), ((int)(((byte)(190)))), ((int)(((byte)(20)))));
-            this.btnRegister.Location = new System.Drawing.Point(91, 624);
-            this.btnRegister.Name = "btnRegister";
-            this.btnRegister.Size = new System.Drawing.Size(457, 55);
-            this.btnRegister.TabIndex = 4;
-            this.btnRegister.Text = "Tạo tài khoản";
-            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
-            // 
-            // lblHaveAccount
-            // 
-            this.lblHaveAccount.AutoSize = true;
-            this.lblHaveAccount.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.lblHaveAccount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(130)))), ((int)(((byte)(130)))), ((int)(((byte)(130)))));
-            this.lblHaveAccount.Location = new System.Drawing.Point(145, 694);
-            this.lblHaveAccount.Name = "lblHaveAccount";
-            this.lblHaveAccount.Size = new System.Drawing.Size(124, 21);
-            this.lblHaveAccount.TabIndex = 9;
-            this.lblHaveAccount.Text = "Đã có tài khoản?";
-            // 
-            // lnkSignIn
-            // 
-            this.lnkSignIn.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-            this.lnkSignIn.AutoSize = true;
-            this.lnkSignIn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lnkSignIn.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-            this.lnkSignIn.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.lnkSignIn.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(22)))), ((int)(((byte)(22)))));
-            this.lnkSignIn.Location = new System.Drawing.Point(354, 694);
-            this.lnkSignIn.Name = "lnkSignIn";
-            this.lnkSignIn.Size = new System.Drawing.Size(94, 21);
-            this.lnkSignIn.TabIndex = 10;
-            this.lnkSignIn.TabStop = true;
-            this.lnkSignIn.Text = "Đăng nhập";
-            this.lnkSignIn.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSignIn_LinkClicked);
-            // 
-            // pnlSignInUnderline
-            // 
-            this.pnlSignInUnderline.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(181)))), ((int)(((byte)(212)))), ((int)(((byte)(34)))));
-            this.pnlSignInUnderline.Location = new System.Drawing.Point(358, 718);
-            this.pnlSignInUnderline.Name = "pnlSignInUnderline";
-            this.pnlSignInUnderline.Size = new System.Drawing.Size(82, 2);
-            this.pnlSignInUnderline.TabIndex = 11;
-            // 
-            // panelRight
-            // 
-            this.panelRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(220)))), ((int)(((byte)(216)))));
-            this.panelRight.Controls.Add(this.picBackground);
-            this.panelRight.Location = new System.Drawing.Point(640, 0);
-            this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(700, 747);
-            this.panelRight.TabIndex = 1;
-            // 
-            // picBackground
-            // 
-            this.picBackground.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(220)))), ((int)(((byte)(216)))));
-            this.picBackground.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picBackground.Location = new System.Drawing.Point(0, 0);
-            this.picBackground.Name = "picBackground";
-            this.picBackground.Size = new System.Drawing.Size(731, 747);
-            this.picBackground.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picBackground.TabIndex = 0;
-            this.picBackground.TabStop = false;
-            // 
-            // RegisterForm
+            // RegisterForm Base
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1320, 747);
-            this.Controls.Add(this.panelLeft);
-            this.Controls.Add(this.panelRight);
+            this.ClientSize = new System.Drawing.Size(1100, 750);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "RegisterForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Đăng Ký";
-            this.panelLeft.ResumeLayout(false);
-            this.panelLeft.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
-            this.panelRight.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picBackground)).EndInit();
-            this.ResumeLayout(false);
 
+            // ----------------------------------------------------
+            // LEFT PANEL
+            // ----------------------------------------------------
+            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(52, 75, 90);
+            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlLeft.Width = 450;
+            this.pnlLeft.Controls.Add(this.lblLogo);
+            this.pnlLeft.Controls.Add(this.lblTitle);
+            this.pnlLeft.Controls.Add(this.lblSubtitle);
+            this.pnlLeft.Controls.Add(this.lblFeature1);
+            this.pnlLeft.Controls.Add(this.lblFeature2);
+
+            this.lblLogo.AutoSize = true;
+            this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblLogo.ForeColor = System.Drawing.Color.White;
+            this.lblLogo.Location = new System.Drawing.Point(40, 50);
+            this.lblLogo.Text = "Executive Finance";
+
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.Location = new System.Drawing.Point(30, 200);
+            this.lblTitle.Size = new System.Drawing.Size(380, 200);
+            this.lblTitle.Text = "Join the\nElite Circle of\nWealth\nManagement.";
+
+            this.lblSubtitle.AutoSize = true;
+            this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(200, 210, 220);
+            this.lblSubtitle.Location = new System.Drawing.Point(40, 480);
+            this.lblSubtitle.Size = new System.Drawing.Size(350, 45);
+            this.lblSubtitle.Text = "Elevate your financial trajectory with our precision-engineered executive workspace.";
+
+            this.lblFeature1.AutoSize = true;
+            this.lblFeature1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblFeature1.ForeColor = System.Drawing.Color.FromArgb(180, 200, 210);
+            this.lblFeature1.Location = new System.Drawing.Point(40, 640);
+            this.lblFeature1.Text = ".   Bank-grade encryption protocol";
+
+            this.lblFeature2.AutoSize = true;
+            this.lblFeature2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblFeature2.ForeColor = System.Drawing.Color.FromArgb(180, 200, 210);
+            this.lblFeature2.Location = new System.Drawing.Point(40, 680);
+            this.lblFeature2.Text = ".   Real-time market synchronization";
+
+            // ----------------------------------------------------
+            // RIGHT PANEL
+            // ----------------------------------------------------
+            this.pnlRight.BackColor = System.Drawing.Color.White;
+            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlRight.Controls.Add(this.btnClose);
+            this.pnlRight.Controls.Add(this.lblRightTitle);
+            this.pnlRight.Controls.Add(this.lblRightSub);
+            this.pnlRight.Controls.Add(this.lblName);
+            this.pnlRight.Controls.Add(this.txtFullName);
+            this.pnlRight.Controls.Add(this.lblEmail);
+            this.pnlRight.Controls.Add(this.txtEmail);
+            this.pnlRight.Controls.Add(this.lblExecId);
+            this.pnlRight.Controls.Add(this.txtExecutiveId);
+            this.pnlRight.Controls.Add(this.lblPass);
+            this.pnlRight.Controls.Add(this.txtPassword);
+            this.pnlRight.Controls.Add(this.lblConfPass);
+            this.pnlRight.Controls.Add(this.txtConfirmPwd);
+            this.pnlRight.Controls.Add(this.chkTerms);
+            this.pnlRight.Controls.Add(this.btnRegister);
+            this.pnlRight.Controls.Add(this.lnkSignIn);
+            this.pnlRight.Controls.Add(this.lblFooterCopy);
+            this.pnlRight.Controls.Add(this.lblFooterPriv);
+            this.pnlRight.Controls.Add(this.lblFooterReg);
+
+            this.btnClose.Location = new System.Drawing.Point(590, 20);
+            this.btnClose.Size = new System.Drawing.Size(40, 40);
+            this.btnClose.Text = "X";
+            this.btnClose.PrimaryColor = System.Drawing.Color.FromArgb(230, 230, 230);
+            this.btnClose.ForeColor = System.Drawing.Color.Gray;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+
+            this.lblRightTitle.AutoSize = true;
+            this.lblRightTitle.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
+            this.lblRightTitle.ForeColor = System.Drawing.Color.FromArgb(40, 60, 80);
+            this.lblRightTitle.Location = new System.Drawing.Point(50, 80);
+            this.lblRightTitle.Text = "Create Account";
+
+            this.lblRightSub.AutoSize = true;
+            this.lblRightSub.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblRightSub.ForeColor = System.Drawing.Color.Gray;
+            this.lblRightSub.Location = new System.Drawing.Point(55, 130);
+            this.lblRightSub.Text = "Initialize your premium financial profile.";
+
+            // Row 1: Full Name
+            this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblName.ForeColor = System.Drawing.Color.Gray;
+            this.lblName.Location = new System.Drawing.Point(50, 190);
+            this.lblName.Text = "Full Name";
+
+            this.txtFullName.Location = new System.Drawing.Point(50, 210);
+            this.txtFullName.Size = new System.Drawing.Size(540, 40);
+            this.txtFullName.Text = "";
+
+            // Row 2: Email & Exec ID
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblEmail.ForeColor = System.Drawing.Color.Gray;
+            this.lblEmail.Location = new System.Drawing.Point(50, 275);
+            this.lblEmail.Text = "Email Address";
+
+            this.txtEmail.Location = new System.Drawing.Point(50, 295);
+            this.txtEmail.Size = new System.Drawing.Size(260, 40);
+            this.txtEmail.Text = "";
+
+            this.lblExecId.AutoSize = true;
+            this.lblExecId.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblExecId.ForeColor = System.Drawing.Color.Gray;
+            this.lblExecId.Location = new System.Drawing.Point(330, 275);
+            this.lblExecId.Text = "Executive ID";
+
+            this.txtExecutiveId.Location = new System.Drawing.Point(330, 295);
+            this.txtExecutiveId.Size = new System.Drawing.Size(260, 40);
+            this.txtExecutiveId.Text = "";
+
+            // Row 3: Passwords
+            this.lblPass.AutoSize = true;
+            this.lblPass.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblPass.ForeColor = System.Drawing.Color.Gray;
+            this.lblPass.Location = new System.Drawing.Point(50, 360);
+            this.lblPass.Text = "Password";
+
+            this.txtPassword.Location = new System.Drawing.Point(50, 380);
+            this.txtPassword.Size = new System.Drawing.Size(260, 40);
+            this.txtPassword.UseSystemPasswordChar = true;
+
+            this.lblConfPass.AutoSize = true;
+            this.lblConfPass.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblConfPass.ForeColor = System.Drawing.Color.Gray;
+            this.lblConfPass.Location = new System.Drawing.Point(330, 360);
+            this.lblConfPass.Text = "Confirm Password";
+
+            this.txtConfirmPwd.Location = new System.Drawing.Point(330, 380);
+            this.txtConfirmPwd.Size = new System.Drawing.Size(260, 40);
+            this.txtConfirmPwd.UseSystemPasswordChar = true;
+
+            // Row 4: Checkbox
+            this.chkTerms.AutoSize = true;
+            this.chkTerms.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.chkTerms.ForeColor = System.Drawing.Color.FromArgb(80, 80, 80);
+            this.chkTerms.Location = new System.Drawing.Point(50, 450);
+            this.chkTerms.Text = "I acknowledge the Executive Terms of Service and consent to the data protocols.";
+            this.chkTerms.Checked = true;
+
+            // Row 5: Submit Button
+            this.btnRegister.Location = new System.Drawing.Point(50, 495);
+            this.btnRegister.Size = new System.Drawing.Size(540, 45);
+            this.btnRegister.PrimaryColor = System.Drawing.Color.FromArgb(200, 20, 80);
+            this.btnRegister.Text = "Create Account ->";
+            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
+
+            // Row 6: Link
+            this.lnkSignIn.AutoSize = true;
+            this.lnkSignIn.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lnkSignIn.LinkColor = System.Drawing.Color.FromArgb(80, 80, 100);
+            this.lnkSignIn.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.lnkSignIn.Location = new System.Drawing.Point(180, 560);
+            this.lnkSignIn.Text = "Already have an account? Back to Login ->";
+            this.lnkSignIn.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSignIn_LinkClicked);
+
+            // Row 7: Footer
+            this.lblFooterCopy.AutoSize = true;
+            this.lblFooterCopy.Font = new System.Drawing.Font("Segoe UI", 7F);
+            this.lblFooterCopy.ForeColor = System.Drawing.Color.Silver;
+            this.lblFooterCopy.Location = new System.Drawing.Point(50, 680);
+            this.lblFooterCopy.Text = "2024 EXECUTIVE FINANCE GLOBAL";
+
+            this.lblFooterPriv.AutoSize = true;
+            this.lblFooterPriv.Font = new System.Drawing.Font("Segoe UI", 7F);
+            this.lblFooterPriv.ForeColor = System.Drawing.Color.Silver;
+            this.lblFooterPriv.Location = new System.Drawing.Point(350, 680);
+            this.lblFooterPriv.Text = "PRIVACY POLICY";
+
+            this.lblFooterReg.AutoSize = true;
+            this.lblFooterReg.Font = new System.Drawing.Font("Segoe UI", 7F);
+            this.lblFooterReg.ForeColor = System.Drawing.Color.Silver;
+            this.lblFooterReg.Location = new System.Drawing.Point(470, 680);
+            this.lblFooterReg.Text = "REGULATORY DISCLOSURE";
+
+            this.Controls.Add(this.pnlRight);
+            this.Controls.Add(this.pnlLeft);
+
+            this.pnlLeft.ResumeLayout(false);
+            this.pnlLeft.PerformLayout();
+            this.pnlRight.ResumeLayout(false);
+            this.pnlRight.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
-        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse1;
-        private Guna.UI2.WinForms.Guna2ShadowForm guna2ShadowForm1;
-        private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
-        private System.Windows.Forms.Panel panelLeft;
-        private System.Windows.Forms.Panel panelRight;
-        private System.Windows.Forms.PictureBox picBackground;
-        private Guna.UI2.WinForms.Guna2Button btnClose;
-        private System.Windows.Forms.PictureBox picLogo;
-        private System.Windows.Forms.Label lblLogoText;
+        private System.Windows.Forms.Panel pnlLeft;
+        private System.Windows.Forms.Label lblLogo;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblSubtitle;
-        private System.Windows.Forms.Label lblFullName;
-        private Guna.UI2.WinForms.Guna2TextBox txtFullName;
+        private System.Windows.Forms.Label lblFeature1;
+        private System.Windows.Forms.Label lblFeature2;
+
+        private System.Windows.Forms.Panel pnlRight;
+        private ReaLTaiizor.Controls.HopeButton btnClose;
+        private System.Windows.Forms.Label lblRightTitle;
+        private System.Windows.Forms.Label lblRightSub;
+        
+        private System.Windows.Forms.Label lblName;
+        private ReaLTaiizor.Controls.HopeTextBox txtFullName;
         private System.Windows.Forms.Label lblEmail;
-        private Guna.UI2.WinForms.Guna2TextBox txtEmail;
-        private System.Windows.Forms.Label lblPassword;
-        private Guna.UI2.WinForms.Guna2TextBox txtPassword;
-        private System.Windows.Forms.Label lblConfirmPwd;
-        private Guna.UI2.WinForms.Guna2TextBox txtConfirmPwd;
-        private Guna.UI2.WinForms.Guna2Button btnRegister;
-        private System.Windows.Forms.Label lblHaveAccount;
+        private ReaLTaiizor.Controls.HopeTextBox txtEmail;
+        private System.Windows.Forms.Label lblExecId;
+        private ReaLTaiizor.Controls.HopeTextBox txtExecutiveId;
+        private System.Windows.Forms.Label lblPass;
+        private ReaLTaiizor.Controls.HopeTextBox txtPassword;
+        private System.Windows.Forms.Label lblConfPass;
+        private ReaLTaiizor.Controls.HopeTextBox txtConfirmPwd;
+        private System.Windows.Forms.CheckBox chkTerms;
+        private ReaLTaiizor.Controls.HopeButton btnRegister;
         private System.Windows.Forms.LinkLabel lnkSignIn;
-        private System.Windows.Forms.Panel pnlSignInUnderline;
+        private System.Windows.Forms.Label lblFooterCopy;
+        private System.Windows.Forms.Label lblFooterPriv;
+        private System.Windows.Forms.Label lblFooterReg;
     }
 }

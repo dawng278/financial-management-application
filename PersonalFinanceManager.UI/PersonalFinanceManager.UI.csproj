@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -9,8 +9,9 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>PersonalFinanceManager</RootNamespace>
     <AssemblyName>PersonalFinanceManager</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>latest</LangVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -76,11 +77,8 @@
     <Reference Include="EPPlus.Interfaces, Version=8.4.0.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.Interfaces.8.4.0\lib\net462\EPPlus.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Guna.Charts.WinForms, Version=1.0.9.0, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
-      <HintPath>..\packages\Guna.Charts.WinForms.1.0.9\lib\net472\Guna.Charts.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="Guna.UI2, Version=2.0.4.6, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
-      <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.6\lib\net472\Guna.UI2.dll</HintPath>
+    <Reference Include="ReaLTaiizor, Version=3.8.1.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReaLTaiizor.3.8.1.5\lib\net48\ReaLTaiizor.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp, Version=5.5.13.5, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.13.5\lib\net461\itextsharp.dll</HintPath>
@@ -166,6 +164,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Accounts\AccountAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Accounts\AccountEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\ChartHelper.cs" />
     <Compile Include="Controls\ExpenseChart.cs">
       <SubType>UserControl</SubType>
@@ -186,6 +190,12 @@
     <Compile Include="Forms\Accounts\AccountForm.Designer.cs">
       <DependentUpon>AccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Shell\BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Shell\BaseForm.Designer.cs">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Auth\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,40 +208,43 @@
     <Compile Include="Forms\Auth\RegisterForm.Designer.cs">
       <DependentUpon>RegisterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Categories\CategoryEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Categories\CategoryForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Categories\CategoryForm.Designer.cs">
       <DependentUpon>CategoryForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Categories\Category.cs" />
+    <Compile Include="Forms\Goals\GoalManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalManagementForm.Designer.cs">
+      <DependentUpon>GoalManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalAddForm.Designer.cs">
+      <DependentUpon>GoalAddForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalSuccessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalSuccessForm.Designer.cs">
+      <DependentUpon>GoalSuccessForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Goals\GoalDepositForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Dashboard\DashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Dashboard\DashboardForm.Designer.cs">
       <DependentUpon>DashboardForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Invoices\CreateInvoiceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Invoices\CreateInvoiceForm.Designer.cs">
-      <DependentUpon>CreateInvoiceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Invoices\InvoiceListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Invoices\InvoiceListForm.Designer.cs">
-      <DependentUpon>InvoiceListForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\MyWallet\MyWalletForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MyWallet\MyWalletForm.Designer.cs">
-      <DependentUpon>MyWalletForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Reports\ReportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\Reports\ReportForm.cs" />
     <Compile Include="Forms\Reports\ReportForm.Designer.cs">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </Compile>
@@ -240,6 +253,9 @@
     </Compile>
     <Compile Include="Forms\Settings\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Transactions\TransactionEditForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Transactions\TransactionListForm.cs">
       <SubType>Form</SubType>
@@ -252,45 +268,9 @@
     <Compile Include="Navigation\FormNavigator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Theme\AppThemeManager.cs" />
     <Compile Include="Theme\GunaThemeConfig.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
-    <EmbeddedResource Include="Forms\Accounts\AccountForm.resx">
-      <DependentUpon>AccountForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Auth\LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Auth\RegisterForm.resx">
-      <DependentUpon>RegisterForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Categories\CategoryForm.resx">
-      <DependentUpon>CategoryForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Dashboard\DashboardForm.resx">
-      <DependentUpon>DashboardForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Invoices\CreateInvoiceForm.resx">
-      <DependentUpon>CreateInvoiceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Invoices\InvoiceListForm.resx">
-      <DependentUpon>InvoiceListForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Reports\ReportForm.resx">
-      <DependentUpon>ReportForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Transactions\TransactionListForm.resx">
-      <DependentUpon>TransactionListForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="finance.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -343,9 +323,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Image.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\icons8-report-24.png" />
     <None Include="Resources\icons8-category-32.png" />
     <None Include="Resources\icons8-coin-48.png" />
@@ -353,7 +330,14 @@
     <None Include="Resources\icons8-eye-50.png" />
     <None Include="Resources\icons8-closed-eye-50.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\Reports\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Settings\SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

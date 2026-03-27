@@ -1,4 +1,4 @@
-﻿using LiveCharts;
+using LiveCharts;
 using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace PersonalFinanceManager.Controls
             chart.AxisY.Add(new Axis
             {
                 Title = "Số dư (VNĐ)",
-                LabelFormatter = value => value.ToString("N0") // Định dạng số: 1.000.000
+                LabelFormatter = value => PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency((decimal)value) // Định dạng số: 1.000.000
             });
 
             chart.LegendLocation = LegendLocation.Top;
@@ -93,7 +93,7 @@ namespace PersonalFinanceManager.Controls
             chart.AxisY.Add(new Axis
             {
                 Title = "Số dư",
-                LabelFormatter = value => value.ToString("N0") + "đ"
+                LabelFormatter = value => PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency((decimal)value)
             });
         }
     }

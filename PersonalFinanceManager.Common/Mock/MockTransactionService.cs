@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using PersonalFinanceManager.Common.Interfaces;
@@ -10,6 +10,9 @@ namespace PersonalFinanceManager.Common.Mock
     public class MockTransactionService : ITransactionService
     {
         private readonly DbHelper _dbHelper = new DbHelper();
+
+        public event EventHandler TransactionChanged;
+        public string LastError { get; private set; }
 
         public IEnumerable<Transaction> GetRecent(int count)
         {
@@ -226,6 +229,10 @@ namespace PersonalFinanceManager.Common.Mock
                 ImportSource = r["ImportSource"] == DBNull.Value ? null : r["ImportSource"].ToString(),
                 CategoryName = r["CategoryName"] == DBNull.Value ? null : r["CategoryName"].ToString()
             };
+        }
+        public decimal GetMonthlySpentByCategory(int categoryId, int year, int month)
+        {
+            return 0; // Simplified for mock
         }
     }
 }

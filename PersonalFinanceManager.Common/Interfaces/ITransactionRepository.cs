@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using PersonalFinanceManager.Models;
 
@@ -14,6 +14,7 @@ namespace PersonalFinanceManager.Common.Interfaces
 
         // Thống kê - Member D và C cần
         decimal GetTotalByType(int userId, string type, DateTime from, DateTime to);
+        decimal GetTotalByCategoryAndMonth(int userId, int categoryId, string type, int year, int month);
         IEnumerable<Transaction> GetRecent(int userId, int count);
     }
 }

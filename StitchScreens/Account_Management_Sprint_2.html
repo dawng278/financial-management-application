@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Azure Precision - Account Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#72787b",
+                        "surface-tint": "#466270",
+                        "secondary-fixed-dim": "#ffb1c1",
+                        "inverse-primary": "#adcbda",
+                        "secondary": "#b70052",
+                        "primary": "#43606d",
+                        "on-tertiary-fixed": "#002204",
+                        "surface-bright": "#f8f9fa",
+                        "outline-variant": "#c2c7cb",
+                        "on-secondary-fixed-variant": "#8f003f",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-primary-fixed-variant": "#2e4b57",
+                        "secondary-fixed": "#ffd9df",
+                        "on-surface-variant": "#42484b",
+                        "on-surface": "#191c1d",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "primary-fixed-dim": "#adcbda",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#c9e7f7",
+                        "primary-container": "#5c7987",
+                        "on-secondary-fixed": "#3f0018",
+                        "tertiary-fixed": "#a3f69c",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-container": "#f7fff1",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-container": "#fbfdff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1d",
+                        "background": "#f8f9fa",
+                        "tertiary-container": "#358438",
+                        "secondary-container": "#dd2269",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-primary-fixed": "#001f2a",
+                        "tertiary": "#186a22"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-active {
+            background-color: #ffffff;
+            color: #FF4081;
+            border-left: 4px solid #FF4081;
+            font-weight: 700;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .account-card-glow:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-100 dark:bg-slate-950 flex flex-col p-4 space-y-2 z-40">
+<div class="text-2xl font-black text-[#607D8B] mb-8 px-2">Azure Precision</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-manrope text-sm">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg sidebar-active hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="account_balance">account_balance</span>
+<span class="font-manrope text-sm">Accounts</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-manrope text-sm">Transactions</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="payments">payments</span>
+<span class="font-manrope text-sm">Budgets</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="analytics">analytics</span>
+<span class="font-manrope text-sm">Reports</span>
+</a>
+</nav>
+<div class="pt-4 mt-4 border-t border-slate-200">
+<div class="flex items-center px-4 py-3 mb-4 bg-white/50 rounded-xl">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold mr-3 overflow-hidden">
+<img alt="Executive User" data-alt="User profile avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx4uDJCoZJBgKcvKeTuFh-vWZ1Da_VTl85Ewj4XVa0v_VpuYGSG8bo_mW0ai2uwewwOSIb0ThTKDSmA8-X6zEDrPL2g3VAbHz8-bQ2sroKhwTpEJFPRtE8KNSdqjugn6T4hdYRqWiPPNyDeq-lhcB7fPi6bvNAFhVqk_hfmwcNGYCKUkb5e4Hzx35TDeRm_J64Pxordy9bxxKBdHA7k2fUhsKu8IPhMeEqNqOrk0kVBtOrEh6ZNxM5TQAC4DWgfg2Bnc6V6Elhn2U"/>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface">Executive User</p>
+<p class="text-[10px] text-on-surface-variant">Premium Tier</p>
+</div>
+</div>
+<a class="flex items-center px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200/50 transition-all text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200/50 transition-all text-sm" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-50 bg-slate-50 dark:bg-slate-900 shadow-sm flex justify-between items-center px-6 py-3">
+<div class="flex items-center space-x-6">
+<h1 class="font-manrope text-xl font-bold text-[#607D8B] tracking-tight">Account Management</h1>
+<div class="relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-slate-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-secondary transition-all outline-none" placeholder="Search accounts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="bg-primary hover:bg-primary-container text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95 flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span>Add Transaction</span>
+</button>
+<div class="flex space-x-1">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-8 space-y-8 flex-1">
+<!-- Context Header & Primary Action -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight">Financial Overview</h2>
+<p class="text-on-surface-variant mt-1 font-medium">Manage your linked accounts and wallets</p>
+</div>
+<button class="bg-secondary text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-secondary/20 hover:shadow-secondary/40 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center space-x-2">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Add New Account</span>
+</button>
+</div>
+<!-- Bento-ish Grid of Account Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+<!-- Account Card 1: Main Savings -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-tertiary account-card-glow transition-all duration-300 group">
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-tertiary/10 rounded-lg">
+<span class="material-symbols-outlined text-tertiary" data-icon="savings">savings</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold px-2 py-0.5 bg-tertiary/10 text-tertiary rounded-full uppercase tracking-wider">Active</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Synced 2m ago</span>
+</div>
+</div>
+<div>
+<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Main Savings</h3>
+<div class="text-2xl font-extrabold text-[#607D8B] font-manrope">$42,850.24</div>
+</div>
+<div class="mt-6 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="flex-1 py-2 text-[11px] font-bold text-primary bg-surface-container hover:bg-surface-variant rounded-md transition-colors">TRANSFER</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Account Card 2: Amex Platinum -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary account-card-glow transition-all duration-300 group">
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary" data-icon="credit_card">credit_card</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold px-2 py-0.5 bg-secondary/10 text-secondary rounded-full uppercase tracking-wider">Due Soon</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Synced 1h ago</span>
+</div>
+</div>
+<div>
+<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Amex Platinum</h3>
+<div class="text-2xl font-extrabold text-[#607D8B] font-manrope">-$2,140.12</div>
+</div>
+<div class="mt-6 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="flex-1 py-2 text-[11px] font-bold text-secondary bg-secondary/5 hover:bg-secondary/10 rounded-md transition-colors">PAY NOW</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Account Card 3: Crypto Wallet -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary account-card-glow transition-all duration-300 group">
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="currency_bitcoin">currency_bitcoin</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold px-2 py-0.5 bg-primary/10 text-primary rounded-full uppercase tracking-wider">Volatile</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Synced 12s ago</span>
+</div>
+</div>
+<div>
+<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Crypto Portfolio</h3>
+<div class="text-2xl font-extrabold text-[#607D8B] font-manrope">$18,902.55</div>
+</div>
+<div class="mt-6 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="flex-1 py-2 text-[11px] font-bold text-primary bg-surface-container hover:bg-surface-variant rounded-md transition-colors">TRADE</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Account Card 4: Emergency Cash -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-outline-variant account-card-glow transition-all duration-300 group">
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-slate-100 rounded-lg">
+<span class="material-symbols-outlined text-slate-500" data-icon="payments">payments</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full uppercase tracking-wider">Manual</span>
+<span class="text-[10px] text-on-surface-variant mt-1">Updated yesterday</span>
+</div>
+</div>
+<div>
+<h3 class="text-on-surface-variant text-xs font-bold uppercase tracking-widest mb-1">Emergency Cash</h3>
+<div class="text-2xl font-extrabold text-[#607D8B] font-manrope">$1,200.00</div>
+</div>
+<div class="mt-6 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="flex-1 py-2 text-[11px] font-bold text-primary bg-surface-container hover:bg-surface-variant rounded-md transition-colors">LOG CASH</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+</button>
+<button class="p-2 text-on-surface-variant bg-surface-container hover:bg-surface-variant rounded-md transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Detailed Lists or Secondary Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Large Chart Placeholder / Stats Area -->
+<div class="lg:col-span-2 bg-surface-container-low rounded-2xl p-8 relative overflow-hidden">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface">Net Asset Growth</h3>
+<p class="text-sm text-on-surface-variant">Combined performance over the last 30 days</p>
+</div>
+<div class="flex space-x-2">
+<button class="px-3 py-1 bg-white text-xs font-bold rounded-lg shadow-sm">1M</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface-variant hover:bg-white/50 rounded-lg transition-all">6M</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface-variant hover:bg-white/50 rounded-lg transition-all">1Y</button>
+</div>
+</div>
+<!-- Mock chart visual representation using stylized divs -->
+<div class="h-64 flex items-end space-x-2 overflow-hidden">
+<div class="flex-1 bg-primary/10 h-[40%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/15 h-[45%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/25 h-[65%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/30 h-[80%] rounded-t-lg"></div>
+<div class="flex-1 bg-secondary/20 h-[70%] rounded-t-lg"></div>
+<div class="flex-1 bg-secondary/40 h-[90%] rounded-t-lg"></div>
+<div class="flex-1 bg-tertiary/20 h-[75%] rounded-t-lg"></div>
+<div class="flex-1 bg-tertiary/40 h-[95%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/30 h-[85%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/40 h-[100%] rounded-t-lg"></div>
+</div>
+<div class="absolute bottom-4 right-8 flex items-center text-tertiary font-bold space-x-2">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>+12.4% this month</span>
+</div>
+</div>
+<!-- Quick Action / Status Card -->
+<div class="bg-secondary-container rounded-2xl p-8 text-on-secondary-container flex flex-col justify-between">
+<div>
+<div class="flex items-center space-x-3 mb-6">
+<div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<h3 class="font-headline text-lg font-bold">Quick Insights</h3>
+</div>
+<p class="text-sm text-white/80 leading-relaxed mb-6">You've reached your savings goal for "Main Savings" 10 days earlier than projected. Consider moving the surplus to "Crypto Portfolio".</p>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/60">
+<span>Optimization Status</span>
+<span>85%</span>
+</div>
+<div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+<div class="w-[85%] h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full py-4 bg-white text-secondary font-black rounded-xl hover:bg-slate-50 transition-colors shadow-xl active:scale-95">
+                        OPTIMIZE PORTFOLIO
+                    </button>
+</div>
+</div>
+<!-- Recent Activity List (High-end style) -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<div class="px-8 py-6 border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-headline text-lg font-bold text-on-surface">Institutional Connections</h3>
+<button class="text-primary text-sm font-bold flex items-center hover:underline">
+                        Manage Connections
+                        <span class="material-symbols-outlined text-sm ml-1" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="p-2">
+<div class="flex items-center justify-between p-6 hover:bg-surface transition-colors rounded-xl">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
+<img alt="Chase Bank" class="w-6 h-6 object-contain" data-alt="Financial institution bank logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9RZ5ZtdvVAQ8H3E54p5E8ZxDfFKcaWovPoS2xLumYDE3thPF6KSkCAPo1zB4v-wtV_qYS60wppkSxNuYR-4n6FPZ9e2KLMpafpjXVQTO9LZFTS9aBmEWd4n4OUJsN0neA1ym2F7zQd3NK2elYLI8I12HhGYT6q-NMQrkmoL0Zo7K8iJUbPnP3WNKfqVroX_OpzGNcvoYQrUsGz7BgDZTwoGwWR79_AwbYjuJLtBPXYq43-0WvG_KL-OIRR3_yPsiswfWf4brthl0"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Chase Manhattan Bank</h4>
+<p class="text-xs text-on-surface-variant">Connected since Jan 2024</p>
+</div>
+</div>
+<div class="flex items-center space-x-12">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface-variant uppercase">Accounts</p>
+<p class="text-sm font-bold text-on-surface">2 Active</p>
+</div>
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold">Encrypted</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-6 hover:bg-surface transition-colors rounded-xl">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
+<img alt="American Express" class="w-6 h-6 object-contain" data-alt="Credit card provider logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoHDK3vvPWg6sJ9LMDSsPBYs8WatReaMhvGPyoULirr3zB-QodCGgdmc0jg-H50-sKHEMxGAkdxy_U3HWMwU73mWWBteurvyvOnwO1AHUvGcbZXXDSgInKXpHxoYEk9VmTGbQfo8xg7f3ZGo1P2flpYlc5ica4MWJTqlJz3677BYdttXLcsNpM0Oh6BCQRzUBcFSAK-ELxH7FoEIANF4EocIomDFdSpv6YNPwZtoKGO9nHXBAaLNjZGfzlmfGQ9cbIXSrDtpAKqEM"/>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">American Express</h4>
+<p class="text-xs text-on-surface-variant">Connected since Mar 2024</p>
+</div>
+</div>
+<div class="flex items-center space-x-12">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface-variant uppercase">Accounts</p>
+<p class="text-sm font-bold text-on-surface">1 Active</p>
+</div>
+<div class="flex items-center text-tertiary">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold">Encrypted</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB for quick access, suppressed on many pages but useful here for mobile focus though the primary desktop button is in content -->
+<button class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-secondary text-white rounded-full shadow-2xl flex items-center justify-center z-50">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</body></html>

@@ -10,7 +10,8 @@ namespace PersonalFinanceManager.BLL.Validators
         public TransactionValidator()
         {
             RuleFor(x => x.Amount)
-                .GreaterThan(0).WithMessage("Số tiền phải lớn hơn 0.");
+                .Must((tx, amt) => amt != 0 || tx.ImportSource == "Milestone")
+                .WithMessage("Số tiền phải khác 0.");
 
             RuleFor(x => x.CategoryId)
                 .NotEmpty().WithMessage("Vui lòng chọn danh mục.");

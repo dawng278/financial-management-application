@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Electric Finance - Add New Goal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#8f003f",
+              "primary": "#43606d",
+              "on-surface-variant": "#42484b",
+              "primary-container": "#5c7987",
+              "surface-bright": "#f8f9fa",
+              "on-primary-fixed-variant": "#2e4b57",
+              "on-tertiary-fixed": "#002204",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#72787b",
+              "tertiary-container": "#358438",
+              "on-error": "#ffffff",
+              "surface-container-highest": "#e1e3e4",
+              "surface-variant": "#e1e3e4",
+              "on-primary-fixed": "#001f2a",
+              "on-surface": "#191c1d",
+              "on-tertiary-fixed-variant": "#005312",
+              "on-secondary": "#ffffff",
+              "inverse-surface": "#2e3132",
+              "surface": "#f8f9fa",
+              "on-background": "#191c1d",
+              "background": "#f8f9fa",
+              "tertiary-fixed": "#a3f69c",
+              "outline-variant": "#c2c7cb",
+              "on-primary": "#ffffff",
+              "secondary-fixed-dim": "#ffb1c1",
+              "primary-fixed": "#c9e7f7",
+              "secondary-fixed": "#ffd9df",
+              "surface-container": "#edeeef",
+              "surface-container-high": "#e7e8e9",
+              "surface-dim": "#d9dadb",
+              "tertiary": "#186a22",
+              "secondary-container": "#dd2269",
+              "error-container": "#ffdad6",
+              "primary-fixed-dim": "#adcbda",
+              "on-tertiary-container": "#f7fff1",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#88d982",
+              "surface-container-low": "#f3f4f5",
+              "on-secondary-fixed": "#3f0018",
+              "error": "#ba1a1a",
+              "inverse-on-surface": "#f0f1f2",
+              "on-secondary-container": "#fffbff",
+              "surface-tint": "#466270",
+              "on-error-container": "#93000a",
+              "on-primary-container": "#fbfdff",
+              "inverse-primary": "#adcbda",
+              "secondary": "#b70052"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .modal-blur { backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- Background Content: Financial Goals Page -->
+<header class="bg-white dark:bg-[#191C1D] text-[#43606D] dark:text-[#D9DADB] shadow-sm dark:shadow-none docked full-width top-0 z-10">
+<div class="flex justify-between items-center w-full px-8 h-16">
+<div class="text-xl font-bold text-[#43606D] dark:text-white font-headline">Electric Finance</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-[#43606D] dark:text-[#D9DADB] hover:text-[#B70052] transition-colors" href="#">Dashboard</a>
+<a class="text-[#43606D] dark:text-[#D9DADB] hover:text-[#B70052] transition-colors" href="#">Analytics</a>
+<a class="text-[#B70052] border-b-2 border-[#B70052] pb-1 font-headline font-bold" href="#">Goals</a>
+<a class="text-[#43606D] dark:text-[#D9DADB] hover:text-[#B70052] transition-colors" href="#">Budget</a>
+</nav>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary transition-colors" data-icon="settings">settings</span>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="User profile picture thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDGRBQrhy-YJs_y3cTHwHE-m7uowO57x1bh6thRQE7pUMw-AmHWp5mhy3ty31eAXm0kHhMmk22KLo3AwHGMH1F-WL07r_jVxwbVnXLoyD1JfMGeTrxvKtwWtLuL7jYyV3MbLuCHstglWPnARNZHBZcasbeZbwTAan_1mqvUAvKnSeybPrGMbxgJvwgmoLja3N-ejqdk_fQonB8RUGon4qZ9s5OYJyWLyTcVcpzUdtI5t8GIr68H9XGd9Org6CSFJg0g0S8VP8BfyA"/>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- Sidebar Shell -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col pt-20 bg-[#F8F9FA] dark:bg-[#1C1F20] text-[#43606D] dark:text-[#D9DADB] font-manrope tracking-tight w-64 z-0">
+<div class="px-6 mb-8">
+<div class="flex items-center space-x-3 mb-2">
+<img alt="Executive User" class="w-10 h-10 rounded-lg" data-alt="Executive tier user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcCwIxhRNSfo0_mOWtXC3fNXID-WpCXe76VFGaQpDAyw4OXcwnEWReghaUR2r7Ur3hPJuQxmt6en6ZGjDuy5fEW9DBRNPud2gWxaMP7tY_Ylbhxvl03b98XFhJllbbaeZRxUP6kcUevGtjpXV8GwaK9FsimBukHw2xtqluXl6nGd_54077AOKjkQ0tRklMMrYIippAdlyOf21YgPcjhf1STpYBEYaUFHzEi8KeOTxRprtzg3MEHMYlHA2CfRLvvXyc_4w-NPWwrek"/>
+<div>
+<p class="font-bold text-sm">Executive</p>
+<p class="text-xs opacity-70">Premium Tier</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</div>
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Income</span>
+</div>
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span>Expenses</span>
+</div>
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Savings</span>
+</div>
+<div class="flex items-center space-x-3 bg-white dark:bg-[#2A2D2E] text-[#B70052] rounded-r-full py-3 px-6 border-l-4 border-[#B70052] scale-95 transition-transform font-bold">
+<span class="material-symbols-outlined" data-icon="flag">flag</span>
+<span>Goals</span>
+</div>
+</nav>
+<div class="p-6 border-t border-outline-variant/20">
+<button class="w-full bg-secondary text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-secondary/20 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Add New Goal</span>
+</button>
+</div>
+<div class="mt-auto pb-8">
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</div>
+<div class="flex items-center space-x-3 text-[#43606D] dark:text-[#D9DADB] py-3 px-6 hover:bg-[#EDEEEF] dark:hover:bg-[#323637] cursor-pointer">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area (Background) -->
+<main class="ml-64 flex-1 p-8 pt-24 bg-surface filter blur-[2px] opacity-60">
+<div class="max-w-6xl mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h1 class="text-4xl font-extrabold tracking-tight text-primary mb-2">Financial Goals</h1>
+<p class="text-on-surface-variant font-body">Track your progress towards financial freedom.</p>
+</div>
+</div>
+<!-- Bento Grid Content (Blurred) -->
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-bold text-primary">Active Goals</h3>
+<span class="text-secondary font-bold text-sm">3 Goals in Progress</span>
+</div>
+<div class="space-y-6">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<div class="flex justify-between mb-2">
+<span class="font-bold">Home Downpayment</span>
+<span class="text-tertiary font-bold">$45,000 / $120,000</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[37.5%]"></div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<div class="flex justify-between mb-2">
+<span class="font-bold">Tesla Model S</span>
+<span class="text-tertiary font-bold">$82,000 / $95,000</span>
+</div>
+<div class="w-full bg-surface-container-highest h-3 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[86%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-4 space-y-6">
+<div class="bg-primary p-6 rounded-xl text-white">
+<h3 class="font-bold mb-1 opacity-80">Total Saved</h3>
+<div class="text-3xl font-black">$127,000.00</div>
+</div>
+<div class="bg-surface-container-highest p-6 rounded-xl">
+<h3 class="font-bold text-primary mb-4">Milestones</h3>
+<ul class="space-y-3 text-sm">
+<li class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-tertiary" data-icon="check_circle">check_circle</span>
+<span>Emergency Fund Reach</span>
+</li>
+<li class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-tertiary" data-icon="check_circle">check_circle</span>
+<span>Debt Free 2023</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 modal-blur">
+<!-- Modal Container -->
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl shadow-2xl transform transition-all border border-outline-variant/20 overflow-hidden">
+<!-- Modal Header -->
+<div class="px-8 pt-8 pb-4">
+<div class="flex justify-between items-center mb-2">
+<h2 class="text-2xl font-extrabold text-primary font-headline">Create New Financial Goal</h2>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<p class="text-on-surface-variant text-sm font-body">Define your path to achievement with clear targets.</p>
+</div>
+<!-- Modal Form -->
+<form class="px-8 py-4 space-y-6">
+<!-- Goal Name -->
+<div class="space-y-2">
+<label class="text-sm font-bold text-primary uppercase tracking-wider">Goal Name</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-secondary rounded-lg py-3 px-4 font-body transition-all outline-none" placeholder="e.g., Emergency Fund" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-outline-variant group-focus-within:text-secondary" data-icon="edit">edit</span>
+</div>
+</div>
+<!-- Row: Amount and Date -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-sm font-bold text-primary uppercase tracking-wider">Target Amount</label>
+<div class="relative">
+<span class="absolute left-4 top-3 text-primary font-bold">$</span>
+<input class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-secondary rounded-lg py-3 pl-8 pr-4 font-body transition-all outline-none" placeholder="0.00" type="number"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-bold text-primary uppercase tracking-wider">Target Date</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-secondary rounded-lg py-3 px-4 font-body transition-all outline-none text-on-surface-variant" type="date"/>
+</div>
+</div>
+</div>
+<!-- Category -->
+<div class="space-y-2">
+<label class="text-sm font-bold text-primary uppercase tracking-wider">Category</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-highest border-none focus:ring-2 focus:ring-secondary rounded-lg py-3 px-4 font-body transition-all outline-none cursor-pointer">
+<option>Savings</option>
+<option>Investment</option>
+<option>Purchase</option>
+<option>Retirement</option>
+<option>Vacation</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 pointer-events-none text-outline-variant" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+<!-- Starting Progress Indicator -->
+<div class="space-y-3 pt-2">
+<div class="flex justify-between text-xs font-bold text-primary uppercase tracking-widest">
+<span>Starting Progress</span>
+<span>0%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full">
+<div class="bg-secondary/30 h-full w-0 rounded-full"></div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center space-x-4 pt-4 pb-8">
+<button class="flex-1 bg-secondary text-white font-bold py-4 rounded-xl shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-95 transition-all" type="button">
+                        Create Goal
+                    </button>
+<button class="px-8 py-4 font-bold text-primary hover:bg-surface-container-high rounded-xl transition-all" type="button">
+                        Cancel
+                    </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Bottom Navigation (Mobile View - Hidden on Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-[#191C1D] flex justify-around items-center h-16 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-10">
+<div class="flex flex-col items-center text-[#43606D]">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+</div>
+<div class="flex flex-col items-center text-[#43606D]">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<div class="flex flex-col items-center text-[#B70052]">
+<span class="material-symbols-outlined" data-icon="flag">flag</span>
+</div>
+<div class="flex flex-col items-center text-[#43606D]">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+</nav>
+</body></html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Finance - Transaction List</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Inter:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-container": "#5c7987",
+                        "on-primary-fixed-variant": "#2e4b57",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#42484b",
+                        "on-surface": "#191c1d",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#fbfdff",
+                        "outline": "#72787b",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "secondary-fixed-dim": "#ffb1c1",
+                        "secondary": "#b70052",
+                        "surface-tint": "#466270",
+                        "on-background": "#191c1d",
+                        "surface-variant": "#e1e3e4",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-secondary-fixed": "#3f0018",
+                        "secondary-fixed": "#ffd9df",
+                        "primary": "#43606d",
+                        "inverse-primary": "#adcbda",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "surface": "#f8f9fa",
+                        "primary-fixed-dim": "#adcbda",
+                        "tertiary": "#186a22",
+                        "tertiary-container": "#358438",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "surface-container": "#edeeef",
+                        "on-secondary-fixed-variant": "#8f003f",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#dd2269",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-fixed": "#002204",
+                        "primary-fixed": "#c9e7f7",
+                        "background": "#f8f9fa",
+                        "on-secondary-container": "#fffbff",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-container": "#f7fff1",
+                        "tertiary-fixed": "#a3f69c",
+                        "outline-variant": "#c2c7cb"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar Component (from SCREEN_12) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-6 bg-slate-100 dark:bg-slate-800 h-full w-64 border-none bg-[#F8F9FA] dark:bg-[#1D2123] shadow-none z-50 overflow-y-auto">
+<div class="px-8 mb-10">
+<h1 class="text-xl font-black text-[#43606D] dark:text-slate-100 font-['Manrope'] tracking-tight">Executive Finance</h1>
+<p class="text-[10px] uppercase tracking-widest text-[#43606D]/60 dark:text-slate-400 mt-1 font-bold">Premium Workspace</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-4 py-3.5 px-8 text-[#43606D] dark:text-slate-400 hover:bg-slate-200/50 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200 group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Transactions ACTIVE -->
+<a class="flex items-center gap-4 py-3.5 px-8 bg-white dark:bg-slate-700 text-[#B70052] rounded-l-none rounded-r-full shadow-sm font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center gap-4 py-3.5 px-8 text-[#43606D] dark:text-slate-400 hover:bg-slate-200/50 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span>Accounts</span>
+</a>
+<a class="flex items-center gap-4 py-3.5 px-8 text-[#43606D] dark:text-slate-400 hover:bg-slate-200/50 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span>Categories</span>
+</a>
+<a class="flex items-center gap-4 py-3.5 px-8 text-[#43606D] dark:text-slate-400 hover:bg-slate-200/50 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+<div class="pt-8 pb-4 px-8">
+<div class="h-[1px] bg-slate-200 dark:bg-slate-700 w-full"></div>
+</div>
+<a class="flex items-center gap-4 py-3.5 px-8 text-[#43606D] dark:text-slate-400 hover:bg-slate-200/50 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-4 py-3.5 px-8 text-error/80 hover:text-error hover:bg-error/5 font-['Manrope'] font-bold tracking-tight hover:translate-x-1 transition-transform duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</nav>
+<div class="px-6 mt-10">
+<div class="bg-primary/5 dark:bg-slate-700/50 rounded-xl p-4 border border-primary/10">
+<p class="text-[10px] font-bold text-primary/60 dark:text-slate-400 mb-2">QUICK STAT</p>
+<p class="text-sm font-headline font-bold text-primary dark:text-slate-200">Monthly Surplus</p>
+<p class="text-xl font-headline font-black text-tertiary">+$4,290.00</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="flex-1 ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar Component (from SCREEN_12) -->
+<header class="flex justify-between items-center px-8 w-full sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md h-16 border-none shadow-sm shadow-slate-200/50 dark:shadow-none text-[#43606D] dark:text-slate-200 font-['Manrope'] font-semibold text-lg">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-secondary transition-colors" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-secondary/20 transition-all outline-none" placeholder="Search transactions, accounts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add" style="font-variation-settings: 'wght' 700;">add</span>
+                Add Transaction
+            </button>
+<div class="flex items-center gap-4 border-l border-slate-200 pl-6">
+<button class="text-slate-500 hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="flex items-center gap-3 ml-2 group cursor-pointer">
+<div class="text-right hidden xl:block">
+<p class="text-xs font-bold text-on-surface">Alexander Hunt</p>
+<p class="text-[10px] text-on-surface-variant">Premium Member</p>
+</div>
+<img alt="User Avatar" class="w-10 h-10 rounded-xl object-cover ring-2 ring-transparent group-hover:ring-secondary/30 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN12uC2CAT10mpdUqaD_Uybyel7bfkRiEgXZk1zqfILdj2RM1Jnn4MftXE3tTD5uRNisJ8F0YOaJ4m21omPoYwMB1Plp0SPRM0OElxATV5VfQ7dmtqgcTw9ayNoHJZJa-r39bSSBJJ3TShZjEC2J3hkFEfxdBnZ_0y1mUmSrcyLr6O1WdPpQvsHAE7dMFNmYe5dhYdGWMslsfVMvUkpRQGSYFqulkPcVfh8YA1kDqW0dbeV-SPkVxMgZvd7GNgnNGoqDIG-tkSMpY"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Transaction Content Area -->
+<div class="p-8 flex-1 overflow-y-auto space-y-8">
+<!-- Filter Bar Section -->
+<section class="bg-surface-container-low p-6 rounded-xl flex flex-wrap items-center gap-4 shadow-sm border-none">
+<div class="flex-1 min-w-[300px] relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-secondary text-sm" placeholder="Search transactions, tags or accounts..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<div class="bg-surface-container-lowest px-4 py-3 rounded-lg flex items-center gap-2 text-sm text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span>Oct 1, 2023 - Oct 31, 2023</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+<div class="bg-surface-container-lowest px-4 py-3 rounded-lg flex items-center gap-2 text-sm text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span>All Categories</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+<button class="bg-primary text-on-primary p-3 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</section>
+<!-- Main Data Grid / Transaction Table -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="w-full overflow-x-auto">
+<table class="w-full border-collapse">
+<thead class="bg-primary text-on-primary">
+<tr>
+<th class="px-6 py-4 text-left font-['Manrope'] font-bold text-sm uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-left font-['Manrope'] font-bold text-sm uppercase tracking-wider">Category</th>
+<th class="px-6 py-4 text-left font-['Manrope'] font-bold text-sm uppercase tracking-wider">Description</th>
+<th class="px-6 py-4 text-left font-['Manrope'] font-bold text-sm uppercase tracking-wider">Account</th>
+<th class="px-6 py-4 text-right font-['Manrope'] font-bold text-sm uppercase tracking-wider">Amount</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<!-- Table Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-semibold">Investments</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Dividend Payment - AAPL</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Wealthfront Brokerage</td>
+<td class="px-6 py-4 text-right font-bold text-tertiary">+$1,240.50</td>
+</tr>
+<!-- Table Row 2 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 22, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full text-xs font-semibold">Dining Out</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">The Gilded Fork - Dinner</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Amex Platinum</td>
+<td class="px-6 py-4 text-right font-bold text-error">-$245.18</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 21, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-semibold">Utilities</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Cloud Hosting - Azure Monthly</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Chase Business</td>
+<td class="px-6 py-4 text-right font-bold text-error">-$840.00</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 20, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-xs font-semibold">Salary</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Executive Bonus - Q3</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Main Savings</td>
+<td class="px-6 py-4 text-right font-bold text-tertiary">+$15,000.00</td>
+</tr>
+<!-- Table Row 5 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 18, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full text-xs font-semibold">Travel</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Lufthansa - Business Class Upgrade</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Amex Platinum</td>
+<td class="px-6 py-4 text-right font-bold text-error">-$1,120.00</td>
+</tr>
+<!-- Table Row 6 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 15, 2023</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-semibold">Housing</span>
+</td>
+<td class="px-6 py-4 text-sm font-medium">Skyline Luxury Apts - Monthly</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Main Savings</td>
+<td class="px-6 py-4 text-right font-bold text-error">-$4,250.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Bottom Control & Summary Bar -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end pb-10">
+<!-- Pagination -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-outline hover:bg-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-secondary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container-highest transition-colors font-medium">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container-highest transition-colors font-medium">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container-highest transition-colors font-medium">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-low text-outline hover:bg-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Spacer -->
+<div></div>
+<!-- Net Liquidity Card -->
+<div class="bg-primary text-on-primary p-6 rounded-2xl shadow-xl flex flex-col items-end relative overflow-hidden group">
+<div class="absolute -right-10 -bottom-10 opacity-10">
+<span class="material-symbols-outlined !text-[120px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Total Net Liquidity</span>
+<h3 class="text-3xl font-black font-['Manrope']">$242,509.80</h3>
+<div class="mt-4 flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+2.4% from last month</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-8 right-8 bg-secondary text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined !text-3xl">add</span>
+</button>
+</body></html>

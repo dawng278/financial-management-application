@@ -1,0 +1,42 @@
+# Personal Finance Manager - UI/UX Design & Architecture PRD
+
+## 1. Project Overview
+A modern desktop application for personal finance management built with C# WinForms and Guna.UI2. The focus is on clean aesthetics, responsive layouts, and a decoupled architecture for easy service swapping.
+
+## 2. Design System (Guna.UI2 Focused)
+- **Primary Color:** Elegant Blue (#607D8B) - Used for sidebars, headers, and primary buttons.
+- **Accent Color:** Neon Pink (#FF4081) - Used for call-to-action (CTA) and highlights.
+- **Status Colors:**
+    - Income: Emerald Green (#4CAF50)
+    - Expense: Soft Red (#F44336)
+- **Typography:** Segoe UI / Roboto (Modern, clean sans-serif).
+- **Interactive States:** All buttons must implement `HoverState` and `CheckedState`.
+
+## 3. Architecture Strategy (Clean UI / Mocking)
+To ensure the UI is decoupled from the data layer (DAL), we implement an Interface-based approach:
+
+### Interfaces (Defined by Leader)
+- `ITransactionService`: `GetAllTransactions()`, `AddTransaction(Transaction t)`
+- `IAuthService`: `Login(string username, string password)`
+- `IDashboardService`: `GetSummaryStats()`, `GetSpendingTrends()`
+
+### Mock Layer
+- `MockTransactionService`: Returns hardcoded lists of transactions for UI preview.
+- `MockAuthService`: Simple boolean checks for login simulation.
+- `MockDashboardService`: Provides static data for charts and cards.
+
+## 4. Screen Roadmap
+### Sprint 1: Core Framework & Auth
+1. **LoginForm:** Minimalist design with Guna2ShadowForm and rounded corners.
+2. **BaseForm:** The main shell featuring a Guna2Panel Sidebar for navigation.
+3. **Dashboard:** Overview with KPI cards (Balance, Income, Expense).
+4. **TransactionListForm:** A Guna2DataGridView centric view for history.
+
+### Sprint 2: Data Visualization & Management
+1. **LiveCharts Integration:** Dynamic charts on Dashboard.
+2. **Account/Category Forms:** CRUD operations for accounts and categories.
+3. **ReportForm:** Advanced filters and export functionality.
+
+## 5. Development Standards
+- **Separation of Concerns:** Design logic stays in `.Designer.cs`. Event handlers in `.cs` call interfaces, not DB logic.
+- **Responsive Layout:** Use Anchors, Docks, and Guna2Panels to ensure layouts adapt to different resolutions.

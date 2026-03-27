@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +15,6 @@ namespace PersonalFinanceManager.Models
         public string ColorHex { get; set; }       // VD: "#FF5733"
         public bool IsDefault { get; set; }        // Category hệ thống, không xóa được
         public int? ParentCategoryId { get; set; } // Cho phép category con (tương lai)
+        public decimal BudgetLimit { get; set; }   // Giới hạn ngân sách
     }
 }

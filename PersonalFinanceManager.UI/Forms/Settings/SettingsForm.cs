@@ -1,419 +1,467 @@
-﻿using PersonalFinanceManager.Infrastructure.DI;
 using System;
+using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-
+using PersonalFinanceManager.Infrastructure.DI;
 namespace PersonalFinanceManager.Forms.Settings
 {
-    public partial class SettingsForm : Form
+    public partial class    SettingsForm : Form
     {
-        private bool _editMode = false;
-
-        // Readonly field style
-        private static readonly Color ReadBorder = Color.FromArgb(218, 222, 235);
-        private static readonly Color ReadFill = Color.White;
-        // Edit mode field style
-        private static readonly Color EditBorder = Color.FromArgb(181, 212, 34);
-        private static readonly Color EditFill = Color.FromArgb(250, 252, 245);
-
         public SettingsForm()
         {
             InitializeComponent();
             this.Load += SettingsForm_Load;
-            this.SizeChanged += SettingsForm_SizeChanged;
-            btnNavHelp.Click += btnNavHelp_Click;
+            
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, ev) => 
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    UpdateTranslations();
+                }));
+            };
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.ThemeChanged += (s, ev) =>
+            {
+                if (this.IsHandleCreated) this.Invoke(new Action(() => {
+                    ApplyTheme();
+                    this.Refresh(); // Force redraw of custom painted cards
+                }));
+            };
+
+            ApplyResponsiveLayout();
         }
 
-        // =====================================================================
-        // LOAD
-        // =====================================================================
+        private void UpdateTranslations()
+        {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+
+            // Using reflection or exact name matches to update labels
+            var lblPageTitle = this.Controls.Find("lblPageTitle", true).Length > 0 ? this.Controls.Find("lblPageTitle", true)[0] as Label : null;
+            if (lblPageTitle != null) lblPageTitle.Text = t("Settings");
+
+            var lblPageSub = this.Controls.Find("lblPageSub", true).Length > 0 ? this.Controls.Find("lblPageSub", true)[0] as Label : null;
+            if (lblPageSub != null) lblPageSub.Text = t("Manage your account preferences and system configuration.");
+
+            var btnEditProfile = this.Controls.Find("btnEditProfile", true).Length > 0 ? this.Controls.Find("btnEditProfile", true)[0] as ReaLTaiizor.Controls.HopeButton : null;
+            if (btnEditProfile != null) btnEditProfile.Text = t("Edit Profile");
+
+            var lblEmailLbl = this.Controls.Find("lblEmailLbl", true).Length > 0 ? this.Controls.Find("lblEmailLbl", true)[0] as Label : null;
+            if (lblEmailLbl != null) lblEmailLbl.Text = t("EMAIL ADDRESS");
+
+            var lblPhoneLbl = this.Controls.Find("lblPhoneLbl", true).Length > 0 ? this.Controls.Find("lblPhoneLbl", true)[0] as Label : null;
+            if (lblPhoneLbl != null) lblPhoneLbl.Text = t("PHONE NUMBER");
+
+            var lblLocLbl = this.Controls.Find("lblLocLbl", true).Length > 0 ? this.Controls.Find("lblLocLbl", true)[0] as Label : null;
+            if (lblLocLbl != null) lblLocLbl.Text = t("LOCATION");
+
+            var lblTimeLbl = this.Controls.Find("lblTimeLbl", true).Length > 0 ? this.Controls.Find("lblTimeLbl", true)[0] as Label : null;
+            if (lblTimeLbl != null) lblTimeLbl.Text = t("TIMEZONE");
+
+            var lblAppTitle = this.Controls.Find("lblAppTitle", true).Length > 0 ? this.Controls.Find("lblAppTitle", true)[0] as Label : null;
+            if (lblAppTitle != null) lblAppTitle.Text = t("Appearance");
+
+            var lblLightMode = this.Controls.Find("lblLightMode", true).Length > 0 ? this.Controls.Find("lblLightMode", true)[0] as Label : null;
+            if (lblLightMode != null) lblLightMode.Text = t("Light Mode");
+
+            var lblDarkMode = this.Controls.Find("lblDarkMode", true).Length > 0 ? this.Controls.Find("lblDarkMode", true)[0] as Label : null;
+            if (lblDarkMode != null) lblDarkMode.Text = t("Dark Mode");
+
+            var lblSecTitle = this.Controls.Find("lblSecTitle", true).Length > 0 ? this.Controls.Find("lblSecTitle", true)[0] as Label : null;
+            if (lblSecTitle != null) lblSecTitle.Text = t("Security & Privacy");
+
+            var lblChangePass = this.Controls.Find("lblChangePass", true).Length > 0 ? this.Controls.Find("lblChangePass", true)[0] as Label : null;
+            if (lblChangePass != null) lblChangePass.Text = t("CHANGE PASSWORD");
+
+            var txtCurrentPass = this.Controls.Find("txtCurrentPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            if (txtCurrentPass != null) txtCurrentPass.Hint = t("Enter current password");
+
+            var txtNewPass = this.Controls.Find("txtNewPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            if (txtNewPass != null) txtNewPass.Hint = t("Enter new password");
+
+            var txtConfirmPass = this.Controls.Find("txtConfirmPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            if (txtConfirmPass != null) txtConfirmPass.Hint = t("Confirm new password");
+
+            var btnUpdatePassword = this.Controls.Find("btnUpdatePassword", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeButton;
+            if (btnUpdatePassword != null) btnUpdatePassword.Text = t("Update Password");
+
+
+            var lblLang = this.Controls.Find("lblLang", true).Length > 0 ? this.Controls.Find("lblLang", true)[0] as Label : null;
+            if (lblLang != null) lblLang.Text = t("LANGUAGE");
+
+            var lblCurr = this.Controls.Find("lblCurr", true).Length > 0 ? this.Controls.Find("lblCurr", true)[0] as Label : null;
+            if (lblCurr != null) lblCurr.Text = t("CURRENCY FORMAT");
+
+            var lblExport = this.Controls.Find("lblExport", true).Length > 0 ? this.Controls.Find("lblExport", true)[0] as Label : null;
+            if (lblExport != null) lblExport.Text = t("Export Account Data");
+
+            var btnFactoryReset = this.Controls.Find("btnFactoryReset", true).Length > 0 ? this.Controls.Find("btnFactoryReset", true)[0] as ReaLTaiizor.Controls.HopeButton : null;
+            if (btnFactoryReset != null) btnFactoryReset.Text = t("Factory Reset");
+        }
+
+        private void ApplyResponsiveLayout()
+        {
+            // Security Password Fields Stretch
+            txtCurrentPass.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtNewPass.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtConfirmPass.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnUpdatePassword.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            pnlPrivacy.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            // Layout Split geometry dynamically centering a 2x2 symmetrical grid
+            this.SizeChanged += (s, e) => {
+                int margin = 40;
+                int gap = 40;
+                int colW = (this.ClientSize.Width - margin * 2 - gap) / 2;
+                if (colW < 300) colW = 300;
+
+                // Adjust the 4 Main Cards
+                pnlProfile.Width = colW;
+                pnlSecurity.Width = colW;
+                
+                pnlAppearance.Width = colW;
+                pnlAppearance.Left = pnlProfile.Right + gap;
+
+                // Dynamically slice the 2-column fields inside Profile Card
+                int profileGap = 20;
+                int profileFieldW = (colW - 40 - profileGap) / 2;
+
+                txtEmail.Width = profileFieldW;
+                txtPhone.Width = profileFieldW;
+                txtPhone.Left = txtEmail.Right + profileGap;
+                var lblPhoneLbl = this.Controls.Find("lblPhoneLbl", true).FirstOrDefault() as Label;
+                if (lblPhoneLbl != null) lblPhoneLbl.Left = txtPhone.Left;
+
+                txtLocation.Width = profileFieldW;
+                txtTimezone.Width = profileFieldW;
+                txtTimezone.Left = txtLocation.Right + profileGap;
+                
+                var lblTimeLbl = this.Controls.Find("lblTimeLbl", true).FirstOrDefault() as Label;
+                if (lblTimeLbl != null) lblTimeLbl.Left = txtTimezone.Left;
+
+                // Move Appearance dark mode card safely depending on width
+                var pnlLightMode = this.Controls.Find("pnlLightMode", true).FirstOrDefault() as Panel;
+                var pnlDarkMode = this.Controls.Find("pnlDarkMode", true).FirstOrDefault() as Panel;
+                var lblDarkMode = this.Controls.Find("lblDarkMode", true).FirstOrDefault() as Label;
+                
+                if (pnlLightMode != null && pnlDarkMode != null && lblDarkMode != null)
+                {
+                    pnlDarkMode.Left = pnlLightMode.Right + profileGap;
+                    lblDarkMode.Left = pnlDarkMode.Left + (pnlDarkMode.Width / 2) - (lblDarkMode.Width / 2);
+                }
+
+                // Invalidate for clean paint
+                pnlProfile.Invalidate();
+                pnlSecurity.Invalidate();
+                pnlAppearance.Invalidate();
+            };
+        }
+
         private void SettingsForm_Load(object sender, EventArgs e)
         {
+            ApplyTheme();
+            
+            // Clear default text to show hints
+            var txtCurrentPass = this.Controls.Find("txtCurrentPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            var txtNewPass = this.Controls.Find("txtNewPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            var txtConfirmPass = this.Controls.Find("txtConfirmPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            if (txtCurrentPass != null) txtCurrentPass.Text = "";
+            if (txtNewPass != null) txtNewPass.Text = "";
+            if (txtConfirmPass != null) txtConfirmPass.Text = "";
+            
+            // Apply Premium Aesthetics to Designer Controls
+            foreach (Control c in this.Controls)
+            {
+                if (c is Panel p && p.BackColor == Color.White)
+                {
+                    p.BackColor = Color.Transparent;
+                    p.Paint += Card_Paint;
+                }
+            }
+
+            // Bind Button Themes
+            var primaryColor = Color.FromArgb(183, 0, 82);
+            var darkTheme = Color.FromArgb(40, 45, 60);
+
+            var btnEditProfile = this.Controls.Find("btnEditProfile", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeButton;
+            var btnUpdatePassword = this.Controls.Find("btnUpdatePassword", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeButton;
+            var btnFactoryReset = this.Controls.Find("btnFactoryReset", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeButton;
+
+            Action<ReaLTaiizor.Controls.HopeButton> RoundButton = (btn) => {
+                if (btn == null) return;
+                var setRgn = new Action(() => btn.Region = new Region(RoundedRect(new Rectangle(0, 0, btn.Width, btn.Height), 6)));
+                setRgn();
+                btn.SizeChanged += (s, ev) => setRgn();
+            };
+
+            if (btnEditProfile != null) { btnEditProfile.PrimaryColor = darkTheme; btnEditProfile.Cursor = Cursors.Hand; btnEditProfile.Click += BtnEditProfile_Click; RoundButton(btnEditProfile); }
+            if (btnUpdatePassword != null) { btnUpdatePassword.PrimaryColor = primaryColor; btnUpdatePassword.Cursor = Cursors.Hand; RoundButton(btnUpdatePassword); }
+            if (btnFactoryReset != null) { btnFactoryReset.PrimaryColor = Color.FromArgb(200, 30, 50); btnFactoryReset.Cursor = Cursors.Hand; RoundButton(btnFactoryReset); }
+
+            // Bind Interactive Light/Dark Pnl Handlers
+            var pnlLightMode = this.Controls.Find("pnlLightMode", true).FirstOrDefault() as Panel;
+            var pnlDarkMode = this.Controls.Find("pnlDarkMode", true).FirstOrDefault() as Panel;
+            var lblLightMode = this.Controls.Find("lblLightMode", true).FirstOrDefault() as Label;
+            var lblDarkMode = this.Controls.Find("lblDarkMode", true).FirstOrDefault() as Label;
+
+            if (pnlLightMode != null) { pnlLightMode.Cursor = Cursors.Hand; pnlLightMode.Paint += ThemeBox_Paint; pnlLightMode.Click += Theme_Click; }
+            if (pnlDarkMode != null) { pnlDarkMode.Cursor = Cursors.Hand; pnlDarkMode.Paint += ThemeBox_Paint; pnlDarkMode.Click += Theme_Click; }
+            if (lblLightMode != null) { lblLightMode.Cursor = Cursors.Hand; lblLightMode.Click += Theme_Click; }
+            if (lblDarkMode != null) { lblDarkMode.Cursor = Cursors.Hand; lblDarkMode.Click += Theme_Click; }
+
+            // Bind Settings
+            var cboCurr = this.Controls.Find("cboCurr", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
+            var cboLang = this.Controls.Find("cboLang", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeComboBox;
+            if (cboCurr != null)
+            {
+                cboCurr.Items.Clear();
+                cboCurr.Items.Add("VND (đ) - Đồng");
+                cboCurr.Items.Add("USD ($) - Dollar");
+                cboCurr.Items.Add("EUR (€) - Euro");
+                cboCurr.SelectedItem = PersonalFinanceManager.Common.Helpers.ConfigHelper.GlobalCurrency == "USD" ? "USD ($) - Dollar" : (PersonalFinanceManager.Common.Helpers.ConfigHelper.GlobalCurrency == "EUR" ? "EUR (€) - Euro" : "VND (đ) - Đồng");
+                cboCurr.SelectedIndexChanged += CboCurr_SelectedIndexChanged;
+            }
+
+            if (cboLang != null)
+            {
+                cboLang.Items.Clear();
+                cboLang.Items.Add("English (EN)");
+                cboLang.Items.Add("Tiếng Việt (VI)");
+                cboLang.SelectedItem = PersonalFinanceManager.Common.Helpers.ConfigHelper.GlobalLanguage == "VI" ? "Tiếng Việt (VI)" : "English (EN)";
+                cboLang.SelectedIndexChanged += CboLang_SelectedIndexChanged;
+            }
+
             try
             {
                 var u = ServiceLocator.UserService.GetCurrentUser();
                 if (u != null)
                 {
-                    lblUsername.Text = u.FullName ?? u.Email ?? "Admin";
-                    // Pre-fill fields from user data if available
-                    if (!string.IsNullOrEmpty(u.FullName))
-                    {
-                        var parts = u.FullName.Split(' ');
-                        txtFirstName.Text = parts.Length > 0 ? parts[0] : u.FullName;
-                        txtLast.Text = parts.Length > 1 ? string.Join(" ", parts, 1, parts.Length - 1) : "";
-                    }
-
-                    if (!string.IsNullOrEmpty(u.Email))
-                        txtEmail.Text = u.Email;
+                    var lblProfileName = this.Controls.Find("lblProfileName", true).FirstOrDefault() as Label;
+                    var txtEmail = this.Controls.Find("txtEmail", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+                    if (lblProfileName != null) lblProfileName.Text = u.FullName ?? u.Username;
+                    if (txtEmail != null) txtEmail.Text = u.Email ?? "";
                 }
             }
             catch { }
-
-            LayoutTopBar();
-            LayoutSidebarBottom();
-            ResizeContent();
-            SetEditMode(false);
+            
+            UpdateTranslations();
         }
 
-        // =====================================================================
-        // EDIT / VIEW TOGGLE
-        // =====================================================================
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void ApplyTheme()
         {
-            SetEditMode(!_editMode);
+            PersonalFinanceManager.Common.Helpers.ThemeHelper.ApplyTheme(this);
+            
+            // Overrides for specific labels
+            var lblPageTitle = this.Controls.Find("lblPageTitle", true).FirstOrDefault() as Label;
+            if (lblPageTitle != null) lblPageTitle.ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.Text;
+            
+            var lblPageSub = this.Controls.Find("lblPageSub", true).FirstOrDefault() as Label;
+            if (lblPageSub != null) lblPageSub.ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.SubText;
+
+            // SYNC ALL TOGGLES BACKGROUND WITH THE PARENT CARD (Anti-WhiteBox Fix)
+            SyncTogglesBackground(this);
         }
 
-        private void SetEditMode(bool edit)
+        private void SyncTogglesBackground(Control parent)
         {
-            _editMode = edit;
-
-            // Toggle button label
-            btnEdit.Text = edit ? "  ✕  Cancel" : "  ✎  Edit";
-            btnEdit.ForeColor = edit
-                ? Color.FromArgb(195, 45, 45)
-                : Color.FromArgb(34, 160, 95);
-            btnEdit.HoverState.FillColor = edit
-                ? Color.FromArgb(255, 235, 235)
-                : Color.FromArgb(232, 252, 215);
-            btnEdit.HoverState.ForeColor = edit
-                ? Color.FromArgb(160, 30, 30)
-                : Color.FromArgb(25, 135, 75);
-
-            // Toggle field readonly state + style
-            SetFieldEditable(txtFirstName, edit);
-            SetFieldEditable(txtLast, edit);
-            SetFieldEditable(txtMobile, edit);
-            SetFieldEditable(txtEmail, edit);
-            SetFieldEditable(txtNewPass, edit);
-            SetFieldEditable(txtConfirmPass, edit);
-
-            dtpDob.Enabled = edit;
-            dtpDob.BorderColor = edit ? EditBorder : ReadBorder;
-
-            // Update button only active in edit mode
-            btnUpdate.Enabled = edit;
-            btnUpdate.FillColor = edit
-                ? Color.FromArgb(34, 160, 95)
-                : Color.FromArgb(160, 180, 160);
-            btnUpdate.HoverState.FillColor = edit
-                ? Color.FromArgb(26, 135, 78)
-                : Color.FromArgb(160, 180, 160);
-        }
-
-        private void SetFieldEditable(Guna.UI2.WinForms.Guna2TextBox tb, bool edit)
-        {
-            tb.ReadOnly = !edit;
-            tb.BorderColor = edit ? EditBorder : ReadBorder;
-            tb.FillColor = edit ? EditFill : ReadFill;
-        }
-
-        // =====================================================================
-        // UPDATE
-        // =====================================================================
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            if (!_editMode) return;
-
-            // Basic validation
-            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
-            { ShowError("First name cannot be empty."); return; }
-
-            if (string.IsNullOrWhiteSpace(txtEmail.Text) || !txtEmail.Text.Contains("@"))
-            { ShowError("Please enter a valid email address."); return; }
-
-            if (!string.IsNullOrEmpty(txtNewPass.Text) &&
-                txtNewPass.Text != txtConfirmPass.Text)
-            { ShowError("Passwords do not match."); return; }
-
-            try
+            foreach (Control c in parent.Controls)
             {
-                // Persist via service if available
-                var u = ServiceLocator.UserService.GetCurrentUser();
-                if (u != null)
+                if (c is ReaLTaiizor.Controls.HopeToggle tg)
                 {
-                    var updated = new PersonalFinanceManager.Models.User
-                    {
-                        FullName = txtFirstName.Text.Trim() + " " + txtLast.Text.Trim(),
-                        Email = txtEmail.Text.Trim()
-                    };
+                    tg.BackColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+                    tg.BaseColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+                    tg.BaseColorA = PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode ? Color.FromArgb(45, 45, 60) : Color.FromArgb(220, 223, 230);
+                    tg.HeadColorB = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+                }
+                else if (c is ReaLTaiizor.Controls.HopeSwitch sw)
+                {
+                    sw.BackColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+                    sw.BaseColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground;
+                }
+                if (c.HasChildren)
+                {
+                    SyncTogglesBackground(c);
+                }
+            }
+        }
 
-                    var userService = ServiceLocator.UserService as PersonalFinanceManager.Common.Mock.MockUserService;
-                    if (userService == null || !userService.UpdateProfile(updated, txtNewPass.Text.Trim()))
+        private void CboCurr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var cbo = sender as ReaLTaiizor.Controls.HopeComboBox;
+            if (cbo == null || cbo.SelectedItem == null) return;
+            string cur = "VND";
+            if (cbo.SelectedItem.ToString().Contains("USD")) cur = "USD";
+            if (cbo.SelectedItem.ToString().Contains("EUR")) cur = "EUR";
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.SaveRates(PersonalFinanceManager.Common.Helpers.ConfigHelper.RateUsdToVnd, PersonalFinanceManager.Common.Helpers.ConfigHelper.RateEurToVnd, cur);
+            MessageBox.Show($"Currency format changed to {cur}.", "Settings Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void CboLang_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var cbo = sender as ReaLTaiizor.Controls.HopeComboBox;
+            if (cbo == null || cbo.SelectedItem == null) return;
+            string lang = cbo.SelectedItem.ToString().Contains("VI") ? "VI" : "EN";
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.SaveLanguage(lang);
+        }
+
+        private void BtnEditProfile_Click(object sender, EventArgs e)
+        {
+            var txtEmail = this.Controls.Find("txtEmail", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            var u = ServiceLocator.UserService.GetCurrentUser();
+            if (u != null && txtEmail != null)
+            {
+                u.Email = txtEmail.Text;
+                bool ok = ServiceLocator.UserService.UpdateProfile(u, null);
+                if (ok) MessageBox.Show("Profile successfully saved.", "Profile", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else MessageBox.Show("Failed to save profile. Email might be in use.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void Theme_Click(object sender, EventArgs e)
+        {
+            string ctrlName = (sender as Control)?.Name ?? "";
+            string theme = ctrlName.Contains("Light") ? "LIGHT" : "DARK";
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.SaveTheme(theme);
+            
+            this.Refresh(); // Refresh the theme boxes
+        }
+
+        private void ThemeBox_Paint(object sender, PaintEventArgs e)
+        {
+            var pnl = sender as Panel;
+            var g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            using (var path = RoundedRect(new Rectangle(0, 0, pnl.Width - 1, pnl.Height - 1), 10))
+            {
+                bool isThisOne = (pnl.Name == "pnlLightMode" && !PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode) ||
+                                (pnl.Name == "pnlDarkMode" && PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode);
+
+                g.FillPath(new SolidBrush(pnl.Name == "pnlLightMode" ? Color.FromArgb(245,245,250) : Color.FromArgb(25,25,35)), path);
+                
+                if (isThisOne)
+                {
+                    g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Primary, 2), path);
+                }
+                else
+                {
+                    g.DrawPath(new Pen(Color.FromArgb(200, 200, 210), 1), path);
+                }
+
+                // Draw pseudo UI inside
+                g.FillRectangle(new SolidBrush(pnl.Name == "pnlLightMode" ? Color.White : Color.FromArgb(40,45,60)), 15, 10, 40, pnl.Height - 20); // Sidebar pseudo
+                g.FillRectangle(new SolidBrush(pnl.Name == "pnlLightMode" ? Color.FromArgb(220,225,235) : Color.FromArgb(50,55,75)), 65, 20, pnl.Width - 85, 15); // Line pseudo
+                g.FillRectangle(new SolidBrush(pnl.Name == "pnlLightMode" ? Color.FromArgb(220,225,235) : Color.FromArgb(50,55,75)), 65, 45, pnl.Width - 110, 15); // Line pseudo
+            }
+        }
+
+        private void Card_Paint(object sender, PaintEventArgs e)
+        {
+            var pnl = sender as Panel;
+            var g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using (var path = RoundedRect(new Rectangle(0, 0, pnl.Width - 5, pnl.Height - 5), 15))
+            {
+                // Soft shadow offset if light mode
+                if (!PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode)
+                    g.FillPath(new SolidBrush(Color.FromArgb(10, 0, 0, 0)), RoundedRect(new Rectangle(3, 3, pnl.Width - 5, pnl.Height - 5), 15));
+                
+                g.FillPath(new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.CardBackground), path);
+                g.DrawPath(new Pen(PersonalFinanceManager.Common.Helpers.ThemeHelper.Border, 1), path); // Crisp border
+            }
+        }
+
+        private static System.Drawing.Drawing2D.GraphicsPath RoundedRect(Rectangle r, int radius)
+        {
+            var path = new System.Drawing.Drawing2D.GraphicsPath();
+            int d = radius * 2;
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        private void btnUpdatePassword_Click(object sender, EventArgs e)
+        {
+            var txtCurrent = this.Controls.Find("txtCurrentPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            var txtNew = this.Controls.Find("txtNewPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            var txtConfirm = this.Controls.Find("txtConfirmPass", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeTextBox;
+            
+            if (txtCurrent == null || txtNew == null || txtConfirm == null) return;
+
+            var u = ServiceLocator.UserService.GetCurrentUser();
+            if (u == null) return;
+
+            if (u.PasswordHash != txtCurrent.Text && !string.IsNullOrWhiteSpace(txtCurrent.Text))
+            {
+                MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Incorrect current password."), 
+                                PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Error"), 
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (txtNew.Text != txtConfirm.Text)
+            {
+                MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("New passwords do not match."), 
+                                PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Error"), 
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtNew.Text) || txtNew.Text.Length < 4)
+            {
+                MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Password is too weak. Must be at least 4 characters."), 
+                                PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Security"), 
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (ServiceLocator.UserService.UpdateProfile(u, txtNew.Text))
+            {
+                MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Password updated successfully. Logging out..."), 
+                                PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Success"), 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // Logout by restarting application
+                Application.Restart();
+            }
+            else
+            {
+                MessageBox.Show(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Failed to update password."), 
+                                PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Error"), 
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnFactoryReset_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to completely erase all transaction and goal data? This cannot be undone.", "Factory Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                try
+                {
+                    var dbHelper = new PersonalFinanceManager.Common.Helpers.DbHelper();
+                    using (var conn = dbHelper.CreateConnection())
                     {
-                        ShowError("Unable to update profile. Email may already be used.");
-                        return;
+                        conn.Open();
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = "DELETE FROM Transactions; DELETE FROM Goals;";
+                            cmd.ExecuteNonQuery();
+                        }
                     }
-                }
-            }
-            catch { }
-
-            MessageBox.Show("Profile updated successfully.", "Settings",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            SetEditMode(false);
-        }
-
-        private void ShowError(string msg)
-            => MessageBox.Show(msg, "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-        // =====================================================================
-        // LAYOUT
-        // =====================================================================
-        private void SettingsForm_SizeChanged(object sender, EventArgs e)
-        {
-            LayoutTopBar();
-            LayoutSidebarBottom();
-            ResizeContent();
-        }
-
-        private void LayoutTopBar()
-        {
-            int w = pnlTopBar.Width;
-            int by = (pnlTopBar.Height - 30) / 2;
-            btnClose.Location = new Point(w - 40, by);
-            btnMaximize.Location = new Point(w - 74, by);
-            btnMinimize.Location = new Point(w - 108, by);
-            lblUsername.Location = new Point(w - 220, (pnlTopBar.Height - lblUsername.Height) / 2);
-            picAvatar.Location = new Point(w - 258, (pnlTopBar.Height - 36) / 2);
-        }
-
-        private void LayoutSidebarBottom()
-        {
-            int sH = pnlSidebar.Height;
-            btnNavLogout.Location = new Point(14, sH - 48);
-            btnNavHelp.Location = new Point(14, sH - 96);
-            pnlSidebar.Invalidate();
-        }
-
-        private void ResizeContent()
-        {
-            int pad = pnlMain.Padding.Left;
-            int avail = pnlMain.ClientSize.Width - pad * 2;
-
-            pnlSettingsWrap.Location = new Point(pad, pad);
-            pnlSettingsWrap.Width = avail;
-            pnlFormCard.Width = avail;
-
-            // Stretch full-width controls inside card
-            int innerW = avail - 56;   // 28px padding each side
-            pnlDivider.Width = innerW;
-            txtEmail.Width = innerW;
-
-            // Recalculate two-column widths
-            int half = (innerW - 16) / 2;   // 16px gap between columns
-            int col2 = 28 + half + 16;
-
-            txtFirstName.Width = half;
-            txtLast.Width = half;
-            txtLast.Location = new Point(col2, txtLast.Top);
-            lblLastLbl.Location = new Point(col2, lblLastLbl.Top);
-
-            dtpDob.Width = half;
-            txtMobile.Width = half;
-            txtMobile.Location = new Point(col2, txtMobile.Top);
-            lblMobileLbl.Location = new Point(col2, lblMobileLbl.Top);
-
-            txtNewPass.Width = half;
-            txtConfirmPass.Width = half;
-            txtConfirmPass.Location = new Point(col2, txtConfirmPass.Top);
-            lblConfirmPassLbl.Location = new Point(col2, lblConfirmPassLbl.Top);
-
-            // Edit button always anchored right inside card
-            btnEdit.Location = new Point(avail - 56 - btnEdit.Width, btnEdit.Top);
-
-            pnlFormCard.Invalidate();
-        }
-
-        // =====================================================================
-        // NAVIGATION
-        // =====================================================================
-        private void btnNavDashboard_Click(object sender, EventArgs e)
-            => UI.Navigation.FormNavigator.GoToDashboard();
-
-        private void btnNavTransactions_Click(object sender, EventArgs e)
-            => UI.Navigation.FormNavigator.GoToTransactions();
-
-        private void btnNavInvoices_Click(object sender, EventArgs e)
-            => UI.Navigation.FormNavigator.GoToInvoices();
-
-        private void btnNavWallets_Click(object sender, EventArgs e)
-            => UI.Navigation.FormNavigator.GoToMyWallet();
-
-        private void btnNavLogout_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Bạn có muốn đăng xuất không?", "Đăng xuất",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                ServiceLocator.UserService.Logout();
-                UI.Navigation.FormNavigator.GoToLogin();
-            }
-        }
-
-        private void btnNavHelp_Click(object sender, EventArgs e)
-        {
-            var choice = MessageBox.Show(
-                "Yes: Backup database\nNo: Restore database",
-                "Database Tools",
-                MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Question);
-
-            if (choice == DialogResult.Yes)
-            {
-                BackupDatabase();
-            }
-            else if (choice == DialogResult.No)
-            {
-                RestoreDatabase();
-            }
-        }
-
-        private void BackupDatabase()
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.Description = "Chọn thư mục lưu backup";
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-
-                try
-                {
-                    var backupFile = CreateBackup(dialog.SelectedPath);
-                    MessageBox.Show("Backup thành công:\n" + backupFile, "Backup",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("All transactional data has been reset.", "Reset Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    Application.Restart();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Backup thất bại:\n" + ex.Message, "Backup",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error resetting data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }
-
-        private void RestoreDatabase()
-        {
-            using (var dialog = new OpenFileDialog())
-            {
-                dialog.Filter = "SQLite Database (*.db)|*.db|All files (*.*)|*.*";
-                dialog.Title = "Chọn file backup để restore";
-
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-
-                var confirm = MessageBox.Show(
-                    "Restore sẽ ghi đè database hiện tại. Tiếp tục?",
-                    "Xác nhận restore",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
-
-                if (confirm != DialogResult.Yes) return;
-
-                try
-                {
-                    RestoreBackup(dialog.FileName);
-                    MessageBox.Show("Restore thành công. Vui lòng khởi động lại ứng dụng.", "Restore",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Restore thất bại:\n" + ex.Message, "Restore",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
-        private static string GetDbPath()
-        {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PersonalFinance.db");
-        }
-
-        private static string CreateBackup(string destinationFolder)
-        {
-            var dbPath = GetDbPath();
-            if (!File.Exists(dbPath))
-                throw new FileNotFoundException("Không tìm thấy file database.", dbPath);
-
-            Directory.CreateDirectory(destinationFolder);
-            var backupFile = Path.Combine(destinationFolder,
-                "PersonalFinance_backup_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".db");
-
-            File.Copy(dbPath, backupFile, true);
-            return backupFile;
-        }
-
-        private static void RestoreBackup(string backupFilePath)
-        {
-            if (!File.Exists(backupFilePath))
-                throw new FileNotFoundException("Không tìm thấy file backup.", backupFilePath);
-
-            File.Copy(backupFilePath, GetDbPath(), true);
-        }
-
-        private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
-        private void btnMinimize_Click(object sender, EventArgs e) => WindowState = FormWindowState.Minimized;
-        private void btnMaximize_Click(object sender, EventArgs e)
-            => WindowState = WindowState == FormWindowState.Maximized
-               ? FormWindowState.Normal : FormWindowState.Maximized;
-
-        // =====================================================================
-        // PAINT
-        // =====================================================================
-        private void pnlSidebar_Paint(object sender, PaintEventArgs e)
-        {
-            using (var pen = new Pen(Color.FromArgb(232, 235, 244), 1))
-            {
-                e.Graphics.DrawLine(pen, 14, 90, 226, 90);
-                e.Graphics.DrawLine(pen, 14, btnNavHelp.Top - 10, 226, btnNavHelp.Top - 10);
-                e.Graphics.DrawLine(pen, pnlSidebar.Width - 1, 0, pnlSidebar.Width - 1, pnlSidebar.Height);
-            }
-        }
-
-        private void picLogo_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var b = new SolidBrush(Color.FromArgb(18, 20, 28)))
-                e.Graphics.FillEllipse(b, 0, 0, 41, 41);
-            using (var f = new Font("Segoe UI", 15F, FontStyle.Bold))
-            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                e.Graphics.DrawString("m", f, Brushes.White, new RectangleF(0, 0, 41, 41), sf);
-        }
-
-        private void picAvatar_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var grd = new LinearGradientBrush(new Rectangle(0, 0, 36, 36),
-                Color.FromArgb(100, 175, 255), Color.FromArgb(58, 95, 225), 45f))
-                e.Graphics.FillEllipse(grd, 0, 0, 35, 35);
-            using (var f = new Font("Segoe UI", 12F, FontStyle.Bold))
-            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                e.Graphics.DrawString("A", f, Brushes.White, new RectangleF(0, 0, 36, 36), sf);
-        }
-
-        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
-        {
-            using (var pen = new Pen(Color.FromArgb(228, 231, 242), 1))
-                e.Graphics.DrawLine(pen, 0, pnlTopBar.Height - 1, pnlTopBar.Width, pnlTopBar.Height - 1);
-        }
-
-        private void pnlWhiteCard_Paint(object sender, PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            var c = (Control)sender;
-            var r = new Rectangle(0, 0, c.Width - 1, c.Height - 1);
-            using (var path = RR(r, 14))
-            {
-                using (var b = new SolidBrush(Color.White)) e.Graphics.FillPath(b, path);
-                using (var pen = new Pen(Color.FromArgb(226, 229, 242), 1)) e.Graphics.DrawPath(pen, path);
-            }
-        }
-
-        private static GraphicsPath RR(Rectangle r, int rad)
-        {
-            var p = new GraphicsPath(); int d = rad * 2;
-            p.AddArc(r.X, r.Y, d, d, 180, 90);
-            p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
-            p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
-            p.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
-            p.CloseFigure(); return p;
         }
     }
+
 }

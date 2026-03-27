@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dapper;
 using PersonalFinanceManager.Common.Helpers;
 using PersonalFinanceManager.Common.Interfaces;
@@ -19,7 +20,7 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId ORDER BY TransactionDate DESC";
-                return conn.Query<Transaction>(sql, new { UserId = userId });
+                return conn.Query<Transaction>(sql, new { UserId = userId }).ToList();
             }
         }
 
@@ -28,7 +29,7 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 string sql = $"SELECT * FROM {TableName} WHERE AccountId = @AccountId ORDER BY TransactionDate DESC";
-                return conn.Query<Transaction>(sql, new { AccountId = accountId });
+                return conn.Query<Transaction>(sql, new { AccountId = accountId }).ToList();
             }
         }
 
@@ -37,7 +38,7 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId AND TransactionDate BETWEEN @FromDate AND @ToDate ORDER BY TransactionDate DESC";
-                return conn.Query<Transaction>(sql, new { UserId = userId, FromDate = from, ToDate = to });
+                return conn.Query<Transaction>(sql, new { UserId = userId, FromDate = from, ToDate = to }).ToList();
             }
         }
 
@@ -46,7 +47,7 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId AND CategoryId = @CategoryId ORDER BY TransactionDate DESC";
-                return conn.Query<Transaction>(sql, new { UserId = userId, CategoryId = categoryId });
+                return conn.Query<Transaction>(sql, new { UserId = userId, CategoryId = categoryId }).ToList();
             }
         }
 
@@ -64,7 +65,7 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId ORDER BY TransactionDate DESC LIMIT @Count";
-                return conn.Query<Transaction>(sql, new { UserId = userId, Count = count });
+                return conn.Query<Transaction>(sql, new { UserId = userId, Count = count }).ToList();
             }
         }
 
@@ -82,6 +83,29 @@ namespace PersonalFinanceManager.DAL.Repositories
                 return conn.ExecuteScalar<decimal>(sql, new
                 {
                     UserId = userId,
+                    Type = type,
+                    Year = year.ToString("0000"),
+                    Month = month.ToString("00")
+                });
+            }
+        }
+        
+        public decimal GetTotalByCategoryAndMonth(int userId, int categoryId, string type, int year, int month)
+        {
+            using (var conn = _dbHelper.CreateConnection())
+            {
+                string sql = $@"SELECT IFNULL(SUM(Amount), 0)
+                                FROM {TableName}
+                                WHERE UserId = @UserId
+                                  AND CategoryId = @CategoryId
+                                  AND Type = @Type
+                                  AND strftime('%Y', TransactionDate) = @Year
+                                  AND strftime('%m', TransactionDate) = @Month";
+
+                return conn.ExecuteScalar<decimal>(sql, new
+                {
+                    UserId = userId,
+                    CategoryId = categoryId,
                     Type = type,
                     Year = year.ToString("0000"),
                     Month = month.ToString("00")
@@ -107,7 +131,7 @@ namespace PersonalFinanceManager.DAL.Repositories
                     UserId = userId,
                     FromDate = from,
                     ToDate = to
-                });
+                }).ToList();
             }
         }
 

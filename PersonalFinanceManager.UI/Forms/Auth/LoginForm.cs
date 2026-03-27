@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using PersonalFinanceManager.Common.Interfaces;
 using PersonalFinanceManager.Infrastructure.DI;
@@ -10,70 +9,106 @@ namespace PersonalFinanceManager.Forms.Auth
     public partial class LoginForm : Form
     {
         private readonly IUserService _userService;
+        private readonly string _rememberConfig = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "remember_me.cfg");
 
         public LoginForm()
         {
             InitializeComponent();
             _userService = ServiceLocator.UserService;
             this.Load += LoginForm_Load;
+            
+            // 1. Enter key support
+            this.KeyPreview = true;
+            this.AcceptButton = btnSignIn as IButtonControl;
+            
+            // 2. Anchor close button to top right
+            btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            PersonalFinanceManager.Common.Helpers.ConfigHelper.LanguageChanged += (s, e) => {
+                if (this.IsHandleCreated) this.Invoke(new Action(UpdateTranslations));
+            };
+            UpdateTranslations();
+        }
+
+        // Responsive centering logic
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            CenterLayout();
+        }
+
+        private void CenterLayout()
+        {
+            if (pnlCard == null) return;
+            this.SuspendLayout();
+
+            int centerX = this.ClientSize.Width / 2;
+            int centerY = this.ClientSize.Height / 2;
+
+            // Positioning relative to center
+            pnlCard.Location = new Point(centerX - pnlCard.Width / 2, centerY - pnlCard.Height / 2 + 20);
+            pnlLogo.Location = new Point(centerX - pnlLogo.Width / 2, pnlCard.Top - 180);
+            lblTitle.Location = new Point(centerX - lblTitle.Width / 2, pnlLogo.Bottom + 15);
+            lblSubtitle.Location = new Point(centerX - lblSubtitle.Width / 2, lblTitle.Bottom + 5);
+
+            lblNew.Location = new Point(centerX - lblNew.Width / 2, pnlCard.Bottom + 30);
+            int linksWidth = lnkRequest.Width + lnkSignUp.Width + 10;
+            lnkRequest.Location = new Point(centerX - linksWidth / 2, lblNew.Bottom + 10);
+            lnkSignUp.Location = new Point(lnkRequest.Right + 10, lblNew.Bottom + 10);
+
+            lblSecure.Location = new Point(centerX - lblSecure.Width / 2, this.ClientSize.Height - 50);
+
+            this.ResumeLayout();
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSignIn_Click(btnSignIn, EventArgs.Empty);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-            LoadBackgroundImage();
-            txtEmail.Focus();
-        }
-
-        private void LoadBackgroundImage()
-        {
-            string[] candidates = new[]
+            UpdateTranslations();
+            if (System.IO.File.Exists(_rememberConfig))
             {
-                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image.png"),
-                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Image.png"),
-                System.IO.Path.Combine(Application.StartupPath, "Image.png"),
-            };
-
-            foreach (var path in candidates)
-            {
-                if (System.IO.File.Exists(path))
+                try
                 {
-                    try { picBackground.Image = Image.FromFile(path); return; }
-                    catch { }
+                    string savedUser = System.IO.File.ReadAllText(_rememberConfig).Trim();
+                    if (!string.IsNullOrEmpty(savedUser))
+                    {
+                        txtEmail.Text = savedUser;
+                        chkRemember.Checked = true;
+                    }
                 }
+                catch { }
             }
+
+            if (string.IsNullOrEmpty(txtEmail.Text))
+                txtEmail.Focus();
+            else
+                txtPassword.Focus();
         }
 
-        // =====================================================
-        // VẼ LOGO — hình tròn xanh lá vàng chữ "F"
-        // =====================================================
-        private void picLogo_Paint(object sender, PaintEventArgs e)
+        private void UpdateTranslations()
         {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-
-            int w = picLogo.Width;
-            int h = picLogo.Height;
-
-            // Nền tròn
-            using (var bg = new SolidBrush(Color.FromArgb(181, 212, 34)))
-                g.FillEllipse(bg, 0, 0, w - 1, h - 1);
-
-            // Overlay nhẹ tạo chiều sâu
-            using (var overlay = new SolidBrush(Color.FromArgb(30, 0, 0, 0)))
-                g.FillEllipse(overlay, 3, 3, w - 7, h - 7);
-
-            // Chữ "F"
-            using (var font = new Font("Segoe UI", 15f, FontStyle.Bold))
-            using (var brush = new SolidBrush(Color.FromArgb(22, 22, 22)))
-            {
-                var sf = new StringFormat
-                {
-                    Alignment = StringAlignment.Center,
-                    LineAlignment = StringAlignment.Center
-                };
-                g.DrawString("F", font, brush, new RectangleF(0, 0, w, h), sf);
-            }
+            this.Text = tr("Login - Executive Finance");
+            lblSubtitle.Text = tr("Premium Workspace Access");
+            lblUserLabel.Text = tr("USERNAME / EXECUTIVE ID");
+            lblPassLabel.Text = tr("SECURE PASSWORD");
+            chkRemember.Text = tr("Remember me");
+            lnkForgotPassword.Text = tr("Forgot key?");
+            btnSignIn.Text = tr("Access Workspace   ->");
+            lblNew.Text = tr("New to the executive tier?");
+            lnkRequest.Text = tr("Request Access");
+            lnkSignUp.Text = tr("  .  Sign Up Now");
+            lblSecure.Text = tr("VERIFIED SECURE      AES-256 AUTH");
+            CenterLayout();
         }
 
         private void btnClose_Click(object sender, EventArgs e) => Application.Exit();
@@ -83,51 +118,46 @@ namespace PersonalFinanceManager.Forms.Auth
             string email = txtEmail.Text.Trim();
             string password = txtPassword.Text;
 
-            if (string.IsNullOrEmpty(email)) { SetError(txtEmail, "Vui lòng nhập email."); return; }
-            if (string.IsNullOrEmpty(password)) { SetError(txtPassword, "Vui lòng nhập mật khẩu."); return; }
-
-            ResetErrors();
+            if (string.IsNullOrEmpty(email)) { SetError(txtEmail, tr("Please enter your Username / Executive ID.")); return; }
+            if (string.IsNullOrEmpty(password)) { SetError(txtPassword, tr("Please enter your password.")); return; }
 
             bool success = _userService.Login(email, password);
 
             if (success)
             {
+                if (chkRemember.Checked)
+                {
+                    try { System.IO.File.WriteAllText(_rememberConfig, email); } catch { }
+                }
+                else
+                {
+                    try { if (System.IO.File.Exists(_rememberConfig)) System.IO.File.Delete(_rememberConfig); } catch { }
+                }
+
                 PersonalFinanceManager.UI.Navigation.FormNavigator.GoToDashboard();
             }
             else
             {
-                SetError(txtPassword, "Email hoặc mật khẩu không đúng.");
+                SetError(txtPassword, tr("Invalid credentials or unauthorized tier."));
             }
         }
 
         private void lnkForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            MessageBox.Show("Tính năng quên mật khẩu sẽ được phát triển sau.",
-                "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(tr("Forgot password recovery process will go here."), tr("Notification"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void lnkSignUp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var registerForm = new RegisterForm();
-            registerForm.Show();
-            this.Hide();
-            registerForm.FormClosed += (s, args) => this.Show();
+            PersonalFinanceManager.UI.Navigation.FormNavigator.GoToRegister();
         }
 
-        private void SetError(Guna.UI2.WinForms.Guna2TextBox field, string message)
+        private void SetError(ReaLTaiizor.Controls.HopeTextBox field, string message)
         {
-            field.BorderColor = Color.FromArgb(220, 60, 60);
-            field.FocusedState.BorderColor = Color.FromArgb(220, 60, 60);
-            MessageBox.Show(message, "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(message, tr("Authentication Error"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             field.Focus();
         }
 
-        private void ResetErrors()
-        {
-            txtEmail.BorderColor = Color.FromArgb(210, 215, 220);
-            txtEmail.FocusedState.BorderColor = Color.FromArgb(22, 22, 22);
-            txtPassword.BorderColor = Color.FromArgb(210, 215, 220);
-            txtPassword.FocusedState.BorderColor = Color.FromArgb(22, 22, 22);
-        }
+        private string tr(string key) => PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate(key);
     }
 }

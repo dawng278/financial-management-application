@@ -14,6 +14,9 @@ namespace PersonalFinanceManager.BLL.Validators
             RuleFor(x => x.Type)
                 .Must(type => type == "Income" || type == "Expense")
                 .WithMessage("Loại danh mục phải là Income hoặc Expense.");
+
+            RuleFor(x => x.BudgetLimit)
+                .GreaterThanOrEqualTo(0).WithMessage("Giới hạn ngân sách không được là số âm.");
         }
     }
 }

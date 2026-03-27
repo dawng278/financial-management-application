@@ -14,14 +14,17 @@ namespace PersonalFinanceManager.Infrastructure.DI
         public static IUserService UserService
             => DependencyContainer.Resolve<IUserService>();
 
-        public static PersonalFinanceManager.BLL.Interfaces.ITransactionService TransactionService
-            => DependencyContainer.Resolve<PersonalFinanceManager.BLL.Interfaces.ITransactionService>();
+        public static PersonalFinanceManager.Common.Interfaces.ITransactionService TransactionService
+            => DependencyContainer.Resolve<PersonalFinanceManager.Common.Interfaces.ITransactionService>();
 
         public static IAccountService AccountService
             => DependencyContainer.Resolve<IAccountService>();
 
         public static ICategoryService CategoryService
             => DependencyContainer.Resolve<ICategoryService>();
+
+        public static IGoalService GoalService
+            => DependencyContainer.Resolve<IGoalService>();
     }
 }
 

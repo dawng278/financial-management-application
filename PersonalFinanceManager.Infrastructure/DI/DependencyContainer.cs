@@ -29,15 +29,18 @@ namespace PersonalFinanceManager.Infrastructure.DI
             var accountRepo = new PersonalFinanceManager.DAL.Repositories.AccountRepository(dbHelper);
             var categoryRepo = new PersonalFinanceManager.DAL.Repositories.CategoryRepository(dbHelper);
             var transactionRepo = new PersonalFinanceManager.DAL.Repositories.TransactionRepository(dbHelper);
+            var goalRepo = new PersonalFinanceManager.DAL.Repositories.GoalRepository(dbHelper);
             
             var accountService = new PersonalFinanceManager.BLL.Services.AccountService(accountRepo, userService);
             var categoryService = new PersonalFinanceManager.BLL.Services.CategoryService(categoryRepo);
-            var transactionService = new PersonalFinanceManager.BLL.Services.TransactionService(transactionRepo, userService);
+            var transactionService = new PersonalFinanceManager.BLL.Services.TransactionService(transactionRepo, accountRepo, categoryRepo, userService);
+            var goalService = new PersonalFinanceManager.BLL.Services.GoalService(goalRepo, userService);
             
             _services[typeof(IUserService)] = userService;
             _services[typeof(IAccountService)] = accountService;
             _services[typeof(ICategoryService)] = categoryService;
-            _services[typeof(PersonalFinanceManager.BLL.Interfaces.ITransactionService)] = transactionService;
+            _services[typeof(PersonalFinanceManager.Common.Interfaces.ITransactionService)] = transactionService;
+            _services[typeof(IGoalService)] = goalService;
         }
 
         /// <summary>

@@ -18,8 +18,8 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 const string sql = @"
-                    INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, ParentCategoryId)
-                    VALUES (@Name, @Type, @IconName, @ColorHex, @IsDefault, @ParentCategoryId);
+                    INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, ParentCategoryId, BudgetLimit)
+                    VALUES (@Name, @Type, @IconName, @ColorHex, @IsDefault, @ParentCategoryId, @BudgetLimit);
                     SELECT last_insert_rowid();";
                 int newId = conn.ExecuteScalar<int>(sql, entity);
                 ClearCache();
@@ -38,7 +38,8 @@ namespace PersonalFinanceManager.DAL.Repositories
                         IconName = @IconName,
                         ColorHex = @ColorHex,
                         IsDefault = @IsDefault,
-                        ParentCategoryId = @ParentCategoryId
+                        ParentCategoryId = @ParentCategoryId,
+                        BudgetLimit = @BudgetLimit
                     WHERE Id = @Id";
                 bool updated = conn.Execute(sql, entity) > 0;
                 if (updated) ClearCache(entity.Id);

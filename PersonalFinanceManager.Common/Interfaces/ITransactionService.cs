@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using PersonalFinanceManager.Models;
 
@@ -13,5 +13,8 @@ namespace PersonalFinanceManager.Common.Interfaces
         bool Delete(int id);
         decimal GetTotalIncome(DateTime from, DateTime to);
         decimal GetTotalExpense(DateTime from, DateTime to);
+        decimal GetMonthlySpentByCategory(int categoryId, int year, int month);
+        event EventHandler TransactionChanged;
+        string LastError { get; }
     }
 }

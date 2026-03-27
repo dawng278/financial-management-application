@@ -62,7 +62,20 @@ namespace PersonalFinanceManager.BLL.Services
 
         public decimal GetTotalBalance()
         {
-            return _accountRepository.GetTotalBalanceByUser(GetCurrentUserId());
+            var accounts = GetByCurrentUser();
+            decimal totalVnd = 0;
+
+            decimal rateUsdToVnd = PersonalFinanceManager.Common.Helpers.ConfigHelper.RateUsdToVnd;
+            decimal rateEurToVnd = PersonalFinanceManager.Common.Helpers.ConfigHelper.RateEurToVnd;
+
+            foreach (var acc in accounts)
+            {
+                if (acc.Currency == "USD") totalVnd += acc.Balance * rateUsdToVnd;
+                else if (acc.Currency == "EUR") totalVnd += acc.Balance * rateEurToVnd;
+                else totalVnd += acc.Balance; 
+            }
+
+            return totalVnd;
         }
     }
 }

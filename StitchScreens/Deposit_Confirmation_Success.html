@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deposit Success - Electric Executive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#c2c7cb",
+              "on-secondary-container": "#fffbff",
+              "surface-container-highest": "#e1e3e4",
+              "on-secondary-fixed": "#3f0018",
+              "on-primary-fixed-variant": "#2e4b57",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#dd2269",
+              "surface-dim": "#d9dadb",
+              "secondary-fixed-dim": "#ffb1c1",
+              "on-primary-fixed": "#001f2a",
+              "inverse-surface": "#2e3132",
+              "tertiary": "#186a22",
+              "on-tertiary-fixed-variant": "#005312",
+              "secondary": "#b70052",
+              "on-tertiary-container": "#f7fff1",
+              "primary-fixed": "#c9e7f7",
+              "inverse-primary": "#adcbda",
+              "surface-variant": "#e1e3e4",
+              "surface-container": "#edeeef",
+              "on-secondary-fixed-variant": "#8f003f",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "primary": "#43606d",
+              "on-tertiary-fixed": "#002204",
+              "tertiary-fixed-dim": "#88d982",
+              "tertiary-container": "#358438",
+              "surface-tint": "#466270",
+              "surface-container-low": "#f3f4f5",
+              "error": "#ba1a1a",
+              "surface-bright": "#f8f9fa",
+              "on-secondary": "#ffffff",
+              "secondary-fixed": "#ffd9df",
+              "tertiary-fixed": "#a3f69c",
+              "primary-container": "#5c7987",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "inverse-on-surface": "#f0f1f2",
+              "surface-container-high": "#e7e8e9",
+              "on-primary-container": "#fbfdff",
+              "on-surface-variant": "#42484b",
+              "primary-fixed-dim": "#adcbda",
+              "on-surface": "#191c1d",
+              "on-error-container": "#93000a",
+              "surface": "#f8f9fa",
+              "on-primary": "#ffffff",
+              "outline": "#72787b",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-blur-overlay {
+            backdrop-filter: blur(8px);
+            background-color: rgba(25, 28, 29, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden h-screen w-screen flex items-center justify-center">
+<!-- Blurred Background (Simulating Financial Goals Screen) -->
+<div class="fixed inset-0 z-0 overflow-hidden flex flex-col pointer-events-none opacity-40">
+<!-- Mock TopAppBar -->
+<header class="bg-white px-6 py-3 flex justify-between items-center shadow-sm">
+<span class="text-xl font-extrabold text-primary">Electric Executive</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-outline">notifications</span>
+<span class="material-symbols-outlined text-outline">settings</span>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Mock SideNavBar -->
+<aside class="w-64 bg-surface-container-low p-6 space-y-4">
+<div class="h-10 w-full bg-surface-container-highest rounded-full"></div>
+<div class="h-10 w-full bg-primary rounded-full"></div>
+<div class="h-10 w-full bg-surface-container-highest rounded-full"></div>
+<div class="h-10 w-full bg-surface-container-highest rounded-full"></div>
+</aside>
+<!-- Mock Content -->
+<main class="flex-1 p-16 space-y-10">
+<div class="flex justify-between items-end">
+<div class="h-12 w-64 bg-surface-container-highest rounded"></div>
+<div class="h-10 w-32 bg-secondary rounded-xl"></div>
+</div>
+<div class="grid grid-cols-3 gap-8">
+<div class="h-64 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10"></div>
+<div class="h-64 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10"></div>
+<div class="h-64 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10"></div>
+</div>
+</main>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-10 bg-blur-overlay"></div>
+<!-- Success Modal -->
+<div class="relative z-20 w-full max-w-md mx-4 bg-surface-container-lowest rounded-xl shadow-[0_24px_48px_-12px_rgba(66,72,75,0.15)] overflow-hidden">
+<div class="p-10 flex flex-col items-center text-center">
+<!-- Icon Section -->
+<div class="w-20 h-20 bg-tertiary/10 rounded-full flex items-center justify-center mb-8">
+<span class="material-symbols-outlined text-tertiary text-5xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">
+                    check_circle
+                </span>
+</div>
+<!-- Typography -->
+<h1 class="font-headline text-3xl font-extrabold text-on-surface mb-3 tracking-tight">
+                Deposit Successful!
+            </h1>
+<p class="font-body text-on-surface-variant text-sm font-medium mb-10 leading-relaxed max-w-[280px]">
+                Your funds have been securely allocated to your goal.
+            </p>
+<!-- Summary Box -->
+<div class="w-full bg-surface-container-low rounded-xl p-6 mb-10 space-y-4 text-left">
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] font-bold text-outline uppercase tracking-widest">AMOUNT DEPOSITED</span>
+<span class="font-headline text-xl font-bold text-tertiary">$500.00</span>
+</div>
+<div class="h-px bg-outline-variant/20 w-full"></div>
+<div class="flex flex-col gap-1">
+<span class="font-label text-[10px] font-bold text-outline uppercase tracking-widest">CONTRIBUTING TO</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">savings</span>
+<span class="font-body text-sm font-semibold text-primary">Emergency Fund</span>
+</div>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-secondary hover:brightness-110 active:scale-95 transition-all py-4 rounded-xl flex items-center justify-center gap-2 group">
+<span class="font-label font-bold text-white text-sm">Back to Goals</span>
+<span class="material-symbols-outlined text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<!-- Subtle Bottom Accent -->
+<div class="h-1.5 w-full bg-gradient-to-r from-primary to-secondary opacity-20"></div>
+</div>
+</body></html>
