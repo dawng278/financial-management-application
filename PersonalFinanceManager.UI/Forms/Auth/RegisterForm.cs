@@ -69,6 +69,7 @@ namespace PersonalFinanceManager.Forms.Auth
 
             string fullName = txtFullName.Text.Trim();
             string email = txtEmail.Text.Trim();
+            string executiveId = txtExecutiveId.Text.Trim();
             string password = txtPassword.Text;
             string confirmPwd = txtConfirmPwd.Text;
 
@@ -97,6 +98,8 @@ namespace PersonalFinanceManager.Forms.Auth
                 return;
             }
 
+            // (NEW) Executive ID is optional, if empty it uses email as username in backend, but good to have if user filled it
+            
             if (password.Length < 6)
             {
                 SetError(txtPassword, tr("Password must be at least 6 characters."));
@@ -114,6 +117,7 @@ namespace PersonalFinanceManager.Forms.Auth
             {
                 FullName = fullName,
                 Email = email,
+                Username = string.IsNullOrEmpty(executiveId) ? email : executiveId,
                 CreatedAt = DateTime.Now
             };
 

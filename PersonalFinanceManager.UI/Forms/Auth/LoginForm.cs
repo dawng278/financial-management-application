@@ -115,19 +115,20 @@ namespace PersonalFinanceManager.Forms.Auth
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            string email = txtEmail.Text.Trim();
+            // The field can be either Email or Executive ID (Username)
+            string identifier = txtEmail.Text.Trim();
             string password = txtPassword.Text;
 
-            if (string.IsNullOrEmpty(email)) { SetError(txtEmail, tr("Please enter your Username / Executive ID.")); return; }
+            if (string.IsNullOrEmpty(identifier)) { SetError(txtEmail, tr("Please enter your Username / Executive ID.")); return; }
             if (string.IsNullOrEmpty(password)) { SetError(txtPassword, tr("Please enter your password.")); return; }
 
-            bool success = _userService.Login(email, password);
+            bool success = _userService.Login(identifier, password);
 
             if (success)
             {
                 if (chkRemember.Checked)
                 {
-                    try { System.IO.File.WriteAllText(_rememberConfig, email); } catch { }
+                    try { System.IO.File.WriteAllText(_rememberConfig, identifier); } catch { }
                 }
                 else
                 {

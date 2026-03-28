@@ -161,7 +161,7 @@ namespace PersonalFinanceManager.Common.Helpers
 
                 // Auth
                 vi["Premium Workspace Access"] = "Quyền Truy Cập";
-                vi["USERNAME / EXECUTIVE ID"] = "TÊN ĐĂNG NHẬP / MÃ ID";
+                vi["USERNAME / EXECUTIVE ID"] = "GMAIL / MÃ ID";
                 vi["SECURE PASSWORD"] = "MẬT KHẨU BẢO MẬT";
                 vi["Remember me"] = "Ghi nhớ";
                 vi["Forgot key?"] = "Quên khóa?";
