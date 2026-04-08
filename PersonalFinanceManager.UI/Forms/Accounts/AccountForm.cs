@@ -69,7 +69,8 @@ namespace PersonalFinanceManager.Forms.Accounts
                     System.Threading.Tasks.Task.Delay(1500).ContinueWith(_ => {
                         this.Invoke(new Action(() => {
                             Cursor.Current = Cursors.Default;
-                            MessageBox.Show("Analysis complete! Your portfolio is currently performing 15% better than the market average. All savings goals are on track.", "Portfolio AI Analysis", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                            MessageBox.Show(t("Analysis complete! Your portfolio is currently performing 15% better than the market average. All savings goals are on track."), t("Portfolio AI Analysis"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }));
                     });
                 };
@@ -223,7 +224,7 @@ namespace PersonalFinanceManager.Forms.Accounts
             var lblAccHead = new Label { Text = t("ACCOUNTS"), Font = new Font("Segoe UI", 7F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(pnlRow.Width - 300, 8), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             var lblAccVal = new Label { Text = activeCount, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Black, Location = new Point(pnlRow.Width - 300, 25), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             
-            var lblEnc = new Label { Text = "\u2714 Encrypted", Font = new Font("Segoe UI", 8.5F, FontStyle.Bold), ForeColor = Color.FromArgb(24, 106, 34), Location = new Point(pnlRow.Width - 120, 20), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            var lblEnc = new Label { Text = "✔ " + t("Encrypted"), Font = new Font("Segoe UI", 8.5F, FontStyle.Bold), ForeColor = Color.FromArgb(24, 106, 34), Location = new Point(pnlRow.Width - 120, 20), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             var lblDots = new Label { Text = "\u22EE", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.Black, Location = new Point(pnlRow.Width - 20, 10), AutoSize = true, Cursor = Cursors.Hand, Anchor = AnchorStyles.Top | AnchorStyles.Right };
 
             pnlRow.Paint += (s, e) => {
@@ -259,7 +260,7 @@ namespace PersonalFinanceManager.Forms.Accounts
                         Color pillColor = acc.IsActive ? Color.FromArgb(40, 100, 40) : Color.FromArgb(100, 100, 100);
                         Color pillBg = acc.IsActive ? Color.FromArgb(230, 250, 230) : Color.FromArgb(240, 240, 240);
                         
-                        string syncText = "Synced " + GetRelativeTime(acc.CreatedAt);
+                        string syncText = t("Synced") + " " + GetRelativeTime(acc.CreatedAt);
                         
                         _accountData.Add(new AccountCardData {
                             Title = acc.AccountName.ToUpper(),
@@ -277,8 +278,8 @@ namespace PersonalFinanceManager.Forms.Accounts
 
             if (_accountData.Count == 0)
             {
-                _accountData.Add(new AccountCardData { Title = t("MAIN SAVINGS"), Amount = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(42850.24m), PillText = t("ACTIVE"), SyncText = "Synced 3m ago", TrimColor = Color.FromArgb(40, 100, 40), PillBg = Color.FromArgb(230, 250, 230) });
-                _accountData.Add(new AccountCardData { Title = t("AMEX PLATINUM"), Amount = "-" + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(2140.12m), PillText = t("DUE SOON"), SyncText = "Synced 1h ago", TrimColor = Color.FromArgb(183, 0, 82), PillBg = Color.FromArgb(255, 230, 240) });
+                _accountData.Add(new AccountCardData { Title = t("MAIN SAVINGS"), Amount = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(42850.24m), PillText = t("ACTIVE"), SyncText = t("Synced") + " 3" + t("m ago"), TrimColor = Color.FromArgb(40, 100, 40), PillBg = Color.FromArgb(230, 250, 230) });
+                _accountData.Add(new AccountCardData { Title = t("AMEX PLATINUM"), Amount = "-" + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(2140.12m), PillText = t("DUE SOON"), SyncText = t("Synced") + " 1" + t("h ago"), TrimColor = Color.FromArgb(183, 0, 82), PillBg = Color.FromArgb(255, 230, 240) });
             }
 
             RenderAccountCards();
@@ -301,16 +302,17 @@ namespace PersonalFinanceManager.Forms.Accounts
 
         private string GetRelativeTime(DateTime dt)
         {
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
             var span = DateTime.Now - dt;
-            if (span.TotalDays > 1) return (int)span.TotalDays + "d ago";
-            if (span.TotalHours > 1) return (int)span.TotalHours + "h ago";
-            if (span.TotalMinutes > 1) return (int)span.TotalMinutes + "m ago";
-            return "Just now";
+            if (span.TotalDays > 1) return (int)span.TotalDays + t("d ago");
+            if (span.TotalHours > 1) return (int)span.TotalHours + t("h ago");
+            if (span.TotalMinutes > 1) return (int)span.TotalMinutes + t("m ago");
+            return t("Just now");
         }
 
         private Panel CreateAccountCard(AccountCardData data)
         {
-            var pnl = new Panel { Size = new Size(250, 220), Margin = new Padding(0, 0, 13, 0), BackColor = Color.Transparent };
+            var pnl = new Panel { Size = new Size(260, 230), Margin = new Padding(0, 0, 15, 0), BackColor = Color.Transparent };
 
             var lblTitle = new Label { Text = data.Title, Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(30, 110), AutoSize = true };
             var lblAmount = new Label { Text = data.Amount, Font = new Font("Segoe UI", 18F, FontStyle.Bold), ForeColor = Color.FromArgb(40,80,100), Location = new Point(25, 130), AutoSize = true };
@@ -323,7 +325,7 @@ namespace PersonalFinanceManager.Forms.Accounts
                     Font = new Font("Segoe UI", 12F, FontStyle.Bold),
                     ForeColor = Color.DarkGray,
                     Cursor = Cursors.Hand,
-                    Location = new Point(215, 185),
+                    Location = new Point(225, 185),
                     AutoSize = true,
                     BackColor = Color.Transparent
                 };
@@ -360,11 +362,11 @@ namespace PersonalFinanceManager.Forms.Accounts
                 g.FillPath(new SolidBrush(data.PillBg), RoundedRect(new Rectangle(30,30,40,40), 10));
                 
                 // Draw pill
-                g.FillPath(new SolidBrush(data.PillBg), RoundedRect(new Rectangle(140, 35, 80, 24), 12));
+                g.FillPath(new SolidBrush(data.PillBg), RoundedRect(new Rectangle(150, 35, 80, 24), 12));
                 using(var sf = new StringFormat{Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center})
-                    g.DrawString(data.PillText, new Font("Segoe UI", 7F, FontStyle.Bold), new SolidBrush(data.TrimColor), new Rectangle(140, 35, 80, 24), sf);
+                    g.DrawString(data.PillText, new Font("Segoe UI", 7F, FontStyle.Bold), new SolidBrush(data.TrimColor), new Rectangle(150, 35, 80, 24), sf);
                 
-                g.DrawString(data.SyncText, new Font("Segoe UI", 7F), Brushes.Gray, 150, 65);
+                g.DrawString(data.SyncText, new Font("Segoe UI", 6.5F), Brushes.Gray, 142, 70);
             };
 
             pnl.Controls.Add(lblTitle); pnl.Controls.Add(lblAmount);

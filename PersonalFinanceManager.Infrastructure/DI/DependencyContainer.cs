@@ -32,7 +32,7 @@ namespace PersonalFinanceManager.Infrastructure.DI
             var goalRepo = new PersonalFinanceManager.DAL.Repositories.GoalRepository(dbHelper);
             
             var accountService = new PersonalFinanceManager.BLL.Services.AccountService(accountRepo, userService);
-            var categoryService = new PersonalFinanceManager.BLL.Services.CategoryService(categoryRepo);
+            var categoryService = new PersonalFinanceManager.BLL.Services.CategoryService(categoryRepo, userService);
             var transactionService = new PersonalFinanceManager.BLL.Services.TransactionService(transactionRepo, accountRepo, categoryRepo, userService);
             var goalService = new PersonalFinanceManager.BLL.Services.GoalService(goalRepo, userService);
             

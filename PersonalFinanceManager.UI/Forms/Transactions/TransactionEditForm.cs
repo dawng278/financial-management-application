@@ -41,7 +41,7 @@ namespace PersonalFinanceManager.Forms.Transactions
             var t = new Func<string, string>(ConfigHelper.Translate);
 
             // Title Block
-            lblTitle = new Label { Text = t("+ Add Transaction"), Font = new Font("Segoe UI", 18F, FontStyle.Bold), Location = new Point(35, 45), AutoSize = true };
+            lblTitle = new Label { Text = t("Add Transaction"), Font = new Font("Segoe UI", 18F, FontStyle.Bold), Location = new Point(35, 45), AutoSize = true };
             lblSubTitle = new Label { Text = t("Track your spending and optimize your flow."), Font = new Font("Segoe UI", 9.5F), Location = new Point(35, 85), AutoSize = true, ForeColor = Color.Gray };
 
             int startY = 140;
@@ -49,36 +49,38 @@ namespace PersonalFinanceManager.Forms.Transactions
             int fieldW = 410;
 
             // Type
-            var lblType = CreateFieldLabel(t("TRANSACTION TYPE"), 35, startY);
+            var lblType = CreateFieldLabel(t("Transaction Type"), 35, startY);
             cbType = new HopeComboBox { Location = new Point(35, startY + 20), Width = fieldW, Height = 40, DropDownStyle = ComboBoxStyle.DropDownList };
             cbType.Items.Add(t("Income"));
             cbType.Items.Add(t("Expense"));
             cbType.SelectedIndex = 1; // Default to Expense
 
             // Date
-            var lblDate = CreateFieldLabel(t("TRANSACTION DATE"), 35, startY + stepY);
+            var lblDate = CreateFieldLabel(t("Transaction Date"), 35, startY + stepY);
             dtpDate = new DateTimePicker { Location = new Point(35, startY + stepY + 20), Width = fieldW, Font = new Font("Segoe UI", 12F) };
+            dtpDate.Format = DateTimePickerFormat.Custom;
+            dtpDate.CustomFormat = "dd/MM/yyyy";
 
             // Category
-            var lblCat = CreateFieldLabel(t("CATEGORY"), 35, startY + stepY * 2);
+            var lblCat = CreateFieldLabel(t("Category"), 35, startY + stepY * 2);
             cbCategory = new HopeComboBox { Location = new Point(35, startY + stepY * 2 + 20), Width = fieldW, Height = 40, DropDownStyle = ComboBoxStyle.DropDownList };
             var cats = ServiceLocator.CategoryService.GetAll();
             if (cats != null && cats.Any()) { cbCategory.DataSource = cats.ToList(); cbCategory.DisplayMember = "Name"; cbCategory.ValueMember = "Id"; }
-            else { cbCategory.Items.AddRange(new[] { "Food", "Transport", "Shopping", "Salary", "Other" }); }
+            else { cbCategory.Items.AddRange(new[] { t("Food"), t("Transport"), t("Shopping"), t("Salary"), t("Other") }); }
 
             // Account
-            var lblAcc = CreateFieldLabel(t("ACCOUNT"), 35, startY + stepY * 3);
+            var lblAcc = CreateFieldLabel(t("Account"), 35, startY + stepY * 3);
             cbAccount = new HopeComboBox { Location = new Point(35, startY + stepY * 3 + 20), Width = fieldW, Height = 40, DropDownStyle = ComboBoxStyle.DropDownList };
             var accounts = ServiceLocator.AccountService.GetByCurrentUser();
             if (accounts != null && accounts.Any()) { cbAccount.DataSource = accounts.ToList(); cbAccount.DisplayMember = "AccountName"; cbAccount.ValueMember = "Id"; }
-            else { cbAccount.Items.AddRange(new[] { "Main Wallet", "Default Account" }); }
+            else { cbAccount.Items.AddRange(new[] { t("Main Wallet"), t("Default Account") }); }
 
             // Amount
-            var lblAmt = CreateFieldLabel(t("AMOUNT"), 35, startY + stepY * 4);
+            var lblAmt = CreateFieldLabel(t("Amount"), 35, startY + stepY * 4);
             txtAmount = new HopeTextBox { Location = new Point(35, startY + stepY * 4 + 20), Width = fieldW, Height = 40, Text = "0" };
 
             // Description
-            var lblDesc = CreateFieldLabel(t("DESCRIPTION / NOTES"), 35, startY + stepY * 5);
+            var lblDesc = CreateFieldLabel(t("Description / Notes"), 35, startY + stepY * 5);
             txtDesc = new HopeTextBox { Location = new Point(35, startY + stepY * 5 + 20), Width = fieldW, Height = 40 };
 
             // Buttons

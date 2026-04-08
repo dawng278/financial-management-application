@@ -49,16 +49,16 @@ namespace PersonalFinanceManager.Forms.Categories
             int fieldW = 410;
 
             // Name
-            var lblName = CreateFieldLabel(t("CATEGORY NAME"), 35, startY);
+            var lblName = CreateFieldLabel(t("Category Name"), 35, startY);
             txtName = new HopeTextBox { Location = new Point(35, startY + 20), Width = fieldW, Height = 40 };
 
             // Type
-            var lblType = CreateFieldLabel(t("TYPE"), 35, startY + stepY);
+            var lblType = CreateFieldLabel(t("Type"), 35, startY + stepY);
             cbType = new HopeComboBox { Location = new Point(35, startY + stepY + 20), Width = fieldW, Height = 40, DropDownStyle = ComboBoxStyle.DropDownList };
-            cbType.Items.AddRange(new object[] { "Expense", "Income" });
+            cbType.Items.AddRange(new object[] { t("Expense"), t("Income") });
 
             // Budget Limit
-            var lblBudget = CreateFieldLabel(t("BUDGET LIMIT"), 35, startY + 2 * stepY);
+            var lblBudget = CreateFieldLabel(t("Budget Limit"), 35, startY + 2 * stepY);
             txtBudgetLimit = new HopeTextBox { Location = new Point(35, startY + 2 * stepY + 20), Width = fieldW, Height = 40, Hint = t("Enter amount (e.g. 1000000)") };
 
             // Buttons
@@ -89,8 +89,11 @@ namespace PersonalFinanceManager.Forms.Categories
             else
             {
                 txtName.Text = _editingCategory.Name;
-                cbType.SelectedItem = _editingCategory.Type;
-                txtBudgetLimit.Text = _editingCategory.BudgetLimit.ToString("G29"); // Use G29 to avoid trailing zeros for decimals
+                string[] types = { "Expense", "Income" };
+                int typeIdx = Array.IndexOf(types, _editingCategory.Type);
+                cbType.SelectedIndex = typeIdx != -1 ? typeIdx : 0;
+                
+                txtBudgetLimit.Text = _editingCategory.BudgetLimit.ToString("G29"); 
                 if (_editingCategory.IsDefault) { txtName.Enabled = false; cbType.Enabled = false; txtBudgetLimit.Enabled = false; lblSubTitle.Text = ConfigHelper.Translate("System Default Category"); }
             }
         }
@@ -137,8 +140,9 @@ namespace PersonalFinanceManager.Forms.Categories
             if (_editingCategory == null) ResultCategory = new Category();
             else ResultCategory = _editingCategory;
 
+            string[] types = { "Expense", "Income" };
             ResultCategory.Name = txtName.Text.Trim();
-            ResultCategory.Type = cbType.SelectedItem?.ToString() ?? "Expense";
+            ResultCategory.Type = cbType.SelectedIndex != -1 ? types[cbType.SelectedIndex] : "Expense";
 
             if (string.IsNullOrWhiteSpace(txtBudgetLimit.Text))
             {

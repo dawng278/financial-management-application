@@ -234,5 +234,36 @@ namespace PersonalFinanceManager.Common.Mock
         {
             return 0; // Simplified for mock
         }
+
+        public IEnumerable<Transaction> GetAll()
+        {
+            var currentUserId = MockUserService.CurrentUserId;
+            if (currentUserId <= 0) return new List<Transaction>();
+
+            var result = new List<Transaction>();
+            using (var conn = _dbHelper.CreateConnection())
+            {
+                conn.Open();
+
+                using (var cmd = (SQLiteCommand)conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT t.Id, t.AccountId, t.CategoryId, t.UserId, t.Amount, t.Type, t.Note,
+                                               t.TransactionDate, t.CreatedAt, t.ImportSource,
+                                               c.Name AS CategoryName
+                                        FROM Transactions t
+                                        LEFT JOIN Categories c ON c.Id = t.CategoryId
+                                        WHERE t.UserId = @uid
+                                        ORDER BY datetime(t.TransactionDate) DESC";
+                    cmd.Parameters.AddWithValue("@uid", currentUserId);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read()) result.Add(MapTransaction(r));
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

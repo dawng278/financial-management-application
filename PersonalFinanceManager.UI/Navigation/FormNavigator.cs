@@ -95,6 +95,7 @@ namespace PersonalFinanceManager.UI.Navigation
                 PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.Show();
                 PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.BringToFront();
             }
+            PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.RefreshUserProfile();
             PersonalFinanceManager.UI.Forms.Shell.BaseForm.Instance.LoadChildForm(f);
         }
 

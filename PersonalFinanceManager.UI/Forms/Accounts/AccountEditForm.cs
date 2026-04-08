@@ -65,7 +65,7 @@ namespace PersonalFinanceManager.Forms.Accounts
             var lblType = CreateFieldLabel(t("ACCOUNT TYPE"), 35, startY + stepY);
             cboAccountType.Location = new Point(35, startY + stepY + 20);
             cboAccountType.Size = new Size(fieldW, 40);
-            cboAccountType.Items.AddRange(new object[] { "Cash", "BankAccount", "EWallet", "Savings", "CreditCard" });
+            cboAccountType.Items.AddRange(new object[] { t("Cash"), t("BankAccount"), t("EWallet"), t("Savings"), t("CreditCard") });
 
             var lblBalance = CreateFieldLabel(t("BALANCE"), 35, startY + stepY * 2);
             txtBalance.Location = new Point(35, startY + stepY * 2 + 20);
@@ -96,9 +96,12 @@ namespace PersonalFinanceManager.Forms.Accounts
         {
             txtAccountName.Text = _account.AccountName;
             txtBalance.Text = _account.Balance.ToString();
-            cboAccountType.SelectedItem = _account.AccountType;
+            
+            string[] types = { "Cash", "BankAccount", "EWallet", "Savings", "CreditCard" };
+            int typeIdx = Array.IndexOf(types, _account.AccountType);
+            cboAccountType.SelectedIndex = typeIdx != -1 ? typeIdx : 0;
+            
             cboCurrency.SelectedItem = _account.Currency;
-            if (cboAccountType.SelectedIndex == -1) cboAccountType.SelectedIndex = 0;
             if (cboCurrency.SelectedIndex == -1) cboCurrency.SelectedIndex = 0;
         }
 
@@ -125,8 +128,9 @@ namespace PersonalFinanceManager.Forms.Accounts
             if (string.IsNullOrWhiteSpace(txtAccountName.Text)) { MessageBox.Show(ConfigHelper.Translate("Account name cannot be empty."), "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (!decimal.TryParse(txtBalance.Text, out decimal balance)) { MessageBox.Show(ConfigHelper.Translate("Invalid balance amount."), "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
+            string[] types = { "Cash", "BankAccount", "EWallet", "Savings", "CreditCard" };
             _account.AccountName = txtAccountName.Text;
-            _account.AccountType = cboAccountType.SelectedItem?.ToString() ?? "Cash";
+            _account.AccountType = cboAccountType.SelectedIndex != -1 ? types[cboAccountType.SelectedIndex] : "Cash";
             _account.Balance = balance;
             _account.Currency = cboCurrency.SelectedItem?.ToString() ?? "VND";
 

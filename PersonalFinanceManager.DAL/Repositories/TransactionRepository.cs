@@ -15,21 +15,27 @@ namespace PersonalFinanceManager.DAL.Repositories
 
         public TransactionRepository(DbHelper dbHelper) : base(dbHelper) { }
 
+        private const string SelectWithNames = @"
+            SELECT T.*, C.Name AS CategoryName, A.AccountName AS AccountName 
+            FROM Transactions T
+            LEFT JOIN Categories C ON T.CategoryId = C.Id
+            LEFT JOIN Accounts A ON T.AccountId = A.Id";
+
         public IEnumerable<Transaction> GetByUserId(int userId)
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId ORDER BY TransactionDate DESC";
+                string sql = $"{SelectWithNames} WHERE T.UserId = @UserId ORDER BY T.TransactionDate DESC";
                 return conn.Query<Transaction>(sql, new { UserId = userId }).ToList();
             }
         }
 
-        public IEnumerable<Transaction> GetByAccountId(int accountId)
+        public IEnumerable<Transaction> GetByAccountId(int userId, int accountId)
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                string sql = $"SELECT * FROM {TableName} WHERE AccountId = @AccountId ORDER BY TransactionDate DESC";
-                return conn.Query<Transaction>(sql, new { AccountId = accountId }).ToList();
+                string sql = $"{SelectWithNames} WHERE T.UserId = @UserId AND T.AccountId = @AccountId ORDER BY T.TransactionDate DESC";
+                return conn.Query<Transaction>(sql, new { UserId = userId, AccountId = accountId }).ToList();
             }
         }
 
@@ -37,7 +43,7 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId AND TransactionDate BETWEEN @FromDate AND @ToDate ORDER BY TransactionDate DESC";
+                string sql = $"{SelectWithNames} WHERE T.UserId = @UserId AND T.TransactionDate BETWEEN @FromDate AND @ToDate ORDER BY T.TransactionDate DESC";
                 return conn.Query<Transaction>(sql, new { UserId = userId, FromDate = from, ToDate = to }).ToList();
             }
         }
@@ -46,7 +52,7 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId AND CategoryId = @CategoryId ORDER BY TransactionDate DESC";
+                string sql = $"{SelectWithNames} WHERE T.UserId = @UserId AND T.CategoryId = @CategoryId ORDER BY T.TransactionDate DESC";
                 return conn.Query<Transaction>(sql, new { UserId = userId, CategoryId = categoryId }).ToList();
             }
         }
@@ -64,7 +70,7 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                string sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId ORDER BY TransactionDate DESC LIMIT @Count";
+                string sql = $"{SelectWithNames} WHERE T.UserId = @UserId ORDER BY T.TransactionDate DESC LIMIT @Count";
                 return conn.Query<Transaction>(sql, new { UserId = userId, Count = count }).ToList();
             }
         }
@@ -73,19 +79,21 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+
                 string sql = $@"SELECT IFNULL(SUM(Amount), 0)
                                 FROM {TableName}
                                 WHERE UserId = @UserId
                                   AND Type = @Type
-                                  AND strftime('%Y', TransactionDate) = @Year
-                                  AND strftime('%m', TransactionDate) = @Month";
+                                  AND TransactionDate BETWEEN @Start AND @End";
 
                 return conn.ExecuteScalar<decimal>(sql, new
                 {
                     UserId = userId,
                     Type = type,
-                    Year = year.ToString("0000"),
-                    Month = month.ToString("00")
+                    Start = startDate.ToString("yyyy-MM-dd"),
+                    End = endDate.ToString("yyyy-MM-dd") + " 23:59:59"
                 });
             }
         }
@@ -94,21 +102,23 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+
                 string sql = $@"SELECT IFNULL(SUM(Amount), 0)
                                 FROM {TableName}
                                 WHERE UserId = @UserId
                                   AND CategoryId = @CategoryId
                                   AND Type = @Type
-                                  AND strftime('%Y', TransactionDate) = @Year
-                                  AND strftime('%m', TransactionDate) = @Month";
+                                  AND TransactionDate BETWEEN @Start AND @End";
 
                 return conn.ExecuteScalar<decimal>(sql, new
                 {
                     UserId = userId,
                     CategoryId = categoryId,
                     Type = type,
-                    Year = year.ToString("0000"),
-                    Month = month.ToString("00")
+                    Start = startDate.ToString("yyyy-MM-dd"),
+                    End = endDate.ToString("yyyy-MM-dd") + " 23:59:59"
                 });
             }
         }

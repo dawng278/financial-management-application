@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using PersonalFinanceManager.Helpers;
 
 namespace PersonalFinanceManager.Forms.Dashboard
 {
@@ -33,6 +34,8 @@ namespace PersonalFinanceManager.Forms.Dashboard
                     SetupTransactionGrid();
                 }));
             };
+
+            txtSearch.TextChanged += (s, e) => SetupTransactionGrid();
 
             ApplyResponsiveLayout();
         }
@@ -83,6 +86,10 @@ namespace PersonalFinanceManager.Forms.Dashboard
             lblUsageTitle.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Budget Usage") + "\n" + PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Monthly allocation spent");
             lblRecentTitle.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Recent Transactions");
             
+            txtSearch.Text = "";
+            txtSearch.SetPlaceholder(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Search transactions, accounts..."));
+            btnAddTransaction.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("+ Add Transaction");
+
             _incomeRowText = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Income");
             _expenseRowText = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Expense");
 
@@ -98,19 +105,24 @@ namespace PersonalFinanceManager.Forms.Dashboard
         {
             try
             {
-                var all = ServiceLocator.TransactionService
-                    .GetByDateRange(DateTime.MinValue.AddYears(1), DateTime.MaxValue.AddYears(-1))
+                // General balance is always total
+                _totalBalance = ServiceLocator.AccountService.GetTotalBalance();
+
+                // Income/Expense are for the current month for visibility
+                var startOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+                var thisMonth = ServiceLocator.TransactionService
+                    .GetByDateRange(startOfMonth, endOfMonth)
                     .ToList();
 
-                _totalIncome = all
+                _totalIncome = thisMonth
                     .Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
                     .Sum(t => t.Amount);
 
-                _totalExpense = all
+                _totalExpense = thisMonth
                     .Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase))
                     .Sum(t => t.Amount);
-
-                _totalBalance = _totalIncome + _totalExpense;
 
                 lblBalance.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_totalBalance);
                 lblIncome.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_totalIncome);
@@ -143,7 +155,7 @@ namespace PersonalFinanceManager.Forms.Dashboard
                 for (int i = 0; i < 6; i++)
                 {
                     var d = DateTime.Today.AddDays(-25 + (i * 5));
-                    labels.Add(d.ToString("dd MMM").ToUpper());
+                    labels.Add(d.ToString("dd/MM"));
                     
                     var expSum = expenses
                         .Where(t => t.TransactionDate.Date > d.AddDays(-5).Date && t.TransactionDate.Date <= d.Date)
@@ -159,7 +171,8 @@ namespace PersonalFinanceManager.Forms.Dashboard
             }
             catch 
             {
-                labels = new List<string> { "01 OCT", "06 OCT", "15 OCT", "22 OCT", "30 OCT", "NOW" };
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                labels = new List<string> { "01/10", "06/10", "15/10", "22/10", "30/10", t("NOW") };
                 expenseValues = new ChartValues<double> { 120, 250, 180, 450, 290, 310 };
                 incomeValues = new ChartValues<double> { 500, 450, 600, 550, 700, 680 };
             }
@@ -210,14 +223,39 @@ namespace PersonalFinanceManager.Forms.Dashboard
         {
             try
             {
-                var spentVal = (double)Math.Abs(_totalExpense);
-                var remainingVal = (double)Math.Max(0, _totalBalance);
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
                 
-                var dict = new Dictionary<string, double>
+                // Get total budget limit for the user
+                decimal totalBudgetLimit = ServiceLocator.CategoryService.GetAll()
+                    .Where(c => c.Type == "Expense")
+                    .Sum(c => c.BudgetLimit);
+
+                double spentVal = (double)Math.Abs(_totalExpense);
+                double budgetLimit = (double)totalBudgetLimit;
+                
+                Dictionary<string, double> dict;
+                
+                if (budgetLimit > 0)
                 {
-                    { "Spent", spentVal },
-                    { "Remaining", remainingVal }
-                };
+                    double remainingInBudget = Math.Max(0, budgetLimit - spentVal);
+                    dict = new Dictionary<string, double>
+                    {
+                        { t("Spent"), spentVal },
+                        { t("Budget Remaining"), remainingInBudget }
+                    };
+                }
+                else
+                {
+                    // Fallback to Income if no budget limits are set
+                    double incomeVal = (double)_totalIncome;
+                    double remainingFromIncome = Math.Max(0, incomeVal - spentVal);
+                    
+                    dict = new Dictionary<string, double>
+                    {
+                        { t("Spent"), spentVal },
+                        { t("Balance"), remainingFromIncome }
+                    };
+                }
 
                 SeriesCollection piechartData = new SeriesCollection();
                 var colors = new[] 
@@ -268,17 +306,24 @@ namespace PersonalFinanceManager.Forms.Dashboard
 
             try
             {
-                var rows = ServiceLocator.TransactionService.GetRecent(5);
-                foreach (var tx in rows)
+                string searchText = txtSearch.Text.Trim().ToLower();
+                var allRecent = ServiceLocator.TransactionService.GetRecent(50);
+                var filtered = allRecent.Where(tx => 
+                    string.IsNullOrEmpty(searchText) || 
+                    (tx.Note != null && tx.Note.ToLower().Contains(searchText)) ||
+                    (tx.CategoryName != null && tx.CategoryName.ToLower().Contains(searchText)) ||
+                    (tx.Type != null && tx.Type.ToLower().Contains(searchText))
+                ).Take(5);
+
+                foreach (var tx in filtered)
                 {
                     bool isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
                     string amount = (isExpense ? "-" : "+") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(tx.Amount));
                     
-                    string catName = string.IsNullOrWhiteSpace(tx.CategoryName) ? "Transaction" : tx.CategoryName;
-                    string note = string.IsNullOrWhiteSpace(tx.Note) ? "Miscellaneous" : tx.Note;
-                    string title = t(catName) + "\n" + t(note);
+                    string catName = string.IsNullOrWhiteSpace(tx.CategoryName) ? t("Other") : tx.CategoryName;
+                    string typeTitle = t(tx.Type);
 
-                    dgvTrans.Rows.Add(title, t(tx.Type).ToUpper(), tx.TransactionDate.ToString("MMM dd, yyyy"), t("Completed"), amount);
+                    dgvTrans.Rows.Add(typeTitle, catName, tx.TransactionDate.ToString("dd/MM/yyyy"), t("Completed"), amount);
                 }
             }
             catch { }

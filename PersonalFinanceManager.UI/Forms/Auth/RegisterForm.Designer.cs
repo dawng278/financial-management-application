@@ -90,15 +90,15 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 32F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(30, 200);
+            this.lblTitle.Location = new System.Drawing.Point(30, 130);
             this.lblTitle.Size = new System.Drawing.Size(380, 200);
             this.lblTitle.Text = "Join the\nElite Circle of\nWealth\nManagement.";
 
-            this.lblSubtitle.AutoSize = true;
+            this.lblSubtitle.AutoSize = false;
             this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(200, 210, 220);
-            this.lblSubtitle.Location = new System.Drawing.Point(40, 480);
-            this.lblSubtitle.Size = new System.Drawing.Size(350, 45);
+            this.lblSubtitle.Location = new System.Drawing.Point(40, 520);
+            this.lblSubtitle.Size = new System.Drawing.Size(360, 60);
             this.lblSubtitle.Text = "Elevate your financial trajectory with our precision-engineered executive workspace.";
 
             this.lblFeature1.AutoSize = true;
@@ -118,7 +118,7 @@ namespace PersonalFinanceManager.Forms.Auth
             // ----------------------------------------------------
             this.pnlRight.BackColor = System.Drawing.Color.White;
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlRight.Controls.Add(this.btnClose);
+            // this.pnlRight.Controls.Add(this.btnClose);
             this.pnlRight.Controls.Add(this.lblRightTitle);
             this.pnlRight.Controls.Add(this.lblRightSub);
             this.pnlRight.Controls.Add(this.lblName);
@@ -222,7 +222,7 @@ namespace PersonalFinanceManager.Forms.Auth
             this.btnRegister.Location = new System.Drawing.Point(50, 495);
             this.btnRegister.Size = new System.Drawing.Size(540, 45);
             this.btnRegister.PrimaryColor = System.Drawing.Color.FromArgb(200, 20, 80);
-            this.btnRegister.Text = "Create Account ->";
+            this.btnRegister.Text = "Create Account";
             this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
 
             // Row 6: Link
@@ -231,7 +231,7 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lnkSignIn.LinkColor = System.Drawing.Color.FromArgb(80, 80, 100);
             this.lnkSignIn.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.lnkSignIn.Location = new System.Drawing.Point(180, 560);
-            this.lnkSignIn.Text = "Already have an account? Back to Login ->";
+            this.lnkSignIn.Text = "Already have an account? Back to Login";
             this.lnkSignIn.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSignIn_LinkClicked);
 
             // Row 7: Footer
@@ -250,7 +250,7 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lblFooterReg.AutoSize = true;
             this.lblFooterReg.Font = new System.Drawing.Font("Segoe UI", 7F);
             this.lblFooterReg.ForeColor = System.Drawing.Color.Silver;
-            this.lblFooterReg.Location = new System.Drawing.Point(470, 680);
+            this.lblFooterReg.Location = new System.Drawing.Point(490, 680);
             this.lblFooterReg.Text = "REGULATORY DISCLOSURE";
 
             this.Controls.Add(this.pnlRight);

@@ -71,7 +71,8 @@ CREATE TABLE IF NOT EXISTS Categories (
     ColorHex TEXT,
     IsDefault INTEGER NOT NULL DEFAULT 0,
     ParentCategoryId INTEGER NULL,
-    BudgetLimit REAL NOT NULL DEFAULT 0
+    BudgetLimit REAL NOT NULL DEFAULT 0,
+    UserId INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Transactions (
@@ -120,6 +121,39 @@ CREATE TABLE IF NOT EXISTS Goals (
                         cmd.ExecuteNonQuery();
                     }
                     catch { /* Column might already exist */ }
+
+                    try
+                    {
+                        cmd.CommandText = "ALTER TABLE Categories ADD COLUMN UserId INTEGER NOT NULL DEFAULT 0;";
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch { /* Column might already exist */ }
+
+                    // One-time fix for existing data: Assign orphaned records to admin (UserId = 1)
+                    cmd.CommandText = "UPDATE Categories SET UserId = 1 WHERE UserId = 0;";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "UPDATE Accounts SET UserId = 1 WHERE UserId = 0;";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "UPDATE Transactions SET UserId = 1 WHERE UserId = 0;";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "UPDATE Goals SET UserId = 1 WHERE UserId = 0;";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "UPDATE Invoices SET UserId = 1 WHERE UserId = 0;";
+                    cmd.ExecuteNonQuery();
+
+                    // Ensure all current users have at least the basic default categories if they don't have any
+                    cmd.CommandText = @"
+INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, UserId)
+SELECT 'Ăn uống', 'Expense', 'Food', '#FF5733', 1, Id FROM Users WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE UserId = Users.Id AND Name = 'Ăn uống');";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = @"
+INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, UserId)
+SELECT 'Đi lại', 'Expense', 'Car', '#2ECC71', 1, Id FROM Users WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE UserId = Users.Id AND Name = 'Đi lại');";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = @"
+INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, UserId)
+SELECT 'Lương', 'Income', 'Salary', '#F1C40F', 1, Id FROM Users WHERE NOT EXISTS (SELECT 1 FROM Categories WHERE UserId = Users.Id AND Name = 'Lương');";
+                    cmd.ExecuteNonQuery();
 
                     cmd.CommandText = @"
 INSERT INTO Users (Username, PasswordHash, FullName, Email, CreatedAt, IsActive)

@@ -123,6 +123,20 @@ namespace PersonalFinanceManager.UI.Forms.Shell
                 }));
             };
             ApplyTheme();
+            RefreshUserProfile();
+        }
+
+        public void RefreshUserProfile()
+        {
+            var user = ServiceLocator.UserService.GetCurrentUser();
+            if (user != null)
+            {
+                lblUserName.Text = user.FullName ?? user.Username ?? user.Email;
+            }
+            else
+            {
+                lblUserName.Text = "Guest";
+            }
         }
 
         private void ApplyTheme()
@@ -173,8 +187,8 @@ namespace PersonalFinanceManager.UI.Forms.Shell
         {
             var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
 
-            if (lblLogo != null) lblLogo.Text = t("Executive");
-            if (lblLogoSubtitle != null) lblLogoSubtitle.Text = t("PREMIUM WORKSPACE");
+            if (lblLogo != null) lblLogo.Text = t("Management");
+            if (lblLogoSubtitle != null) lblLogoSubtitle.Text = t("PERSONAL FINANCE");
 
             btnNavDashboard.Text = $"          {t("Dashboard")}";
             btnNavTransactions.Text = $"          {t("Transactions")}";
@@ -304,6 +318,8 @@ namespace PersonalFinanceManager.UI.Forms.Shell
         }
         private void BtnNavLogout_Click(object sender, EventArgs e)
         {
+            ServiceLocator.UserService.Logout();
+            FormNavigator.ClearCacheAndReloadCurrent();
             FormNavigator.GoToLogin();
         }
         private void btnCloseForm_Click(object sender, EventArgs e)

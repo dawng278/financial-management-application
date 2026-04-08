@@ -96,6 +96,44 @@ namespace PersonalFinanceManager.Forms.Settings
 
             var btnFactoryReset = this.Controls.Find("btnFactoryReset", true).Length > 0 ? this.Controls.Find("btnFactoryReset", true)[0] as ReaLTaiizor.Controls.HopeButton : null;
             if (btnFactoryReset != null) btnFactoryReset.Text = t("Factory Reset");
+
+            // Privacy & Security extras
+            var lblPrivacyTitle = this.Controls.Find("lblPrivacyTitle", true).FirstOrDefault() as Label;
+            if (lblPrivacyTitle != null) lblPrivacyTitle.Text = t("Account Privacy");
+
+            var lblPrivacyDesc = this.Controls.Find("lblPrivacyDesc", true).FirstOrDefault() as Label;
+            if (lblPrivacyDesc != null) lblPrivacyDesc.Text = t("Making your profile private will hide your transaction summaries from shared circles.");
+
+            var lbl2FA = this.Controls.Find("lbl2FA", true).FirstOrDefault() as Label;
+            if (lbl2FA != null) lbl2FA.Text = t("Two-Factor \nAuthentication");
+
+            var lbl2FADesc = this.Controls.Find("lbl2FADesc", true).FirstOrDefault() as Label;
+            if (lbl2FADesc != null) lbl2FADesc.Text = t("Add an extra layer of security to your account by requiring a verification code.");
+
+            // Notifications
+            var lblNotifTitle = this.Controls.Find("lblNotifTitle", true).FirstOrDefault() as Label;
+            if (lblNotifTitle != null) lblNotifTitle.Text = t("Notifications");
+
+            var lblDepAlert = this.Controls.Find("lblDepAlert", true).FirstOrDefault() as Label;
+            if (lblDepAlert != null) lblDepAlert.Text = t("Deposit Alerts");
+
+            var lblDepDesc = this.Controls.Find("lblDepDesc", true).FirstOrDefault() as Label;
+            if (lblDepDesc != null) lblDepDesc.Text = t("Notify when funds arrive");
+
+            var lblBudgAlert = this.Controls.Find("lblBudgAlert", true).FirstOrDefault() as Label;
+            if (lblBudgAlert != null) lblBudgAlert.Text = t("Budget Warnings");
+
+            var lblBudgDesc = this.Controls.Find("lblBudgDesc", true).FirstOrDefault() as Label;
+            if (lblBudgDesc != null) lblBudgDesc.Text = t("When limits are reached");
+
+            var lblMonthAlert = this.Controls.Find("lblMonthAlert", true).FirstOrDefault() as Label;
+            if (lblMonthAlert != null) lblMonthAlert.Text = t("Monthly Reports");
+
+            var lblMonthDesc = this.Controls.Find("lblMonthDesc", true).FirstOrDefault() as Label;
+            if (lblMonthDesc != null) lblMonthDesc.Text = t("Summary of your finances");
+
+            var btnConfigEmail = this.Controls.Find("btnConfigEmail", true).FirstOrDefault() as ReaLTaiizor.Controls.HopeButton;
+            if (btnConfigEmail != null) btnConfigEmail.Text = t("Configure Email Alerts");
         }
 
         private void ApplyResponsiveLayout()
@@ -293,7 +331,8 @@ namespace PersonalFinanceManager.Forms.Settings
             if (cbo.SelectedItem.ToString().Contains("USD")) cur = "USD";
             if (cbo.SelectedItem.ToString().Contains("EUR")) cur = "EUR";
             PersonalFinanceManager.Common.Helpers.ConfigHelper.SaveRates(PersonalFinanceManager.Common.Helpers.ConfigHelper.RateUsdToVnd, PersonalFinanceManager.Common.Helpers.ConfigHelper.RateEurToVnd, cur);
-            MessageBox.Show($"Currency format changed to {cur}.", "Settings Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            MessageBox.Show(string.Format(t("Currency format changed to {0}."), cur), t("Settings Applied"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CboLang_SelectedIndexChanged(object sender, EventArgs e)
@@ -310,10 +349,11 @@ namespace PersonalFinanceManager.Forms.Settings
             var u = ServiceLocator.UserService.GetCurrentUser();
             if (u != null && txtEmail != null)
             {
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
                 u.Email = txtEmail.Text;
                 bool ok = ServiceLocator.UserService.UpdateProfile(u, null);
-                if (ok) MessageBox.Show("Profile successfully saved.", "Profile", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else MessageBox.Show("Failed to save profile. Email might be in use.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (ok) MessageBox.Show(t("Profile successfully saved."), t("Profile"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else MessageBox.Show(t("Failed to save profile. Email might be in use."), t("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -438,7 +478,8 @@ namespace PersonalFinanceManager.Forms.Settings
 
         private void btnFactoryReset_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to completely erase all transaction and goal data? This cannot be undone.", "Factory Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            if (MessageBox.Show(t("Are you sure you want to completely erase all transaction and goal data? This cannot be undone."), t("Factory Reset"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 try
                 {
@@ -452,7 +493,7 @@ namespace PersonalFinanceManager.Forms.Settings
                             cmd.ExecuteNonQuery();
                         }
                     }
-                    MessageBox.Show("All transactional data has been reset.", "Reset Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(t("All transactional data has been reset."), t("Reset Complete"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
                     Application.Restart();
                 }

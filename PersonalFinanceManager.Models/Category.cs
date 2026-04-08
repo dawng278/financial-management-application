@@ -16,5 +16,6 @@ namespace PersonalFinanceManager.Models
         public bool IsDefault { get; set; }        // Category hệ thống, không xóa được
         public int? ParentCategoryId { get; set; } // Cho phép category con (tương lai)
         public decimal BudgetLimit { get; set; }   // Giới hạn ngân sách
+        public int UserId { get; set; }            // User owner
     }
 }

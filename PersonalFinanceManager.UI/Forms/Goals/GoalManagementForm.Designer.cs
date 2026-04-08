@@ -27,7 +27,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             this.pnlProgressBg = new System.Windows.Forms.Panel();
             this.pnlProgressFill = new System.Windows.Forms.Panel();
             this.lblTotalPct = new System.Windows.Forms.Label();
-            this.lblTotalGain = new System.Windows.Forms.Label();
+            this.lblTotalPct = new System.Windows.Forms.Label();
             this.lblTotalTarget = new System.Windows.Forms.Label();
 
             this.pnlProjection = new System.Windows.Forms.Panel();
@@ -96,7 +96,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             this.btnAddGoal.ForeColor = System.Drawing.Color.White;
             this.btnAddGoal.Location = new System.Drawing.Point(880, 25);
             this.btnAddGoal.Size = new System.Drawing.Size(180, 40);
-            this.btnAddGoal.Text = "+ Add New Goal";
+            this.btnAddGoal.Text = "+ Add Goal";
             this.btnAddGoal.Cursor = System.Windows.Forms.Cursors.Hand;
 
             // pnlTotalProgress
@@ -137,18 +137,12 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             this.lblTotalPct.Location = new System.Drawing.Point(30, 150);
             this.lblTotalPct.AutoSize = true;
 
-            this.lblTotalGain.Text = "↗ +$4,200 this month";
-            this.lblTotalGain.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-            this.lblTotalGain.ForeColor = System.Drawing.Color.FromArgb(40, 140, 60);
-            this.lblTotalGain.Location = new System.Drawing.Point(540, 150);
-            this.lblTotalGain.AutoSize = true;
 
             this.pnlTotalProgress.Controls.Add(this.lblTotalSub);
             this.pnlTotalProgress.Controls.Add(this.lblTotalAmt);
             this.pnlTotalProgress.Controls.Add(this.lblTotalTarget);
             this.pnlTotalProgress.Controls.Add(this.pnlProgressBg);
             this.pnlTotalProgress.Controls.Add(this.lblTotalPct);
-            this.pnlTotalProgress.Controls.Add(this.lblTotalGain);
 
             // pnlProjection
             this.pnlProjection.Location = new System.Drawing.Point(750, 90);
@@ -200,23 +194,23 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             this.btnGrid.Size = new System.Drawing.Size(35, 35);
 
             this.flpGoals.Location = new System.Drawing.Point(30, 340);
-            this.flpGoals.Size = new System.Drawing.Size(1050, 220);
+            this.flpGoals.Size = new System.Drawing.Size(1050, 280);
             this.flpGoals.WrapContents = false;
             this.flpGoals.AutoScroll = true;
 
             // Lower Section
             this.lblActivityTitle.Text = "Recent Goal Activity";
             this.lblActivityTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblActivityTitle.Location = new System.Drawing.Point(30, 580);
+            this.lblActivityTitle.Location = new System.Drawing.Point(30, 640);
             this.lblActivityTitle.AutoSize = true;
 
-            this.pnlActivity.Location = new System.Drawing.Point(30, 620);
-            this.pnlActivity.Size = new System.Drawing.Size(740, 200);
+            this.pnlActivity.Location = new System.Drawing.Point(30, 680);
+            this.pnlActivity.Size = new System.Drawing.Size(740, 500);
             this.pnlActivity.BackColor = System.Drawing.Color.Transparent;
             this.pnlActivity.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlActivity_Paint);
 
-            this.pnlAdvice.Location = new System.Drawing.Point(820, 580);
-            this.pnlAdvice.Size = new System.Drawing.Size(260, 240);
+            this.pnlAdvice.Location = new System.Drawing.Point(820, 640);
+            this.pnlAdvice.Size = new System.Drawing.Size(260, 540);
             this.pnlAdvice.BackColor = System.Drawing.Color.Transparent;
             this.pnlAdvice.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlAdvice_Paint);
 
@@ -252,7 +246,6 @@ namespace PersonalFinanceManager.UI.Forms.Goals
         private System.Windows.Forms.Panel pnlProgressBg;
         private System.Windows.Forms.Panel pnlProgressFill;
         private System.Windows.Forms.Label lblTotalPct;
-        private System.Windows.Forms.Label lblTotalGain;
 
         private System.Windows.Forms.Panel pnlProjection;
         private System.Windows.Forms.Label lblProjTitle;

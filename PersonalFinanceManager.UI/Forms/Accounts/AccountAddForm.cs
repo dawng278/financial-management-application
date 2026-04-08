@@ -65,26 +65,26 @@ namespace PersonalFinanceManager.Forms.Accounts
             int fieldW = 410;
 
             // Name
-            var lblName = CreateFieldLabel(t("ACCOUNT NAME"), 35, startY);
+            var lblName = CreateFieldLabel(t("Account Name"), 35, startY);
             txtAccountName.Location = new Point(35, startY + 20);
             txtAccountName.Size = new Size(fieldW, 40);
             txtAccountName.Text = "";
 
             // Type
-            var lblType = CreateFieldLabel(t("ACCOUNT TYPE"), 35, startY + stepY);
+            var lblType = CreateFieldLabel(t("Account Type"), 35, startY + stepY);
             cboAccountType.Location = new Point(35, startY + stepY + 20);
             cboAccountType.Size = new Size(fieldW, 40);
-            cboAccountType.Items.AddRange(new object[] { "Cash", "BankAccount", "EWallet", "Savings", "CreditCard" });
+            cboAccountType.Items.AddRange(new object[] { t("Cash"), t("BankAccount"), t("EWallet"), t("Savings"), t("CreditCard") });
             cboAccountType.SelectedIndex = 0;
 
             // Balance
-            var lblBalance = CreateFieldLabel(t("INITIAL BALANCE"), 35, startY + stepY * 2);
+            var lblBalance = CreateFieldLabel(t("Initial Balance"), 35, startY + stepY * 2);
             txtBalance.Location = new Point(35, startY + stepY * 2 + 20);
             txtBalance.Size = new Size(fieldW, 40);
             txtBalance.Text = "0";
 
             // Currency
-            var lblCurrency = CreateFieldLabel(t("CURRENCY"), 35, startY + stepY * 3);
+            var lblCurrency = CreateFieldLabel(t("Currency"), 35, startY + stepY * 3);
             cboCurrency.Location = new Point(35, startY + stepY * 3 + 20);
             cboCurrency.Size = new Size(fieldW, 40);
             cboCurrency.Items.AddRange(new object[] { "VND", "USD", "EUR" });
@@ -171,11 +171,12 @@ namespace PersonalFinanceManager.Forms.Accounts
             var user = ServiceLocator.UserService.GetCurrentUser();
             if (user == null) { MessageBox.Show("Please login first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
 
+            string[] types = { "Cash", "BankAccount", "EWallet", "Savings", "CreditCard" };
             var newAccount = new Account
             {
                 UserId = user.Id,
                 AccountName = txtAccountName.Text,
-                AccountType = cboAccountType.SelectedItem?.ToString() ?? "Cash",
+                AccountType = cboAccountType.SelectedIndex != -1 ? types[cboAccountType.SelectedIndex] : "Cash",
                 Balance = balance,
                 Currency = cboCurrency.SelectedItem?.ToString() ?? "VND",
                 CreatedAt = DateTime.Now,

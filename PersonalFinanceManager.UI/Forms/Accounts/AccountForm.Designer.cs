@@ -74,7 +74,7 @@ namespace PersonalFinanceManager.Forms.Accounts
             this.lblPageSub.AutoSize = true;
             this.lblPageSub.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular);
             this.lblPageSub.ForeColor = System.Drawing.Color.Gray;
-            this.lblPageSub.Location = new System.Drawing.Point(35, 65);
+            this.lblPageSub.Location = new System.Drawing.Point(35, 85);
             this.lblPageSub.Text = "Manage your linked accounts and wallets";
 
             // btnAddAccount
@@ -87,20 +87,20 @@ namespace PersonalFinanceManager.Forms.Accounts
             this.btnAddAccount.Cursor = System.Windows.Forms.Cursors.Hand;
 
             // flpAccounts
-            this.flpAccounts.Location = new System.Drawing.Point(30, 110);
-            this.flpAccounts.Size = new System.Drawing.Size(1050, 230);
+            this.flpAccounts.Location = new System.Drawing.Point(30, 140);
+            this.flpAccounts.Size = new System.Drawing.Size(1090, 230);
             this.flpAccounts.WrapContents = false;
             this.flpAccounts.AutoScroll = false;
 
             // pnlAccountPagination
-            this.pnlAccountPagination.Location = new System.Drawing.Point(30, 345);
+            this.pnlAccountPagination.Location = new System.Drawing.Point(30, 360);
             this.pnlAccountPagination.Size = new System.Drawing.Size(1050, 30);
             this.pnlAccountPagination.BackColor = System.Drawing.Color.Transparent;
 
             
 
             // pnlInsights
-            this.pnlInsights.Location = new System.Drawing.Point(30, 385);
+            this.pnlInsights.Location = new System.Drawing.Point(30, 400);
             this.pnlInsights.Size = new System.Drawing.Size(1050, 180);
             this.pnlInsights.BackColor = System.Drawing.Color.Transparent;
             this.pnlInsights.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlInsights_Paint);
@@ -146,7 +146,7 @@ namespace PersonalFinanceManager.Forms.Accounts
             this.pnlInsights.Controls.Add(this.btnOptimize);
 
             // pnlInstitutions
-            this.pnlInstitutions.Location = new System.Drawing.Point(30, 585);
+            this.pnlInstitutions.Location = new System.Drawing.Point(30, 600);
             this.pnlInstitutions.Size = new System.Drawing.Size(1050, 200);
             this.pnlInstitutions.BackColor = System.Drawing.Color.White;
             this.pnlInstitutions.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlInstitutions_Paint);

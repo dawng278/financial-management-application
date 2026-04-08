@@ -98,15 +98,16 @@ namespace PersonalFinanceManager.Forms.Auth
         private void UpdateTranslations()
         {
             this.Text = tr("Login - Executive Finance");
+            lblTitle.Text = tr("Executive Finance");
             lblSubtitle.Text = tr("Premium Workspace Access");
             lblUserLabel.Text = tr("USERNAME / EXECUTIVE ID");
             lblPassLabel.Text = tr("SECURE PASSWORD");
             chkRemember.Text = tr("Remember me");
-            lnkForgotPassword.Text = tr("Forgot key?");
-            btnSignIn.Text = tr("Access Workspace   ->");
+            lnkForgotPassword.Text = tr("Forgot password?");
+            btnSignIn.Text = tr("Login Now");
             lblNew.Text = tr("New to the executive tier?");
             lnkRequest.Text = tr("Request Access");
-            lnkSignUp.Text = tr("  .  Sign Up Now");
+            lnkSignUp.Text = tr("Sign Up Now");
             lblSecure.Text = tr("VERIFIED SECURE      AES-256 AUTH");
             CenterLayout();
         }

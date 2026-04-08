@@ -171,6 +171,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\ChartHelper.cs" />
+    <Compile Include="Helpers\UIHelper.cs" />
     <Compile Include="Controls\ExpenseChart.cs">
       <SubType>UserControl</SubType>
     </Compile>

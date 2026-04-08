@@ -33,6 +33,16 @@ namespace PersonalFinanceManager.BLL.Services
             return user?.Id ?? 0;
         }
 
+        public IEnumerable<Transaction> GetAll()
+        {
+            return _transactionRepository.GetByUserId(GetCurrentUserId());
+        }
+
+        public IEnumerable<Transaction> GetByAccount(int accountId)
+        {
+            return _transactionRepository.GetByAccountId(GetCurrentUserId(), accountId);
+        }
+
         public IEnumerable<Transaction> GetRecent(int count)
         {
             return _transactionRepository.GetRecent(GetCurrentUserId(), count);

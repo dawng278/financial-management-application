@@ -8,7 +8,7 @@ namespace PersonalFinanceManager.Common.Interfaces
     {
         // Lọc & tìm kiếm
         IEnumerable<Transaction> GetByUserId(int userId);
-        IEnumerable<Transaction> GetByAccountId(int accountId);
+        IEnumerable<Transaction> GetByAccountId(int userId, int accountId);
         IEnumerable<Transaction> GetByDateRange(int userId, DateTime from, DateTime to);
         IEnumerable<Transaction> GetByCategory(int userId, int categoryId);
 

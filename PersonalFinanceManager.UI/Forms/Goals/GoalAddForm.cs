@@ -65,8 +65,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             {
                 Text = "✕",
                 Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = AppThemeManager.TextMuted,
-                
+                PrimaryColor = Color.Gray, // Less distracting
                 Size = new Size(40, 40),
                 Location = new Point(440, 16),
                 Cursor = Cursors.Hand
@@ -100,7 +99,8 @@ namespace PersonalFinanceManager.UI.Forms.Goals
                 
                 ForeColor = AppThemeManager.TextPrimary,
                 Font = new Font("Segoe UI", 9.5F),
-                Format = DateTimePickerFormat.Short
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "dd/MM/yyyy"
             };
             this.Controls.Add(dtpDeadline);
             this.Controls.Add(MakeLabel(t("ICON"), 310, y));
@@ -125,6 +125,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
                 
                 
                 ForeColor = Color.White,
+                PrimaryColor = Accent, // Matches the premium theme accent
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };

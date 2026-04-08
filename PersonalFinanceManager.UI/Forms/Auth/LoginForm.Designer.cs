@@ -119,14 +119,14 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lnkForgotPassword.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lnkForgotPassword.LinkColor = System.Drawing.Color.FromArgb(80, 80, 100);
             this.lnkForgotPassword.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.lnkForgotPassword.Location = new System.Drawing.Point(290, 197);
-            this.lnkForgotPassword.Text = "Forgot key?";
+            this.lnkForgotPassword.Location = new System.Drawing.Point(260, 197);
+            this.lnkForgotPassword.Text = "Forgot password?";
             this.lnkForgotPassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkForgotPassword_LinkClicked);
 
             this.btnSignIn.Location = new System.Drawing.Point(30, 240);
             this.btnSignIn.Size = new System.Drawing.Size(340, 45);
             this.btnSignIn.PrimaryColor = System.Drawing.Color.FromArgb(250, 20, 120); // Vibrant Pink
-            this.btnSignIn.Text = "Access Workspace   ->";
+            this.btnSignIn.Text = "Login Now";
             this.btnSignIn.Click += new System.EventHandler(this.btnSignIn_Click);
 
             this.pnlCard.Controls.Add(this.lblUserLabel);
@@ -158,7 +158,7 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lnkSignUp.LinkColor = System.Drawing.Color.FromArgb(40, 50, 60);
             this.lnkSignUp.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.lnkSignUp.Location = new System.Drawing.Point(520, 660);
-            this.lnkSignUp.Text = "  .  Sign Up Now";
+            this.lnkSignUp.Text = "Sign Up Now";
             this.lnkSignUp.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSignUp_LinkClicked);
 
             this.lblSecure.AutoSize = true;
@@ -167,7 +167,7 @@ namespace PersonalFinanceManager.Forms.Auth
             this.lblSecure.Location = new System.Drawing.Point(420, 715);
             this.lblSecure.Text = "VERIFIED SECURE      AES-256 AUTH";
 
-            this.Controls.Add(this.btnClose);
+            // this.Controls.Add(this.btnClose);
             this.Controls.Add(this.pnlLogo);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.lblSubtitle);

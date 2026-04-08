@@ -6,6 +6,7 @@ namespace PersonalFinanceManager.Common.Interfaces
 {
     public interface ITransactionService
     {
+        IEnumerable<Transaction> GetAll();
         IEnumerable<Transaction> GetRecent(int count);
         IEnumerable<Transaction> GetByDateRange(DateTime from, DateTime to);
         bool Add(Transaction transaction);

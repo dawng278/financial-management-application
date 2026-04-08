@@ -50,7 +50,7 @@ namespace PersonalFinanceManager.Forms.Categories
             this.lblSubtitle.Text = "Organize your flow with semantic buckets.";
             this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSubtitle.ForeColor = System.Drawing.Color.Gray;
-            this.lblSubtitle.Location = new System.Drawing.Point(35, 65);
+            this.lblSubtitle.Location = new System.Drawing.Point(30, 85);
             this.lblSubtitle.AutoSize = true;
 
             // btnAddCategory
@@ -91,7 +91,7 @@ namespace PersonalFinanceManager.Forms.Categories
             this.pnlToggle.Controls.Add(this.btnExpenses);
 
             // flpCategories
-            this.flpCategories.Location = new System.Drawing.Point(30, 110);
+            this.flpCategories.Location = new System.Drawing.Point(25, 140);
             this.flpCategories.Size = new System.Drawing.Size(1050, 320);
             this.flpCategories.AutoSize = true;
             this.flpCategories.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -103,10 +103,10 @@ namespace PersonalFinanceManager.Forms.Categories
             // Spend Density
             this.lblSpendDensityTitle.Text = "Spend Density";
             this.lblSpendDensityTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblSpendDensityTitle.Location = new System.Drawing.Point(30, 450);
+            this.lblSpendDensityTitle.Location = new System.Drawing.Point(30, 480);
             this.lblSpendDensityTitle.AutoSize = true;
 
-            this.pnlChart.Location = new System.Drawing.Point(30, 490);
+            this.pnlChart.Location = new System.Drawing.Point(30, 520);
             this.pnlChart.Size = new System.Drawing.Size(1050, 180);
             this.pnlChart.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             this.pnlChart.BackColor = System.Drawing.Color.White;

@@ -70,7 +70,7 @@ namespace PersonalFinanceManager.UI.Forms.Shell
             this.pnlTopAppBar.BackColor = System.Drawing.Color.White;
             this.pnlTopAppBar.Controls.Add(this.picAvatar);
             this.pnlTopAppBar.Controls.Add(this.lblUserName);
-            this.pnlTopAppBar.Controls.Add(this.btnCloseForm);
+            // this.pnlTopAppBar.Controls.Add(this.btnCloseForm);
             this.pnlTopAppBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTopAppBar.Location = new System.Drawing.Point(256, 0);
             this.pnlTopAppBar.Name = "pnlTopAppBar";

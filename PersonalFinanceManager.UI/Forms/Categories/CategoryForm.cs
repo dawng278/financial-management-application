@@ -174,6 +174,7 @@ namespace PersonalFinanceManager.Forms.Categories
 
         private Control CreateCategoryCard(Category cat)
         {
+            var t = new Func<string, string>(ConfigHelper.Translate);
             int marginX = 15;
             int gap = 20;
             int containerWidth = Math.Max(flpCategories.Width, 800);
@@ -192,7 +193,8 @@ namespace PersonalFinanceManager.Forms.Categories
             float pct = (cat.BudgetLimit > 0) ? (float)(spent / cat.BudgetLimit * 100m) : 0;
             int displayPct = (int)Math.Min(pct, 100);
 
-            string status = pct >= 100 ? "CRITICAL" : (pct > 80 ? "WARNING" : "STABLE");
+            string statusStr = pct >= 100 ? "CRITICAL" : (pct > 80 ? "WARNING" : "STABLE");
+            string status = t(statusStr);
             Color statusColor = pct >= 100 ? Color.Red : (pct > 80 ? Color.Orange : Color.FromArgb(40, 160, 40));
             Color accentColor = ColorTranslator.FromHtml(cat.ColorHex ?? "#0078D4");
 
@@ -213,8 +215,9 @@ namespace PersonalFinanceManager.Forms.Categories
                 btnDelete.MouseLeave += (s, e) => btnDelete.ForeColor = Color.Gray;
                 btnDelete.Click += (s, e) => 
                 {
-                    var msg = string.Format(ConfigHelper.Translate("Are you sure you want to delete category '{0}'?"), cat.Name);
-                    if (MessageBox.Show(msg, ConfigHelper.Translate("Confirm Delete"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    var t = new Func<string, string>(ConfigHelper.Translate);
+                    var msg = string.Format(t("Are you sure you want to delete category '{0}'?"), cat.Name);
+                    if (MessageBox.Show(msg, t("Confirm Delete"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         if (ServiceLocator.CategoryService.Delete(cat.Id))
                         {
@@ -241,13 +244,31 @@ namespace PersonalFinanceManager.Forms.Categories
                     g.FillRectangle(brush, 0, 10, 6, pnl.Height - 20);
                 }
 
+                // Format amounts for display
+                string spentText = spent.ToString("N0") + " đ";
+                string limitText = cat.BudgetLimit.ToString("N0") + " đ";
+                string budgetInfo = cat.BudgetLimit > 0 ? $"{spentText} / {limitText}" : spentText;
+
                 g.DrawString(status, new Font("Segoe UI", 7.5F, FontStyle.Bold), new SolidBrush(statusColor), pnl.Width - 80, 25);
                 g.DrawString(cat.Name, new Font("Segoe UI", 12F, FontStyle.Bold), new SolidBrush(ThemeHelper.Text), 25, 60);
                 g.DrawString(ConfigHelper.Translate("Budget Utilization"), new Font("Segoe UI", 8F), new SolidBrush(ThemeHelper.SubText), 25, 90);
-                g.DrawString($"{(int)pct}%", new Font("Segoe UI", 8F, FontStyle.Bold), new SolidBrush(ThemeHelper.Text), pnl.Width - 45, 90);
+                
+                // Show the actual amount and percentage
+                string pctText = cat.BudgetLimit > 0 ? $"{(int)pct}%" : "";
+                g.DrawString(budgetInfo, new Font("Segoe UI", 8F, FontStyle.Bold), new SolidBrush(ThemeHelper.Text), 25, 105);
+                if (!string.IsNullOrEmpty(pctText))
+                    g.DrawString(pctText, new Font("Segoe UI", 8F, FontStyle.Bold), new SolidBrush(ThemeHelper.Text), pnl.Width - 45, 90);
 
-                g.FillRectangle(new SolidBrush(Color.FromArgb(235, 235, 235)), 25, 120, pnl.Width - 55, 6);
-                g.FillRectangle(new SolidBrush(accentColor), 25, 120, (pnl.Width - 55) * (displayPct / 100f), 6);
+                g.FillRectangle(new SolidBrush(Color.FromArgb(235, 235, 235)), 25, 125, pnl.Width - 55, 6);
+                if (cat.BudgetLimit > 0)
+                {
+                    g.FillRectangle(new SolidBrush(accentColor), 25, 125, (pnl.Width - 55) * (displayPct / 100f), 6);
+                }
+                else if (spent > 0)
+                {
+                    // If no limit but money spent, show a full bar in gray or a subtle version of accent color to show activity
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(100, accentColor.R, accentColor.G, accentColor.B)), 25, 125, pnl.Width - 55, 6);
+                }
             };
 
             return pnl;
@@ -330,7 +351,7 @@ namespace PersonalFinanceManager.Forms.Categories
                 for (int i = 0; i < pointCount; i += 5) 
                 {
                     var d = DateTime.Today.AddDays(-19 + i);
-                    string dateText = d.ToString("dd MMM").ToUpper();
+                    string dateText = d.ToString("dd/MM");
                     int x = marginH + (i * chartWidth / (pointCount - 1));
                     g.DrawString(dateText, new Font("Segoe UI", 7F), new SolidBrush(Color.FromArgb(160, 160, 160)), x - 20, pnlChart.Height - 25);
                 }

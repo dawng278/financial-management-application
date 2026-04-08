@@ -4,6 +4,8 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using ReaLTaiizor.Controls;
 using Panel = System.Windows.Forms.Panel;
+using PersonalFinanceManager.Helpers;
+using System.Linq;
 
 namespace PersonalFinanceManager.UI.Forms.Goals
 {
@@ -19,6 +21,8 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             lblTotalAmt.Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(0);
             LoadGoals();
             ApplyResponsiveLayout();
+
+            txtSearch.TextChanged += (s, e) => LoadGoals();
             
             // Link Add Button
             btnAddGoal.Click += (s, e) => {
@@ -83,8 +87,12 @@ namespace PersonalFinanceManager.UI.Forms.Goals
         private void UpdateTranslations()
         {
             if (this.lblPageTitle != null) this.lblPageTitle.Text = t("Financial Goals");
-            if (this.txtSearch != null) this.txtSearch.Text = "  " + t("Search goals...");
-            if (this.btnAddGoal != null) this.btnAddGoal.Text = t("+ Add New Goal");
+            if (this.txtSearch != null) 
+            {
+                this.txtSearch.Text = "";
+                this.txtSearch.SetPlaceholder(t("Search goals..."));
+            }
+            if (this.btnAddGoal != null) this.btnAddGoal.Text = t("+ Add Goal");
             if (this.lblTotalSub != null) this.lblTotalSub.Text = t("TOTAL SAVINGS PROGRESS");
             if (this.lblActiveTitle != null) this.lblActiveTitle.Text = t("Active Savings Goals");
             if (this.lblActivityTitle != null) this.lblActivityTitle.Text = t("Recent Goal Activity");
@@ -102,6 +110,11 @@ namespace PersonalFinanceManager.UI.Forms.Goals
             flpGoals.Controls.Clear();
 
             var goals = Infrastructure.DI.ServiceLocator.GoalService.GetAll();
+            string q = txtSearch?.Text?.Trim().ToLower();
+            if (!string.IsNullOrEmpty(q))
+            {
+                goals = goals.Where(g => g.Title.ToLower().Contains(q)).ToList();
+            }
             
             decimal totalSaved = 0;
             decimal totalTarget = 0;
@@ -148,7 +161,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
                             ), 
                             tx => tx.TransactionDate
                         ), 
-                        2
+                        8
                     )
                 );
             }
@@ -160,22 +173,22 @@ namespace PersonalFinanceManager.UI.Forms.Goals
 
         private Panel CreateGoalCard(PersonalFinanceManager.Models.Goal goal, Color themeColor, Color iconBgColor)
         {
-            var pnl = new Panel { Size = new Size(330, 220), Margin = new Padding(0, 0, 30, 0), BackColor = Color.Transparent };
+            var pnl = new Panel { Size = new Size(330, 250), Margin = new Padding(0, 0, 30, 0), BackColor = Color.Transparent };
             
             var lblTitle = new Label { Text = goal.Title, Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.Text, Location = new Point(25, 75), AutoSize = true };
             var lblTarget = new Label { Text = t("Target: ") + goal.TargetDate.ToString("MMMM yyyy"), Font = new Font("Segoe UI", 8.5F), ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.SubText, Location = new Point(25, 100), AutoSize = true };
             
-            var lblSaved = new Label { Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(goal.CurrentAmount), Font = new Font("Segoe UI", 9.5F, FontStyle.Bold), ForeColor = PersonalFinanceManager.Common.Helpers.ThemeHelper.Text, Location = new Point(25, 130), AutoSize = true };
+            var lblSaved = new Label { Text = PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(goal.CurrentAmount), Font = new Font("Segoe UI", 9.5F, FontStyle.Bold), ForeColor = themeColor, Location = new Point(25, 130), AutoSize = true };
             var lblLimit = new Label { Text = " / " + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(goal.TargetAmount), Font = new Font("Segoe UI", 9F), ForeColor = Color.Gray, Location = new Point(lblSaved.Right + 5, 131), AutoSize = true };
-            var lblPct = new Label { Text = $"{goal.ProgressPercentage}%", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Color.FromArgb(40,40,40), Location = new Point(285, 131), AutoSize = true };
+            var lblPct = new Label { Text = $"{goal.ProgressPercentage}%", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Color.FromArgb(40, 40, 40), Location = new Point(285, 131), AutoSize = true };
 
 
             var btnDeposit = new HopeButton
             {
                 Text = t("Make a Deposit"),
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                PrimaryColor = Color.FromArgb(240, 240, 245),
-                ForeColor = Color.FromArgb(60, 80, 100),
+                PrimaryColor = themeColor,
+                ForeColor = Color.White,
                 Location = new Point(25, 175),
                 Size = new Size(280, 35),
                 Cursor = Cursors.Hand
@@ -296,7 +309,7 @@ namespace PersonalFinanceManager.UI.Forms.Goals
                 string subText = isMilestone ? t("Goal Achieved!") : (activity.Type == "Expense" ? t("Funding target goal") : t("Direct contribution"));
                 g.DrawString(subText, new Font("Segoe UI", 8.5F), new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.SubText), 70, yOffset + 42);
                 
-                string amtText = isMilestone ? t("Completed") : ((activity.Amount > 0 ? "+" : "") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(activity.Amount)));
+                string amtText = isMilestone ? t("Completed") : ((activity.Amount > 0 ? "+" : "-") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(activity.Amount)));
                 g.DrawString(amtText, new Font("Segoe UI", 10.5F, FontStyle.Bold), new SolidBrush(accentColor), rightAlign, yOffset + 20);
                 
                 string dateText = activity.TransactionDate.Date == DateTime.Today ? t("Today") : activity.TransactionDate.ToString("dd/MM/yyyy");
@@ -353,7 +366,6 @@ namespace PersonalFinanceManager.UI.Forms.Goals
                 // Track internal progress elements
                 pnlProgressBg.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
                 lblTotalPct.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-                lblTotalGain.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
                 contentPanel.SizeChanged += (s, e) => {
                     int w = contentPanel.ClientSize.Width;

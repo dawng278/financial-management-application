@@ -40,8 +40,8 @@ namespace PersonalFinanceManager.Forms.Auth
             lblPass.Text = tr("Password");
             lblConfPass.Text = tr("Confirm Password");
             chkTerms.Text = tr("I acknowledge the Executive Terms of Service and consent to the data protocols.");
-            btnRegister.Text = tr("Create Account ->");
-            lnkSignIn.Text = tr("Already have an account? Back to Login ->");
+            btnRegister.Text = tr("Create Account");
+            lnkSignIn.Text = tr("Already have an account? Back to Login");
             lblFooterCopy.Text = tr("2024 EXECUTIVE FINANCE GLOBAL");
             lblFooterPriv.Text = tr("PRIVACY POLICY");
             lblFooterReg.Text = tr("REGULATORY DISCLOSURE");

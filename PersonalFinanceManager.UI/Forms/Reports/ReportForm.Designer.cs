@@ -114,7 +114,7 @@ namespace PersonalFinanceManager.Forms.Reports
             // lblFilterStart
             // 
             this.lblFilterStart.AutoSize = true;
-            this.lblFilterStart.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterStart.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblFilterStart.ForeColor = System.Drawing.Color.Gray;
             this.lblFilterStart.Location = new System.Drawing.Point(15, 12);
             this.lblFilterStart.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -138,7 +138,7 @@ namespace PersonalFinanceManager.Forms.Reports
             // lblFilterEnd
             // 
             this.lblFilterEnd.AutoSize = true;
-            this.lblFilterEnd.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterEnd.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblFilterEnd.ForeColor = System.Drawing.Color.Gray;
             this.lblFilterEnd.Location = new System.Drawing.Point(180, 12);
             this.lblFilterEnd.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -162,7 +162,7 @@ namespace PersonalFinanceManager.Forms.Reports
             // lblFilterCat
             // 
             this.lblFilterCat.AutoSize = true;
-            this.lblFilterCat.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterCat.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblFilterCat.ForeColor = System.Drawing.Color.Gray;
             this.lblFilterCat.Location = new System.Drawing.Point(345, 12);
             this.lblFilterCat.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -189,7 +189,7 @@ namespace PersonalFinanceManager.Forms.Reports
             // lblFilterAcc
             // 
             this.lblFilterAcc.AutoSize = true;
-            this.lblFilterAcc.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblFilterAcc.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblFilterAcc.ForeColor = System.Drawing.Color.Gray;
             this.lblFilterAcc.Location = new System.Drawing.Point(510, 12);
             this.lblFilterAcc.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -220,7 +220,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.btnApply.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnApply.DangerColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(108)))), ((int)(((byte)(108)))));
             this.btnApply.DefaultColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.btnApply.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnApply.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.btnApply.ForeColor = System.Drawing.Color.White;
             this.btnApply.HoverTextColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(49)))), ((int)(((byte)(51)))));
             this.btnApply.InfoColor = System.Drawing.Color.FromArgb(((int)(((byte)(144)))), ((int)(((byte)(147)))), ((int)(((byte)(153)))));
@@ -241,7 +241,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.pnlIncome.Location = new System.Drawing.Point(22, 187);
             this.pnlIncome.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlIncome.Name = "pnlIncome";
-            this.pnlIncome.Size = new System.Drawing.Size(248, 81);
+            this.pnlIncome.Size = new System.Drawing.Size(248, 100);
             this.pnlIncome.TabIndex = 3;
             this.pnlIncome.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlIncome_Paint);
             // 
@@ -251,7 +251,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.pnlExpense.Location = new System.Drawing.Point(292, 187);
             this.pnlExpense.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlExpense.Name = "pnlExpense";
-            this.pnlExpense.Size = new System.Drawing.Size(248, 81);
+            this.pnlExpense.Size = new System.Drawing.Size(248, 100);
             this.pnlExpense.TabIndex = 4;
             this.pnlExpense.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlExpense_Paint);
             // 
@@ -261,7 +261,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.pnlSavings.Location = new System.Drawing.Point(562, 187);
             this.pnlSavings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlSavings.Name = "pnlSavings";
-            this.pnlSavings.Size = new System.Drawing.Size(248, 81);
+            this.pnlSavings.Size = new System.Drawing.Size(248, 100);
             this.pnlSavings.TabIndex = 5;
             this.pnlSavings.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlSavings_Paint);
             // 
@@ -270,7 +270,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.pnlChart.BackColor = System.Drawing.Color.Transparent;
             this.pnlChart.Controls.Add(this.lblChartTitle);
             this.pnlChart.Controls.Add(this.lblChartSub);
-            this.pnlChart.Location = new System.Drawing.Point(22, 284);
+            this.pnlChart.Location = new System.Drawing.Point(22, 310);
             this.pnlChart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlChart.Name = "pnlChart";
             this.pnlChart.Size = new System.Drawing.Size(788, 211);
@@ -308,7 +308,7 @@ namespace PersonalFinanceManager.Forms.Reports
             this.pnlLedger.Controls.Add(this.btnExportPdf);
             this.pnlLedger.Controls.Add(this.dgvLedger);
             this.pnlLedger.Controls.Add(this.lblPaginator);
-            this.pnlLedger.Location = new System.Drawing.Point(22, 512);
+            this.pnlLedger.Location = new System.Drawing.Point(22, 540);
             this.pnlLedger.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlLedger.Name = "pnlLedger";
             this.pnlLedger.Size = new System.Drawing.Size(788, 244);

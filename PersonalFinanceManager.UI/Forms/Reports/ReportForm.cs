@@ -35,15 +35,16 @@ namespace PersonalFinanceManager.Forms.Reports
             dtpEnd.Value = DateTime.Now.AddDays(1);
 
             try {
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
                 var cats = ServiceLocator.CategoryService.GetAll();
                 cboCategory.Items.Clear();
-                cboCategory.Items.Add(new ComboItem { Text = "All Categories", Value = 0 });
+                cboCategory.Items.Add(new ComboItem { Text = t("All Categories"), Value = 0 });
                 foreach(var c in cats) cboCategory.Items.Add(new ComboItem { Text = c.Name, Value = c.Id });
                 cboCategory.SelectedIndex = 0;
 
                 var accs = ServiceLocator.AccountService.GetByCurrentUser();
                 cboAccount.Items.Clear();
-                cboAccount.Items.Add(new ComboItem { Text = "All Accounts", Value = 0 });
+                cboAccount.Items.Add(new ComboItem { Text = t("All Accounts"), Value = 0 });
                 foreach(var a in accs) cboAccount.Items.Add(new ComboItem { Text = a.AccountName, Value = a.Id });
                 cboAccount.SelectedIndex = 0;
             } catch { }
@@ -207,13 +208,16 @@ namespace PersonalFinanceManager.Forms.Reports
                 dgvLedger.Rows.Clear();
                 foreach(var tx in txList.OrderByDescending(t => t.TransactionDate))
                 {
+                    var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
                     bool isExpense = string.Equals(tx.Type, "Expense", StringComparison.OrdinalIgnoreCase);
-                    string amt = (isExpense ? "-" : "+") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(tx.Amount);
-                    string catName = string.IsNullOrWhiteSpace(tx.CategoryName) ? "SYSTEM" : tx.CategoryName.ToUpper();
-                    string note = string.IsNullOrWhiteSpace(tx.Note) ? "Transaction" : tx.Note;
-                    string accName = "Account #" + tx.AccountId; // Dynamic account name if join available
+                    string amt = (isExpense ? "-" : "+") + PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(Math.Abs(tx.Amount));
                     
-                    dgvLedger.Rows.Add(tx.TransactionDate.ToString("MMM dd, yyyy"), note, catName, accName, amt);
+                    string catName = tx.CategoryName ?? t("Other");
+                    string note = string.IsNullOrWhiteSpace(tx.Note) ? t("Transaction") : tx.Note;
+                    string accName = tx.AccountName ?? (t("Account #") + tx.AccountId);
+                    
+                    int idx = dgvLedger.Rows.Add(tx.TransactionDate.ToString("dd/MM/yyyy"), t(note), t(catName).ToUpper(), accName, amt);
+                    dgvLedger.Rows[idx].Tag = tx;
                 }
 
                 lblPaginator.Text = string.Format(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Showing {0} entries"), txList.Count);
@@ -237,14 +241,14 @@ namespace PersonalFinanceManager.Forms.Reports
 
             if (groups.Count == 0)
             {
-                labels.Add(dtpStart.Value.ToString("MMM"));
+                labels.Add(dtpStart.Value.ToString("MM/yyyy"));
                 incomeValues.Add(0); expenseValues.Add(0);
             }
             else 
             {
                 foreach(var g in groups)
                 {
-                    labels.Add(new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"));
+                    labels.Add(new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MM/yyyy"));
                     incomeValues.Add((double)g.Where(t => string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount));
                     expenseValues.Add((double)g.Where(t => !string.Equals(t.Type, "Income", StringComparison.OrdinalIgnoreCase)).Sum(t => t.Amount));
                 }
@@ -252,8 +256,8 @@ namespace PersonalFinanceManager.Forms.Reports
 
             _fiscalChart.Series = new SeriesCollection
             {
-                new ColumnSeries { Title = "Income", Values = incomeValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 106, 34)) },
-                new ColumnSeries { Title = "Expense", Values = expenseValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(183, 30, 80)) }
+                new ColumnSeries { Title = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Income"), Values = incomeValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(24, 106, 34)) },
+                new ColumnSeries { Title = PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate("Expense"), Values = expenseValues, Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(183, 30, 80)) }
             };
 
             _fiscalChart.AxisX.Clear();
@@ -328,7 +332,7 @@ namespace PersonalFinanceManager.Forms.Reports
                 var val = e.Value?.ToString() ?? "";
                 if (val.StartsWith("+")) color = Color.FromArgb(24, 106, 34);
                 else color = Color.FromArgb(183, 30, 80);
-                font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                font = new Font("Segoe UI", 9F);
                 
                 using (var stringFormat = new StringFormat() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center })
                 {
@@ -338,22 +342,30 @@ namespace PersonalFinanceManager.Forms.Reports
             }
             else if (e.ColumnIndex == 2)
             {
+                var tx = dgvLedger.Rows[e.RowIndex].Tag as Transaction;
                 var val = e.Value?.ToString() ?? "";
+                
+                // Defaults (Income color)
                 var bg = Color.FromArgb(235, 245, 235);
                 var fg = Color.FromArgb(40, 110, 40);
                 
-                if (val == "BUSINESS" || val == "EQUIPMENT" || val == "RENT") 
+                // Expense color
+                if (tx != null && !string.Equals(tx.Type, "Income", StringComparison.OrdinalIgnoreCase)) 
                 {
                     bg = Color.FromArgb(250, 230, 240);
                     fg = Color.FromArgb(183, 30, 80);
                 }
 
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                e.Graphics.FillPath(new SolidBrush(bg), RoundedRect(new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y + 10, e.CellBounds.Width - 50, 20), 5));
+                var pillRect = new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y + 10, e.CellBounds.Width - 30, 20);
+                using (var path = RoundedRect(pillRect, 5))
+                {
+                    e.Graphics.FillPath(new SolidBrush(bg), path);
+                }
                 
                 using (var sf = new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                 {
-                    e.Graphics.DrawString(val, new Font("Segoe UI", 7F, FontStyle.Bold), new SolidBrush(fg), new Rectangle(e.CellBounds.X + 10, e.CellBounds.Y + 10, e.CellBounds.Width - 50, 20), sf);
+                    e.Graphics.DrawString(val, new Font("Segoe UI", 7F), new SolidBrush(fg), pillRect, sf);
                 }
                 e.Handled = true;
             }
@@ -379,17 +391,20 @@ namespace PersonalFinanceManager.Forms.Reports
 
         private void pnlIncome_Paint(object sender, PaintEventArgs e)
         {
-            DrawMetricCard(e.Graphics, pnlIncome.ClientRectangle, "TOTAL INCOME", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_income), "Calculated statically", Color.FromArgb(24, 106, 34), Color.FromArgb(230, 245, 235), "?");
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            DrawMetricCard(e.Graphics, pnlIncome.ClientRectangle, t("TOTAL INCOME"), PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_income), t("Calculated statically"), Color.FromArgb(24, 106, 34), Color.FromArgb(230, 245, 235), "?");
         }
 
         private void pnlExpense_Paint(object sender, PaintEventArgs e)
         {
-            DrawMetricCard(e.Graphics, pnlExpense.ClientRectangle, "TOTAL EXPENSES", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_expense), "Calculated statically", Color.FromArgb(183, 30, 80), Color.FromArgb(250, 230, 235), "?");
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            DrawMetricCard(e.Graphics, pnlExpense.ClientRectangle, t("TOTAL EXPENSES"), PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_expense), t("Calculated statically"), Color.FromArgb(183, 30, 80), Color.FromArgb(250, 230, 235), "?");
         }
 
         private void pnlSavings_Paint(object sender, PaintEventArgs e)
         {
-            DrawMetricCard(e.Graphics, pnlSavings.ClientRectangle, "NET SAVINGS", PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_savings), "", Color.FromArgb(160, 20, 50), Color.FromArgb(250, 230, 240), "??");
+            var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+            DrawMetricCard(e.Graphics, pnlSavings.ClientRectangle, t("NET SAVINGS"), PersonalFinanceManager.Common.Helpers.ConfigHelper.FormatGlobalCurrency(_savings), "", Color.FromArgb(160, 20, 50), Color.FromArgb(250, 230, 240), "??");
         }
 
         private void DrawMetricCard(Graphics g, Rectangle r, string title, string val, string sub, Color themeColor, Color pillColor, string icon)

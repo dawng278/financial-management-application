@@ -18,8 +18,8 @@ namespace PersonalFinanceManager.DAL.Repositories
             using (var conn = _dbHelper.CreateConnection())
             {
                 const string sql = @"
-                    INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, ParentCategoryId, BudgetLimit)
-                    VALUES (@Name, @Type, @IconName, @ColorHex, @IsDefault, @ParentCategoryId, @BudgetLimit);
+                    INSERT INTO Categories (Name, Type, IconName, ColorHex, IsDefault, ParentCategoryId, BudgetLimit, UserId)
+                    VALUES (@Name, @Type, @IconName, @ColorHex, @IsDefault, @ParentCategoryId, @BudgetLimit, @UserId);
                     SELECT last_insert_rowid();";
                 int newId = conn.ExecuteScalar<int>(sql, entity);
                 ClearCache();
@@ -39,7 +39,8 @@ namespace PersonalFinanceManager.DAL.Repositories
                         ColorHex = @ColorHex,
                         IsDefault = @IsDefault,
                         ParentCategoryId = @ParentCategoryId,
-                        BudgetLimit = @BudgetLimit
+                        BudgetLimit = @BudgetLimit,
+                        UserId = @UserId
                     WHERE Id = @Id";
                 bool updated = conn.Execute(sql, entity) > 0;
                 if (updated) ClearCache(entity.Id);
@@ -47,12 +48,21 @@ namespace PersonalFinanceManager.DAL.Repositories
             }
         }
 
-        public IEnumerable<Category> GetByType(string type)
+        public IEnumerable<Category> GetByUserId(int userId)
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                const string sql = "SELECT * FROM Categories WHERE Type = @Type";
-                return conn.Query<Category>(sql, new { Type = type });
+                const string sql = "SELECT * FROM Categories WHERE UserId = @UserId OR (IsDefault = 1 AND UserId IS NULL)";
+                return conn.Query<Category>(sql, new { UserId = userId });
+            }
+        }
+
+        public IEnumerable<Category> GetByType(int userId, string type)
+        {
+            using (var conn = _dbHelper.CreateConnection())
+            {
+                const string sql = "SELECT * FROM Categories WHERE Type = @Type AND (UserId = @UserId OR (IsDefault = 1 AND UserId IS NULL))";
+                return conn.Query<Category>(sql, new { Type = type, UserId = userId });
             }
         }
 

@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using PersonalFinanceManager.Infrastructure.DI;
+using PersonalFinanceManager.Helpers;
 
 namespace PersonalFinanceManager.Forms.Transactions
 {
@@ -14,6 +15,7 @@ namespace PersonalFinanceManager.Forms.Transactions
         {
             public string Date { get; set; }
             public string Category { get; set; }
+            public string CategoryColor { get; set; }
             public string Description { get; set; }
             public string Account { get; set; }
             public decimal Amount { get; set; }
@@ -94,12 +96,10 @@ namespace PersonalFinanceManager.Forms.Transactions
         {
             var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
 
-            if (txtSearch.Text == "Search transactions, tags or accounts..." || txtSearch.Text == "Tìm kiếm giao dịch, thẻ hoặc tài khoản...") 
-                txtSearch.Text = t("Search transactions, tags or accounts...");
-
             lblNetTitle.Text = t("TOTAL NET LIQUIDITY");
-
-            // Redraw grid headers and re-bind datagrid contents
+            txtSearch.Text = ""; // Clear any manual text
+            txtSearch.SetPlaceholder(t("Search transactions, tags or accounts..."));
+            UpdateLiquidityDisplay();
             SetupGrid();
             BindGridFiltered();
         }
@@ -109,7 +109,7 @@ namespace PersonalFinanceManager.Forms.Transactions
             _allRows = new List<TransactionRow>();
             try
             {
-                var transactions = ServiceLocator.TransactionService.GetRecent(200);
+                var transactions = ServiceLocator.TransactionService.GetAll();
                 if (transactions != null && transactions.Any())
                 {
                     foreach (var tx in transactions)
@@ -119,8 +119,9 @@ namespace PersonalFinanceManager.Forms.Transactions
                         
                         _allRows.Add(new TransactionRow
                         {
-                            Date = tx.TransactionDate.ToString("MMM dd, yyyy"),
+                            Date = tx.TransactionDate.ToString("dd/MM/yyyy"), 
                             Category = category?.Name ?? tx.CategoryName ?? "Other",
+                            CategoryColor = category?.ColorHex ?? "#CCCCCC",
                             Description = tx.Note ?? "",
                             Account = account?.AccountName ?? tx.AccountName ?? "Unknown",
                             Amount = tx.Amount
@@ -151,15 +152,17 @@ namespace PersonalFinanceManager.Forms.Transactions
                 
                 decimal previousBalance = totalBalance - monthlyDelta;
                 double percent = 0;
-                if (previousBalance > 0) percent = (double)(monthlyDelta / previousBalance) * 100.0;
+                if (previousBalance != 0) percent = (double)(monthlyDelta / previousBalance) * 100.0;
                 
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
                 string trendChar = percent >= 0 ? "↗" : "↘";
-                lblNetTrend.Text = $"{trendChar} {(percent >= 0 ? "+" : "")}{percent:N1}% from last month";
+                lblNetTrend.Text = $"{trendChar} {(percent >= 0 ? "+" : "")}{percent:N1}% " + t("from last month");
                 lblNetTrend.ForeColor = percent >= 0 ? Color.FromArgb(170, 220, 200) : Color.FromArgb(250, 180, 180);
             }
             catch
             {
-                lblNetTrend.Text = "↗ +0.0% from last month";
+                var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                lblNetTrend.Text = "↗ +0.0% " + t("from last month");
             }
         }
 
@@ -186,7 +189,7 @@ namespace PersonalFinanceManager.Forms.Transactions
         {
             var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
             string q = txtSearch.Text.Trim().ToLower();
-            if (q == "" || q == t("Search transactions, tags or accounts...").ToLower() || q == "search transactions, tags or accounts...") q = null;
+            if (string.IsNullOrEmpty(q)) q = null;
 
             var query = _allRows.AsEnumerable();
             if(!string.IsNullOrEmpty(q))
@@ -232,17 +235,12 @@ namespace PersonalFinanceManager.Forms.Transactions
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-                Color bg = Color.LightGray;
-                Color fg = Color.DarkGray;
-                switch (row.Category)
-                {
-                    case "Investments": bg = Color.FromArgb(220, 240, 252); fg = Color.FromArgb(40, 130, 180); break;
-                    case "Dining Out": bg = Color.FromArgb(252, 230, 230); fg = Color.FromArgb(200, 50, 70); break;
-                    case "Utilities": bg = Color.FromArgb(225, 245, 255); fg = Color.FromArgb(30, 140, 200); break;
-                    case "Salary": bg = Color.FromArgb(225, 250, 225); fg = Color.FromArgb(40, 180, 80); break;
-                    case "Travel": bg = Color.FromArgb(255, 230, 240); fg = Color.FromArgb(220, 60, 130); break;
-                    case "Housing": bg = Color.FromArgb(215, 240, 255); fg = Color.FromArgb(20, 120, 190); break;
-                }
+                Color baseColor = Color.LightGray;
+                try { baseColor = ColorTranslator.FromHtml(row.CategoryColor ?? "#CCCCCC"); } catch { }
+
+                bool isDark = PersonalFinanceManager.Common.Helpers.ThemeHelper.IsDarkMode;
+                Color bg = Color.FromArgb(isDark ? 55 : 30, baseColor);
+                Color fg = baseColor;
 
                 int w = 110;
                 int h = 30;
@@ -259,7 +257,8 @@ namespace PersonalFinanceManager.Forms.Transactions
                 using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                 using (var bFg = new SolidBrush(fg))
                 {
-                    e.Graphics.DrawString(row.Category, new Font("Segoe UI", 8.5F, FontStyle.Bold), bFg, rect, sf);
+                    var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                    e.Graphics.DrawString(t(row.Category), new Font("Segoe UI", 8.5F, FontStyle.Bold), bFg, rect, sf);
                 }
                 e.Handled = true;
             }
@@ -268,7 +267,9 @@ namespace PersonalFinanceManager.Forms.Transactions
             {
                 using (var brush = new SolidBrush(PersonalFinanceManager.Common.Helpers.ThemeHelper.Text))
                 {
-                    e.Graphics.DrawString(e.Value?.ToString(), new Font("Segoe UI", 9.5F), brush, e.CellBounds.X, e.CellBounds.Y + 20);
+                    var t = new Func<string, string>(PersonalFinanceManager.Common.Helpers.ConfigHelper.Translate);
+                    var val = e.Value?.ToString();
+                    e.Graphics.DrawString(t(val), new Font("Segoe UI", 9.5F), brush, e.CellBounds.X, e.CellBounds.Y + 20);
                 }
                 e.Handled = true;
             }

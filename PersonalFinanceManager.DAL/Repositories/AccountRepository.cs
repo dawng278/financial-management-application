@@ -18,8 +18,7 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                // Fallback catch-all for userId 0/1 depending on user environment mock states
-                string sql = "SELECT * FROM Accounts WHERE UserId = @UserId OR @UserId = 0 OR UserId = 0 OR UserId = 1";
+                string sql = "SELECT * FROM Accounts WHERE UserId = @UserId";
                 return conn.Query<Account>(sql, new { UserId = userId }).ToList();
             }
         }
@@ -38,7 +37,7 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                return conn.ExecuteScalar<decimal>("SELECT COALESCE(SUM(Balance), 0) FROM Accounts WHERE UserId = @UserId OR @UserId = 0 OR UserId = 0 OR UserId = 1", new { UserId = userId });
+                return conn.ExecuteScalar<decimal>("SELECT COALESCE(SUM(Balance), 0) FROM Accounts WHERE UserId = @UserId", new { UserId = userId });
             }
         }
 
@@ -46,9 +45,6 @@ namespace PersonalFinanceManager.DAL.Repositories
         {
             using (var conn = _dbHelper.CreateConnection())
             {
-                // Ensure UserId defaults to 1 if missing for testing
-                if (entity.UserId == 0) entity.UserId = 1;
-                
                 string sql = @"INSERT INTO Accounts (UserId, AccountName, AccountType, Balance, Currency, IsActive, CreatedAt) 
                                VALUES (@UserId, @AccountName, @AccountType, @Balance, @Currency, @IsActive, @CreatedAt);
                                SELECT last_insert_rowid();";
